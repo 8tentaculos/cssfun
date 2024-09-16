@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waving Cat with Theme Selector - React</title>
+
+    <script type="importmap">
+        {
+          "imports": {
+            "rasti": "https://esm.run/rasti@alpha",
+            "cssfun": "../../es/index.js"
+          }
+        }
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="module">
+        import { createTheme } from 'cssfun';
+
+        import App from './App.js';
+        // Themes
+        const themes = {
+            light : {
+                bg1 : '#f0f8ff',
+                fg1 : '#333',
+                fg2 : '#444',
+                fg3 : '#555',
+                catWrapperBg : '#fff',
+                labelBg : '#fff',
+                labelBorderColor : '#ddd',
+                labelHoverBg : '#f0f0f0',
+                labelHoverBorderColor : '#ccc'
+            },
+            dark : {
+                bg1 : '#1e1e1e',
+                fg1 : '#d4d4d4',
+                fg2 : '#c0c0c0',
+                fg3 : '#a8a8a8',
+                catWrapperBg : '#2d2d2d',
+                labelBg : '#2d2d2d',
+                labelBorderColor : '#3c3c3c',
+                labelHoverBg : '#3c3c3c',
+                labelHoverBorderColor : '#4b4b4b'
+            },
+        };
+        // Creating the theme
+        const theme = createTheme()({ themes });
+        // Applying the theme
+        document.body.classList.add(theme.classes.root);
+        // Rendering the app
+        App.mount({}, document.getElementById('root'));
+    </script>
+</body>
+</html>

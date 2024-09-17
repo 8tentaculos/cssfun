@@ -2,44 +2,71 @@ const camelizedToDashed = str => str.replace(/([A-Z])/g, (g) => `-${g[0].toLower
 const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
 
 /**
- * StyleSheet class.  
- * Receives a styles object and options object and generate a css StyleSheet.  
- * The StyleSheet can be attached to the DOM, destroyed or rendered as string for server-side rendering.  
+ * The StyleSheet class receives at the constructor a styles object and an options
+ * object and generate a css StyleSheet.  
+ * The StyleSheet can be attached to the DOM, destroyed or rendered as string for 
+ *  server-side rendering.  
  * @module
- * @param {Object} styles - The styles object.
+ * @class
+ * @param {Object} styles - The styles object. An object with keys as selectors and values as 
+ * style objects. This object will pass trough the parsers and generate the css string.
  * @param {Object} options - The options object.
- * @param {Function} options.generateClassName - The function to generate class names.
- * @param {Function} options.generateId - The function to generate ids.
- * @param {Object} options.attributes - The attributes object.
- * @param {Array} options.parsers - The array of parsers.
+ * @param {Function} options.generateClassName - The function to generate class names. 
+ * This class name will be used to generate the unique class names for styles.
+ * `options.generateClassName` will be added to the instance.
+ * @param {Function} options.generateId - The function to generate ids. This id will be used 
+ * as the style element id.`options.generateId` will be added to the instance.
+ * @param {Object} options.attributes - The attributes object. This attributes will be added 
+ * to the style element. `options.attributes` will be added to the instance.
+ * @param {Array} options.parsers - The array of parsers. Parsers are functions that are composed and called
+ * to generate the css string. The first parser will receive the styles object and the last will return the css string.
+ * By default StyleSheets are rendered using `['renderStyles', 'parseStyles']`.
+ * They can be functions or strings that are methods of the instance. They will be bound to the instance.
+ * `options.parsers` will be added to the instance.
  * @example
+ * // Create a new StyleSheet instance with a styles object.
  * const instance = new StyleSheet({
  *     root : {
  *         color : 'black',
  *     }
  * });
- * 
+ * // Attach the StyleSheet instance to the DOM.
  * instance.attach();
- * 
+ * // Get classes object from the instance.
  * const { classes } = instance;
+ * // Use the classes object to get the class name and use it in your component.
+ * function Header = () => <h1 className={classes.root}>Hello World</h1>;
+ * @example
+ * // Default parsers transforms:
+ * // Camelized keys will be transformed to dashed keys.
+ * css({ root : { backgroundColor : 'black' } }).toString();
+ * // <style id="fun-1">.fun-1-root{background-color:black;}</style>
+ * 
+ * // Nested selectors will be expanded.
+ * css({ root : { '&:hover' : { backgroundColor : 'black' } } }).toString();
+ * // <style id="fun-1">.fun-1-root:hover{background-color:black;}</style>
+ * 
+ * // Global selectors will be rendered as global styles.
+ * css({ '@global' : { body : { backgroundColor : 'black' } } }).toString();
+ * // <style id="fun-1">body{background-color:black;}</style>
+ * 
+ * // Class references will be replaced by the generated class name.
+ * css({ root : { color : 'black' }, '$root:hover' : { color : 'white' } }).toString();
+ * // <style id="fun-1">.fun-1-root{color:black;}.fun-1-root:hover{color:white;}</style>
+ * 
  * @property {Object} styles - The styles object.
- * @property {Object} classes - The original class names object.
- * @property {Number} uid - The unique identifier counter for class names.
- * @property {String} id - The unique identifier for the stylesheet.
- * @property {Function} generateClassName - The function to generate class names.
- * @property {Function} generateId - The function to generate ids.
- * @property {Object} attributes - The attributes object.
- * @property {Array} parsers - The array of parsers.
- * @property {HTMLElement} el - The style element.
- * @static {String} classPrefix - The class prefix.
- * @static {RegExp} classRegex - The class regex.
- * @static {RegExp} classGlobalRegex - The global class regex.
- * @static {RegExp} classReferenceRegex - The class reference regex.
- * @static {RegExp} classNestedRegex - The nested class regex.
- * @static {String} indent - The indent string.
- * @static {Array} registry - The registry array.
- * @static {Number} uid - The unique identifier counter.
- * @static {Boolean} debug - The debug flag. 
+ * @property {Object} classes - The original class names object. Use this object to apply 
+ * class names to your components.
+ * @property {Number} uid - The unique identifier generating class names. 
+ * It will be incremented on each generated class name.
+ * @property {String} id - The unique identifier for the stylesheet. It will be used as the 
+ * style element id. It will be generated by `this.generateId` or can be set on `options.attributes.id`.
+ * @property {Object} attributes - The attributes object. It can be set on 
+ * `options.attributes`.
+ * @property {Array} parsers - The array of parsers. It can be set on 
+ * `options.parsers`.
+ * @property {HTMLElement} el - The style element. A reference to the style element in the DOM. 
+ * It will be created when the instance is attached.
  */
 class StyleSheet {
     constructor(styles, options = {}) {
@@ -63,7 +90,8 @@ class StyleSheet {
         });
     }
     /**
-     * Generate a unique identifier.
+     * Generate a unique identifier. Used for the style element id.
+     * May be overridden by `options.generateId`.
      * @returns {String} The unique identifier.
      */
     generateId() {
@@ -71,6 +99,9 @@ class StyleSheet {
     }
     /**
      * Generate a unique class name.
+     * Transform local selectors that are classes to unique class names
+     * to be used as class names in the styles object.
+     * May be overridden by `options.generateClassName`.
      * @param {String} className - The class name.
      * @returns {String} The unique class name.
      */
@@ -142,7 +173,8 @@ class StyleSheet {
         return { ...result, ...extra };
     }
     /**
-     * Render the instance as a string.
+     * Render the StyleSheet as a style element string.
+     * Used for server-side rendering.
      * @returns {String} The instance as a string.
      */
     toString() {
@@ -158,7 +190,8 @@ class StyleSheet {
         return `<style id="${this.id}"${attributes.join('')}>${this.render()}</style>`;
     }
     /**
-     * Attach the instance to the DOM.
+     * Add the instance to the registry and if we are in the browser, 
+     * attach it to the DOM.
      * @returns {StyleSheet} The instance.
      */
     attach() {
@@ -186,7 +219,8 @@ class StyleSheet {
         return this;
     }
     /**
-     * Destroy the instance and remove it from the DOM.
+     * Destroy the instance and remove it from the registry and 
+     * from the DOM, if it's present.
      * @returns {StyleSheet} The instance.
      */
     destroy() {
@@ -204,7 +238,7 @@ class StyleSheet {
         return this;
     }
     /**
-     * Attach all instances in the registry to the DOM.
+     * Render all instances in the registry as a string.
      * @returns {string} All instances in the registry as a string.
      * @static
      */
@@ -219,7 +253,8 @@ class StyleSheet {
         StyleSheet.registry.forEach(instance => instance.attach());
     }
     /**
-     * Destroy all instances in the registry and remove them from the DOM.
+     * Destroy all instances in the registry and remove them from 
+     * it and from the DOM.
      * @static
      */
     static destroy() {
@@ -227,16 +262,38 @@ class StyleSheet {
     }
 }
 
+/**
+ * @static
+ * @property {String} classPrefix - The class prefix. Used to generate unique class names.
+ */
 StyleSheet.classPrefix = 'fun';
 StyleSheet.classRegex = /^\w+$/;
 StyleSheet.classGlobalRegex = /^@global$/;
 StyleSheet.classReferenceRegex = /\$(\w+)/g;
 StyleSheet.classNestedRegex = /&/g;
+/**
+ * @static
+ * @property {String} indent - The indent string. Used to format text when debug is enabled. 
+ * The default is 4 spaces.
+ */
 StyleSheet.indent = '    ';
 
+/**
+ * @static
+ * @property {Array} registry - The registry array. StyleSheet instances 
+ * will be added to this array.
+ */
 StyleSheet.registry = [];
+/**
+ * @static
+ * @property {Number} uid - The unique identifier counter. 
+ * It will be incremented for each generated id.
+ */
 StyleSheet.uid = 0;
-
+/**
+ * @static
+ * @property {Boolean} debug - The debug flag. Default is `false`.
+ */
 StyleSheet.debug = false;
 
 export default StyleSheet;

@@ -44,7 +44,7 @@ import { css } from 'https://esm.run/cssfun';
 const { css } = CSSFUN;
 ```
 
-### Create sour styles
+### Create your styles
 ```javascript
 const { classes } = css({
     buttons: {

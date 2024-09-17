@@ -1,9 +1,3 @@
-const escape = (() => {
-    const escapeRegex = /([[\].#*$><+~=|^:(),"'`\s])/g;
-    const nativeEscape = typeof CSS !== 'undefined' && CSS.escape;
-    return str => (nativeEscape ? nativeEscape(str) : str.replace(escapeRegex, '\\$1'));
-})();
-
 const camelizedToDashed = str => str.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
 const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
 
@@ -101,8 +95,8 @@ class StyleSheet {
             const value = styles[key];
             if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
                 const str = StyleSheet.debug ?
-                    `${escape(key)} {\n${this.renderStyles(value)}}\n` :
-                    `${escape(key)}{${this.renderStyles(value)}}`;
+                    `${key} {\n${this.renderStyles(value)}}\n` :
+                    `${key}{${this.renderStyles(value)}}`;
 
                 acc.push(str);
                 level++;

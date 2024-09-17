@@ -1,4 +1,4 @@
-import css from './css.js';
+import StyleSheet from './StyleSheet.js';
 
 const merge = (target, ...sources) => {
     // Iterate over all source objects
@@ -120,7 +120,7 @@ const createTheme = (defaultThemes = {}) => (options = {}) => {
         }
     }
     /* eslint-enable */
-    return css(rules);
+    return new StyleSheet(rules).attach();
 };
 
 export default createTheme;

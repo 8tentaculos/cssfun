@@ -43,16 +43,50 @@ const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
  * // <style id="fun-1">.fun-1-root{background-color:black;}</style>
  * 
  * // Nested selectors will be expanded.
- * css({ root : { '&:hover' : { backgroundColor : 'black' } } }).toString();
- * // <style id="fun-1">.fun-1-root:hover{background-color:black;}</style>
+ * css({
+ *     root : {
+ *         '&:hover' : {
+ *             backgroundColor : 'black'
+ *         }
+ *     }
+ * }).toString();
+ * // <style id="fun-1">
+ * //     .fun-1-root:hover {
+ * //         background-color: black;
+ * //     }
+ * // </style>
  * 
  * // Global selectors will be rendered as global styles.
- * css({ '@global' : { body : { backgroundColor : 'black' } } }).toString();
- * // <style id="fun-1">body{background-color:black;}</style>
+ * css({
+ *     '@global' : {
+ *         body : {
+ *             backgroundColor : 'black'
+ *         }
+ *     }
+ * }).toString();
+ * // <style id="fun-1">
+ * //     body {
+ * //         background-color: black;
+ * //     }
+ * // </style>
  * 
  * // Class references will be replaced by the generated class name.
- * css({ root : { color : 'black' }, '$root:hover' : { color : 'white' } }).toString();
- * // <style id="fun-1">.fun-1-root{color:black;}.fun-1-root:hover{color:white;}</style>
+ * css({
+ *     root : {
+ *         color : 'black'
+ *     },
+ *     '$root:hover' : {
+ *         color : 'white'
+ *     }
+ * }).toString();
+ * // <style id="fun-1">
+ * //     .fun-1-root {
+ * //         color:black;
+ * //     }
+ * //     .fun-1-root:hover {
+ * //         color:white;
+ * //     }
+ * // </style>
  * 
  * @property {Object} styles - The styles object.
  * @property {Object} classes - The original class names object. Use this object to apply 

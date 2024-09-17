@@ -3,10 +3,12 @@ CSSFUN is a next generation [css-in-js](https://en.wikipedia.org/wiki/CSS-in-JS)
 It allows you to write CSS directly within your JavaScript code, providing a seamless and dynamic 
 way to style your applications. It leverages the power of JavaScript to create highly maintainable 
 and scalable styles.  
+  
 One of the key features of CSSFUN is that the styles are scoped to the component. This means that the styles 
 you define will not leak out and affect other parts of your application, ensuring that your components remain 
 modular and maintainable. Additionally, the styles are defined in the same file as your component, making it 
 easier to manage and understand the styling of your application.  
+  
 CSSFUN is framework agnostic and has a small footprint of only 4KB. It can be used directly in the browser without 
 any build tools or complex setup.  
 It also supports server-side rendering without duplicating styles.

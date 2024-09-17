@@ -2,35 +2,35 @@ import { Component } from 'rasti';
 import { css } from 'cssfun';
 
 const { classes } = css({
-    label: {
-        fontSize: '1.2rem',
-        color: 'var(--fun-fg1)',
-        marginBottom: '10px'
+    label : {
+        fontSize : '1.2rem',
+        color : 'var(--fun-fg1)',
+        marginBottom : '10px'
     },
-    selector: {
-        display: 'flex',
-        justifyContent: 'center',
-        gap: '10px',
-        '& label': {
-            display: 'inline-block',
-            padding: '10px 20px',
-            background: 'var(--fun-label-bg)',
-            border: '2px solid var(--fun-label-border-color)',
-            borderRadius: '25px',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease'
+    selector : {
+        display : 'flex',
+        justifyContent : 'center',
+        gap : '10px',
+        '& label' : {
+            display : 'inline-block',
+            padding : '10px 20px',
+            background : 'var(--fun-label-bg)',
+            border : '2px solid var(--fun-label-border-color)',
+            borderRadius : '25px',
+            cursor : 'pointer',
+            transition : 'all 0.3s ease'
         },
-        '& input': {
-            display: 'none'
+        '& input' : {
+            display : 'none'
         },
-        '& input:checked + label': {
-            backgroundColor: '#00aaff',
-            borderColor: '#00aaff',
-            color: '#fff'
+        '& input:checked + label' : {
+            backgroundColor : '#00aaff',
+            borderColor : '#00aaff',
+            color : '#fff'
         },
-        '& label:hover': {
-            backgroundColor: 'var(--fun-label-hover-bg)',
-            borderColor: 'var(--fun-label-hover-border-color)'
+        '& label:hover' : {
+            backgroundColor : 'var(--fun-label-hover-bg)',
+            borderColor : 'var(--fun-label-hover-border-color)'
         }
     },
 }).attach();

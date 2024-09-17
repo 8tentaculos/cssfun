@@ -7,6 +7,46 @@ const escape = (() => {
 const camelizedToDashed = str => str.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
 const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
 
+/**
+ * StyleSheet class.  
+ * Receives a styles object and options object and generate a css StyleSheet.  
+ * The StyleSheet can be attached to the DOM, destroyed or rendered as string for server-side rendering.  
+ * @module
+ * @param {Object} styles - The styles object.
+ * @param {Object} options - The options object.
+ * @param {Function} options.generateClassName - The function to generate class names.
+ * @param {Function} options.generateId - The function to generate ids.
+ * @param {Object} options.attributes - The attributes object.
+ * @param {Array} options.parsers - The array of parsers.
+ * @example
+ * const instance = new StyleSheet({
+ *     root : {
+ *         color : 'black',
+ *     }
+ * });
+ * 
+ * instance.attach();
+ * 
+ * const { classes } = instance;
+ * @property {Object} styles - The styles object.
+ * @property {Object} classes - The original class names object.
+ * @property {Number} uid - The unique identifier counter for class names.
+ * @property {String} id - The unique identifier for the stylesheet.
+ * @property {Function} generateClassName - The function to generate class names.
+ * @property {Function} generateId - The function to generate ids.
+ * @property {Object} attributes - The attributes object.
+ * @property {Array} parsers - The array of parsers.
+ * @property {HTMLElement} el - The style element.
+ * @static {String} classPrefix - The class prefix.
+ * @static {RegExp} classRegex - The class regex.
+ * @static {RegExp} classGlobalRegex - The global class regex.
+ * @static {RegExp} classReferenceRegex - The class reference regex.
+ * @static {RegExp} classNestedRegex - The nested class regex.
+ * @static {String} indent - The indent string.
+ * @static {Array} registry - The registry array.
+ * @static {Number} uid - The unique identifier counter.
+ * @static {Boolean} debug - The debug flag. 
+ */
 class StyleSheet {
     constructor(styles, options = {}) {
         // Styles object.
@@ -28,11 +68,18 @@ class StyleSheet {
             }
         });
     }
-
+    /**
+     * Generate a unique identifier.
+     * @returns {String} The unique identifier.
+     */
     generateId() {
         return `${StyleSheet.classPrefix}-${++StyleSheet.uid}`;
     }
-
+    /**
+     * Generate a unique class name.
+     * @param {String} className - The class name.
+     * @returns {String} The unique class name.
+     */
     generateClassName(className) {
         return `${this.id}-${className}-${++this.uid}`;
     }
@@ -100,7 +147,10 @@ class StyleSheet {
 
         return { ...result, ...extra };
     }
-
+    /**
+     * Render the instance as a string.
+     * @returns {String} The instance as a string.
+     */
     toString() {
         let attributes = [];
 
@@ -113,7 +163,10 @@ class StyleSheet {
 
         return `<style id="${this.id}"${attributes.join('')}>${this.render()}</style>`;
     }
-
+    /**
+     * Attach the instance to the DOM.
+     * @returns {StyleSheet} The instance.
+     */
     attach() {
         // Add the instance to the registry if it's not already there.
         if (StyleSheet.registry.indexOf(this) == -1) {
@@ -138,7 +191,10 @@ class StyleSheet {
 
         return this;
     }
-
+    /**
+     * Destroy the instance and remove it from the DOM.
+     * @returns {StyleSheet} The instance.
+     */
     destroy() {
         const index = StyleSheet.registry.indexOf(this);
         // Remove the instance from the registry.
@@ -153,15 +209,25 @@ class StyleSheet {
 
         return this;
     }
-
+    /**
+     * Attach all instances in the registry to the DOM.
+     * @returns {string} All instances in the registry as a string.
+     * @static
+     */
     static toString() {
         return StyleSheet.registry.join('');
     }
-
+    /**
+     * Attach all instances in the registry to the DOM.
+     * @static
+     */
     static attach() {
         StyleSheet.registry.forEach(instance => instance.attach());
     }
-
+    /**
+     * Destroy all instances in the registry and remove them from the DOM.
+     * @static
+     */
     static destroy() {
         StyleSheet.registry.forEach(instance => instance.destroy());
     }

@@ -1,4 +1,4 @@
-import StyleSheet from './StyleSheet.js';
+import css from './css.js';
 
 const merge = (target, ...sources) => {
     // Iterate over all source objects
@@ -36,7 +36,31 @@ const getDiff = (left, right) => {
         return acc;
     }, { left : {}, right : {} });
 };
-
+/**
+ * Higher order function that receives the default themes `{ light, dark }` 
+ * and returns a `createTheme` function.  
+ * The `createTheme` function receives an options object and returns a theme StyleSheet instance.  
+ * It supports light, dark and system color schemes.  
+ * @module
+ * @param {Object} options - The options object.
+ * @param {Object} options.themes - The themes object.
+ * @param {String} options.cssVarsPrefix - The css variables prefix.
+ * @param {String} options.colorScheme - The color scheme.
+ * @returns {StyleSheet} The theme StyleSheet instance.
+ * @example
+ * const theme = createTheme({
+ *    light : {
+ *       color : 'black',
+ *       backgroundColor : 'white',
+ *   },
+ *  dark : {
+ *      color : 'white',
+ *      backgroundColor : 'black',
+ * },
+ * })().attach();
+ * 
+ * document.body.classList.add(theme.classes.root);
+ */
 const createTheme = (defaultThemes = {}) => (options = {}) => {
     const themes = {
         light : merge({}, defaultThemes.light, options.themes && options.themes.light),
@@ -96,9 +120,7 @@ const createTheme = (defaultThemes = {}) => (options = {}) => {
         }
     }
     /* eslint-enable */
-    const instance = new StyleSheet(rules);
-    
-    return (instance).attach();
+    return css(rules);
 };
 
 export default createTheme;

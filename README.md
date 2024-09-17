@@ -1,5 +1,5 @@
 # CSSFUN
-CSSFUN is a next generation [css-in-js](https://en.wikipedia.org/wiki/CSS-in-JS) library.  
+CSSFUN is a next-generation [css-in-js](https://en.wikipedia.org/wiki/CSS-in-JS) library.  
 It allows you to write CSS directly within your JavaScript code, providing a seamless and dynamic 
 way to style your applications. It leverages the power of JavaScript to create highly maintainable 
 and scalable styles.  
@@ -9,14 +9,14 @@ you define will not leak out and affect other parts of your application, ensurin
 modular and maintainable. Additionally, the styles are defined in the same file as your component, making it 
 easier to manage and understand the styling of your application.  
   
-CSSFUN is framework agnostic and has a small footprint of only 4KB. It can be used directly in the browser without 
+CSSFUN is framework-agnostic and has a small footprint of only 4KB. It can be used directly in the browser without 
 any build tools or complex setup.  
 It also supports server-side rendering without duplicating styles.
   
 CSSFUN is available under the [MIT License](LICENSE).  
-You can discuss features or report bugs on our [GitHub Issues page](https://github.com/your-repo/cssfun/issues).
+You can discuss features or report bugs on our [GitHub Issues page](https://github.com/8tentaculos/cssfun/issues).
 
-## Getting started
+## Getting Started
 
 ### Using npm
 
@@ -44,10 +44,10 @@ import { css } from 'https://esm.run/cssfun';
 const { css } = CSSFUN;
 ```
 
-### Create your styles
+### Create sour styles
 ```javascript
 const { classes } = css({
-    buttons : {
+    buttons: {
         backgroundColor : 'blue',
         color : 'white',
         padding : '10px',
@@ -69,3 +69,4 @@ Check out the [examples directory](./examples) for sample projects.
 
 ## License
 This project is licensed under the [MIT License](LICENSE).
+

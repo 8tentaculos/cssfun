@@ -47,7 +47,7 @@ const { css } = CSSFUN;
 ### Create your styles
 ```javascript
 const { classes } = css({
-    buttons: {
+    button : {
         backgroundColor : 'blue',
         color : 'white',
         padding : '10px',

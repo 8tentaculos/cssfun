@@ -1,20 +1,25 @@
 import StyleSheet from './StyleSheet.js';
 
 /**
- * Function to create a new StyleSheet instance.
+ * Function used to create a new StyleSheet instance 
+ * and attach it to the DOM.
  * @module
+ * @function
  * @param {Object} rules The CSS rules.
  * @returns {StyleSheet} The StyleSheet instance.
  * @example
+ * // Create some styles for a link component.
  * const { classes } = css({
- *     root : {
- *         color : 'red',
+ *     link : {
+ *         color : 'blue',
  *         '&:hover' : {
- *            color : 'blue',
+ *            textDecoration : 'underline',
  *         }, 
  *     },
- * }).attach();
+ * });
+ * // Create a link component. Add the `link` class to it.
+ * const Link = ({ children, ...rest }) => <a className={classes.link} ...rest>{children}</a>;
  */
-const css = (...args) => new StyleSheet(...args);
+const css = (...args) => new StyleSheet(...args).attach();
 
 export default css;

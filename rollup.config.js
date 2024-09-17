@@ -27,7 +27,7 @@ const config = inputFiles.map(inputFile => ({
         output: {
             file: 'dist/cssfun.js',
             format: 'umd',
-            name: 'cssfun'
+            name: 'CSSFUN'
         },
         plugins: []
     },
@@ -36,7 +36,7 @@ const config = inputFiles.map(inputFile => ({
         output: {
             file: 'dist/cssfun.min.js',
             format: 'umd',
-            name: 'cssfun'
+            name: 'CSSFUN'
         },
         plugins: [
             terser()

@@ -21,7 +21,7 @@ Next generation css-in-js library
             padding : '10px',
             borderRadius : '5px'
         }
-    });
+    }).attach();
     ```
 
 4. **Apply the styles** to your components:
@@ -32,10 +32,10 @@ Next generation css-in-js library
     ```
 
 ## API Documentation
-[API documentation](/docs/api.md).
+Complete API documentation can be found [here](/docs/api.md).
 
 ## Example
 Check out the [examples directory](./examples) for sample projects.
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](LICENSE).

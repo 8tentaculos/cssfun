@@ -1,3 +1,9 @@
+const escape = (() => {
+    const escapeRegex = /([[\].#*$><+~=|^:(),"'`\s])/g;
+    const nativeEscape = typeof CSS !== 'undefined' && CSS.escape;
+    return str => (nativeEscape ? nativeEscape(str) : str.replace(escapeRegex, '\\$1'));
+})();
+
 const camelizedToDashed = str => str.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
 const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
 
@@ -48,8 +54,8 @@ class StyleSheet {
             const value = styles[key];
             if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
                 const str = StyleSheet.debug ?
-                    `${key} {\n${this.renderStyles(value)}}\n` :
-                    `${key}{${this.renderStyles(value)}}`;
+                    `${escape(key)} {\n${this.renderStyles(value)}}\n` :
+                    `${escape(key)}{${this.renderStyles(value)}}`;
 
                 acc.push(str);
                 level++;
@@ -69,7 +75,7 @@ class StyleSheet {
         const replaceClassReferences = selector => selector.replace(StyleSheet.classReferenceRegex, (match, ref) => fromClasses(ref));
         const replaceClassNested = selector => selector.replace(StyleSheet.classNestedRegex, fromClasses(parentSelector));
 
-        const getKey = key => {
+        const generateKey = key => {
             if (isGlobal && parentSelector) {
                 return `${fromClasses(parentSelector)} ${key}`;
             }
@@ -82,9 +88,9 @@ class StyleSheet {
                 if (key.match(StyleSheet.classGlobalRegex)) {
                     Object.assign(parent || acc.extra, this.parseStyles(value, acc.extra, parentSelector, true));
                 } else if (key.match(StyleSheet.classNestedRegex)) {
-                    parent[getKey(key)] = this.parseStyles(value, acc.extra, key);
+                    parent[generateKey(key)] = this.parseStyles(value, acc.extra, key);
                 } else {
-                    acc.result[getKey(key)] = this.parseStyles(value, acc.extra, key);
+                    acc.result[generateKey(key)] = this.parseStyles(value, acc.extra, key);
                 }
             } else {
                 acc.result[key] = value;

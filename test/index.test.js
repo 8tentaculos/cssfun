@@ -65,7 +65,7 @@ describe('cssfun', () => {
             });
             instance.attach();
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{}.fun-1-button-2{}.fun-1-root-1 .fun-1-button-2{color:blue;}</style>');
+            expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1 .fun-1-button-2{color:blue;}</style>');
         });
 
         it('must use nested styles', () => {
@@ -107,7 +107,7 @@ describe('cssfun', () => {
             });
             instance.attach();
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{}.fun-1-root-1 a{color:red;}</style>');
+            expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1 a{color:red;}</style>');
         });
 
         it('must support media queries', () => {
@@ -134,7 +134,7 @@ describe('cssfun', () => {
             });
             instance.attach();
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{}@media (min-width: 768px){.fun-1-root-1{color:red;}}</style>');
+            expect(style.outerHTML).to.be.equal('<style id="fun-1">@media (min-width: 768px){.fun-1-root-1{color:red;}}</style>');
         });
     });
 });

@@ -154,17 +154,17 @@ class StyleSheet {
         )(this.styles);
     }
 
-    renderStyles(styles) {
-        let level = 1;
+    renderStyles(styles, level = 1) {
         return Object.keys(styles).reduce((acc, key) => {
             const value = styles[key];
             if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-                const str = StyleSheet.debug ?
-                    `${key} {\n${this.renderStyles(value)}}\n` :
-                    `${key}{${this.renderStyles(value)}}`;
+                if (Object.keys(value).length > 0) {
+                    const str = StyleSheet.debug ?
+                        `${key} {\n${this.renderStyles(value, level + 1)}}\n` :
+                        `${key}{${this.renderStyles(value, level + 1)}}`;
 
-                acc.push(str);
-                level++;
+                    acc.push(str);
+                }
             } else {
                 const str = StyleSheet.debug ?
                     `${'    '.repeat(level)}${camelizedToDashed(key)}: ${value};\n` :

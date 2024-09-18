@@ -24,8 +24,8 @@ const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
  * Parsers are functions that transform style objects into CSS strings.  
  * When composed, the first parser receives the styles object, and the final one outputs the resulting CSS string.  
  * If no parsers array is provided, by default, StyleSheets are rendered using `['renderStyles', 'parseStyles']`.
- * Parsers array elements may be functions or strings that are StyleSheet instance methods.
- * They will be bound to the instance.
+ * The elements in the `parsers` array can either be functions or strings referencing methods of the StyleSheet 
+ * instance. These methods will be bound to the instance automatically.
  * `options.parsers` will be added to the instance.
  * @example
  * // Create a new StyleSheet instance with a styles object.

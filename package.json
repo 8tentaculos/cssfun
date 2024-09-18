@@ -12,7 +12,7 @@
     },
     "main": "lib/index.js",
     "module": "es/index.js",
-    "browser": "dist/index.js",
+    "browser": "dist/cssfun.min.js",
     "files": [
         "dist",
         "es",
@@ -28,12 +28,25 @@
         "build": "rollup -c",
         "docs:api": "jsdoc2md --module-index-format none --helper jsdoc2md/helper.cjs --partial jsdoc2md/header.hbs --partial jsdoc2md/sig-link.hbs --partial jsdoc2md/sig-link-html.hbs --partial jsdoc2md/sig-link-parent.hbs --files src/**/*.js > docs/api.md"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/8tentaculos/cssfun.git"
+    "repository": "github:8tentaculos/cssfun",
+    "homepage": "https://github.com/8tentaculos/cssfun",
+    "bugs": "https://github.com/8tentaculos/cssfun/issues",
+    "directories": {
+      "example": "example",
+      "test": "test",
+      "doc": "docs"
     },
     "author": "Alberto Masuelli <alberto.masuelli@gmail.com> (https://github.com/8tentaculos)",
     "license": "MIT",
+    "keywords": [
+      "style",
+      "sheet",
+      "stylesheet",
+      "css",
+      "components",
+      "css in js",
+      "css-in-js"
+    ],
     "devDependencies": {
         "@rollup/plugin-terser": "^0.4.4",
         "chai": "^5.1.1",

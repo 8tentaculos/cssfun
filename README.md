@@ -68,7 +68,7 @@ const Button = () => <button className={classes.button}>Click me</button>;
 ## Parsers
 Parsers are functions that transform style objects into CSS strings.  
 When composed, the first parser receives the styles object, and the final one outputs the resulting CSS string.  
-By default, StyleSheets are rendered using `renderStyles` and `parseStyles`.  
+By default, StyleSheets are rendered using `parseStyles` and `renderStyles`.  
 
 These are the default parser transformations:
 
@@ -155,10 +155,7 @@ css({
 ```
 
 ### Custom parsers
-Parsers can be set at the `parsers` array on the StyleSheet instance. If passed 
-at `options.parsers` it will be added to the StyleSheet instance.  
-Parsers array elements may be functions or strings that are StyleSheet instance methods.
-They will be bound to the instance.
+Parsers can be configured through the `parsers` array on the StyleSheet instance. If provided via `options.parsers`, they will be added to the instance. The elements in the `parsers` array can either be functions or strings referencing methods of the StyleSheet instance. These methods will be bound to the instance automatically.
 
 ## API Documentation
 Complete API documentation can be found [here](/docs/api.md).

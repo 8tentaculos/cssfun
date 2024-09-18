@@ -164,16 +164,13 @@ They will be bound to the instance.
 Complete API documentation can be found [here](/docs/api.md).
 
 ## Examples
-
 The `examples` folder contains various sample projects demonstrating how to use **CSSFUN** in different environments and frameworks. Each example is a standalone project that you can run locally to see **CSSFUN** in action.
 
 ### Available Examples
-
 - **[React Example](examples/react)**: A basic React application demonstrating the use of **CSSFUN** for styling React components.
 - **[Rasti Example](examples/rasti)**: A simple Rasti application illustrating how to apply **CSSFUN** to style Rasti components.
 - **[Vanilla JS Example](examples/vanilla)**: A straightforward JavaScript example showing how to use **CSSFUN** for styling HTML elements.
 - **[Rasti with Server-Side Rendering (SSR) Example](examples/rasti)**: A Rasti application with server-side rendering using Express, highlighting how to use **CSSFUN** for styling in an SSR environment.
-
 
 ## License
 This project is licensed under the [MIT License](LICENSE).

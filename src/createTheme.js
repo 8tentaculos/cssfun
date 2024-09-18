@@ -9,7 +9,9 @@ const merge = (target, ...sources) => {
             if (Object.prototype.hasOwnProperty.call(source, key)) {
                 // If the value is an object, merge it with the existing object
                 // Otherwise, just assign the value
-                target[key] = target[key] && target[key].constructor === Object ? merge(target[key], source[key]) : source[key];
+                target[key] = target[key] && target[key].constructor === Object ?
+                    merge(target[key], source[key]) :
+                    source[key];
             }
         }
     }

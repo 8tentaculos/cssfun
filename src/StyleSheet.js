@@ -157,7 +157,7 @@ class StyleSheet {
     renderStyles(styles, level = 1) {
         return Object.keys(styles).reduce((acc, key) => {
             const value = styles[key];
-            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            if (value.constructor === Object) {
                 if (Object.keys(value).length > 0) {
                     const str = StyleSheet.debug ?
                         `${key} {\n${this.renderStyles(value, level + 1)}}\n` :
@@ -190,7 +190,7 @@ class StyleSheet {
 
         const { result, extra } = Object.keys(styles).reduce((acc, key) => {
             const value = styles[key];
-            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            if (value.constructor === Object) {
                 if (key.match(StyleSheet.classGlobalRegex)) {
                     Object.assign(parent || acc.extra, this.parseStyles(value, acc.extra, parentSelector, true));
                 } else if (key.match(StyleSheet.classNestedRegex)) {

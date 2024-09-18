@@ -109,12 +109,6 @@ css({
     }
 </style>
 ```
-
-### Custom parsers
-Parsers can be set at the `parsers` array on the StyleSheet instance. If passed 
-at `options.parsers` it will be added to the StyleSheet instance.  
-Array elements may be functions or strings that are StyleSheet instance methods.
-They will be bound to the instance.
  
 #### Global selectors will be rendered as global styles
 ```javascript
@@ -159,6 +153,12 @@ css({
     }
 </style>
 ```
+
+### Custom parsers
+Parsers can be set at the `parsers` array on the StyleSheet instance. If passed 
+at `options.parsers` it will be added to the StyleSheet instance.  
+Parsers array elements may be functions or strings that are StyleSheet instance methods.
+They will be bound to the instance.
 
 ## API Documentation
 Complete API documentation can be found [here](/docs/api.md).

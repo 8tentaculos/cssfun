@@ -66,10 +66,10 @@ The StyleSheet can be attached to the DOM, destroyed or rendered as string for
 | --- | --- | --- |
 | styles | <code>Object</code> | The styles object. An object with keys as selectors and values as  style objects. This object will pass trough the parsers and generate the css string. |
 | options | <code>Object</code> | The options object. |
-| options.generateClassName | <code>function</code> | The function to generate class names.  This class name will be used to generate the unique class names for styles. `options.generateClassName` will be added to the instance. |
-| options.generateId | <code>function</code> | The function to generate ids. This id will be used  as the style element id.`options.generateId` will be added to the instance. |
-| options.attributes | <code>Object</code> | The attributes object. This attributes will be added  to the style element. `options.attributes` will be added to the instance. |
-| options.parsers | <code>Array</code> | The array of parsers. Parsers are functions that are composed and called to generate the css string. The first parser will receive the styles object and the last will return the css string. By default StyleSheets are rendered using `['renderStyles', 'parseStyles']`. They can be functions or strings that are methods of the instance. They will be bound to the instance. `options.parsers` will be added to the instance. |
+| options.generateClassName | <code>function</code> | The function to generate class names.  This class name will be used to generate the unique class names for styles.   `options.generateClassName` will be added to the instance. |
+| options.generateId | <code>function</code> | The function to generate ids. This id will be used  as the style element id.   `options.generateId` will be added to the instance. |
+| options.attributes | <code>Object</code> | The attributes object. This attributes will be added  to the style element.   `options.attributes` will be added to the instance. |
+| options.parsers | <code>Array</code> | The array of parsers.  Parsers are functions that transform style objects into CSS strings.   When composed, the first parser receives the styles object, and the final one outputs the resulting CSS string.   If no parsers array is provided, by default, StyleSheets are rendered using `['renderStyles', 'parseStyles']`. Parsers array elements may be functions or strings that are StyleSheet instance methods. They will be bound to the instance. `options.parsers` will be added to the instance. |
 
 **Example**  
 ```js
@@ -85,59 +85,6 @@ instance.attach();
 const { classes } = instance;
 // Use the classes object to get the class name and use it in your component.
 function Header = () => <h1 className={classes.root}>Hello World</h1>;
-```
-**Example**  
-```js
-// Default parsers transforms:
-// Camelized keys will be transformed to dashed keys.
-css({ root : { backgroundColor : 'black' } }).toString();
-// <style id="fun-1">.fun-1-root{background-color:black;}</style>
-
-// Nested selectors will be expanded.
-css({
-    root : {
-        '&:hover' : {
-            backgroundColor : 'black'
-        }
-    }
-}).toString();
-// <style id="fun-1">
-//     .fun-1-root:hover {
-//         background-color: black;
-//     }
-// </style>
-
-// Global selectors will be rendered as global styles.
-css({
-    '@global' : {
-        body : {
-            backgroundColor : 'black'
-        }
-    }
-}).toString();
-// <style id="fun-1">
-//     body {
-//         background-color: black;
-//     }
-// </style>
-
-// Class references will be replaced by the generated class name.
-css({
-    root : {
-        color : 'black'
-    },
-    '$root:hover' : {
-        color : 'white'
-    }
-}).toString();
-// <style id="fun-1">
-//     .fun-1-root {
-//         color:black;
-//     }
-//     .fun-1-root:hover {
-//         color:white;
-//     }
-// </style>
 ```
 <a name="stylesheet__generateid" id="stylesheet__generateid"></a>
 ### styleSheet.generateId() ⇒ <code>String</code>

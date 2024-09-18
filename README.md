@@ -1,6 +1,6 @@
 <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.png">
-    <img alt="CSSFUN" src="docs/logo.png" style="max-width: 500px;">
+    <img alt="CSSFUN" src="docs/logo.png">
 </picture>
 
 CSSFUN is a next-generation [CSS-in-JS](https://en.wikipedia.org/wiki/CSS-in-JS) library.  

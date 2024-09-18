@@ -1,4 +1,8 @@
-# CSSFUN
+<picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.png">
+    <img alt="CSSFUN" src="docs/logo.png" style="max-width: 500px;">
+</picture>
+
 CSSFUN is a next-generation [CSS-in-JS](https://en.wikipedia.org/wiki/CSS-in-JS) library.  
 It allows you to write CSS directly within your JavaScript code, providing a seamless and dynamic 
 way to style your applications. It leverages the power of JavaScript to create highly maintainable 

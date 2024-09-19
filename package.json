@@ -1,6 +1,6 @@
 {
     "name": "cssfun",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "Next-generation CSS-in-JS library",
     "type": "module",
     "exports": {
@@ -32,20 +32,20 @@
     "homepage": "https://github.com/8tentaculos/cssfun",
     "bugs": "https://github.com/8tentaculos/cssfun/issues",
     "directories": {
-      "example": "example",
-      "test": "test",
-      "doc": "docs"
+        "example": "example",
+        "test": "test",
+        "doc": "docs"
     },
     "author": "Alberto Masuelli <alberto.masuelli@gmail.com> (https://github.com/8tentaculos)",
     "license": "MIT",
     "keywords": [
-      "style",
-      "sheet",
-      "stylesheet",
-      "css",
-      "components",
-      "css in js",
-      "css-in-js"
+        "style",
+        "sheet",
+        "stylesheet",
+        "css",
+        "components",
+        "css in js",
+        "css-in-js"
     ],
     "devDependencies": {
         "@rollup/plugin-terser": "^0.4.4",

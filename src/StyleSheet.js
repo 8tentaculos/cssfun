@@ -135,10 +135,14 @@ class StyleSheet {
         const fromClasses = selector => selector in this.classes ? `.${this.classes[selector]}` : selector;
         const replaceClassReferences = selector => selector.replace(StyleSheet.classReferenceRegex, (match, ref) => fromClasses(ref));
         const replaceClassNested = selector => selector.replace(StyleSheet.classNestedRegex, fromClasses(parentSelector));
+        const replaceClassGlobalPrefix = selector => selector.replace(StyleSheet.classGlobalPrefixRegex, '');
 
         const generateKey = key => {
             if (isGlobal && parentSelector) {
                 return `${fromClasses(parentSelector)} ${key}`;
+            }
+            if (key.match(StyleSheet.classGlobalPrefixRegex)) {
+                return replaceClassGlobalPrefix(key);
             }
             return replaceClassNested(replaceClassReferences(fromClasses(key)));
         };
@@ -264,6 +268,7 @@ class StyleSheet {
 StyleSheet.classPrefix = 'fun';
 StyleSheet.classRegex = /^\w+$/;
 StyleSheet.classGlobalRegex = /^@global$/;
+StyleSheet.classGlobalPrefixRegex = /^@global\s+/;
 StyleSheet.classReferenceRegex = /\$(\w+)/g;
 StyleSheet.classNestedRegex = /&/g;
 /**

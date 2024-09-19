@@ -3,22 +3,28 @@
     <img alt="CSSFUN" src="docs/logo.png">
 </picture>
 
-**CSSFUN** is a next-generation [CSS-in-JS](https://en.wikipedia.org/wiki/CSS-in-JS) library.  
-It allows you to write CSS directly within your JavaScript code, providing a seamless and dynamic 
-way to style your applications. It leverages the power of JavaScript to create highly maintainable 
-and scalable styles.  
-  
-One of the key features of **CSSFUN** is that the styles are scoped to the component. This means that the styles 
-you define will not leak out and affect other parts of your application, ensuring that your components remain 
-modular and maintainable. Additionally, the styles are defined in the same file as your component, making it 
-easier to manage and understand the styling of your application.  
-  
-**CSSFUN** is framework-agnostic and has a small footprint of only 4KB. It can be used directly in the browser without 
-any build tools or complex setup.  
-It also supports server-side rendering without duplicating styles.
-  
-**CSSFUN** is available under the [MIT License](LICENSE).  
-You can discuss features or report bugs on our [GitHub Issues page](https://github.com/8tentaculos/cssfun/issues).
+# A Next-Generation CSS-in-JS Library
+
+**CSSFUN** is a [CSS-in-JS](https://en.wikipedia.org/wiki/CSS-in-JS) library. It enables you to write CSS 
+directly within your JavaScript code. This provides a dynamic, seamless way to style your applications while 
+keeping everything modular and maintainable.
+
+## Key Features
+
+- **Component-Scoped Styles**  
+  CSSFUN ensures that styles are scoped to the specific component they are defined in, preventing unwanted style leakage across your application. This promotes modularity and simplifies the management of styles, as both the component logic and its styling exist in the same file.
+
+- **Framework-Agnostic**  
+  Whether you're using React, Vue, or vanilla JavaScript, CSSFUN works with any framework. Its small footprint—only **4KB**—allows you to include it in your projects with minimal overhead.
+
+- **No Build Tools Required**  
+  CSSFUN can be used directly in the browser, eliminating the need for complex build tools or configurations. It's designed to be simple to set up and get started with.
+
+- **Server-Side Rendering (SSR) Support**  
+  CSSFUN supports server-side rendering out of the box, optimizing initial load times without duplicating styles. This results in faster performance and improved SEO for your web applications.
+
+- **Built-in Theme Management**  
+  With built-in support for theme management, CSSFUN leverages CSS variables to easily handle light, dark, and system color schemes. Themes update automatically based on user preferences, without requiring component re-renders.
 
 ## Getting Started
 
@@ -67,7 +73,8 @@ const Button = () => <button className={classes.button}>Click me</button>;
 
 ## Parsers
 Parsers are functions that transform style objects into CSS strings.  
-When composed, the first parser receives the styles object, and the final one outputs the resulting CSS string.  
+When composed, the first parser receives the styles object, and the final one outputs the 
+resulting CSS string.  
 By default, StyleSheets are rendered using `parseStyles` and `renderStyles`.  
 
 These are the default parser transformations:
@@ -155,13 +162,91 @@ css({
 ```
 
 ### Custom parsers
-Parsers can be configured through the `parsers` array on the StyleSheet instance. If provided via `options.parsers`, they will be added to the instance. The elements in the `parsers` array can either be functions or strings referencing methods of the StyleSheet instance. These methods will be bound to the instance automatically.
+Parsers can be configured through the `parsers` array on the StyleSheet instance. 
+If provided via `options.parsers`, they will be added to the instance. The elements in 
+the `parsers` array can either be functions or strings referencing methods of the StyleSheet 
+instance. These methods will be bound to the instance automatically.
+
+## Themes
+A theme is a StyleSheet that provides access to CSS variables for consistent styling across 
+your application. It supports light, dark, and system color schemes, allowing your components 
+to automatically adapt to changes in the user's system preferences.
+
+The higher-order function `createTheme` accepts a default theme configuration object and returns 
+a `createTheme` function with those defaults applied. This function is used to generate 
+theme-specific StyleSheets.
+
+### Creating a Theme
+Create a `createTheme` function with default themes and create a theme StyleSheet.
+
+```javascript
+// Create theme
+const theme = createTheme({
+    light: {
+        color: 'black',
+        backgroundColor: 'white',
+    },
+    dark: {
+        color: 'white',
+        backgroundColor: 'black',
+    },
+})();
+```
+
+#### Applying the Theme Class
+The generated theme object contains a `root` class, which represents the theme StyleSheet. 
+You can apply this class to the `body` element to style the entire application, or to any 
+specific component's root element to style just a part of your UI.
+
+```javascript
+// Add theme class to the body
+document.body.classList.add(theme.classes.root);
+```
+
+#### Using Theme Variables in Styles
+Your theme object is automatically converted into CSS variables. For instance:
+
+```javascript
+{ backgroundLevel1: 'black' }
+```
+
+This will be converted into the CSS variable `--fun-background-level1`.  
+
+Similarly, more complex theme structures like:  
+
+```javascript
+{
+    palette: {
+        common: { 
+            black: '#000'
+        }
+    }
+}
+```
+
+will be converted into `--fun-palette-common-black`.  
+
+Use these variables in your component styles, even before the theme is applied. 
+Your components will automatically update when the theme or system color scheme changes.
+
+```javascript
+const { classes } = css({
+    button: {
+        color: 'var(--fun-color)',
+        backgroundColor: 'var(--fun-backgroundColor)',
+    },
+});
+
+const Button = ({ label }) => <button className={classes.button}>{label}</button>;
+```
 
 ## API Documentation
 Complete API documentation can be found [here](/docs/api.md).
 
 ## Examples
-The `examples` folder contains various sample projects demonstrating how to use **CSSFUN** in different environments and frameworks. Each example is a standalone project that you can run locally to see **CSSFUN** in action.
+The `examples` folder contains various sample projects demonstrating how to use **CSSFUN** in 
+different environments and frameworks. Each example is a standalone project that you can run locally 
+to see **CSSFUN** in action.
 
 ### Available Examples
 - **[React Example](https://github.com/8tentaculos/cssfun/tree/master/example/react)**: A basic React application demonstrating the use of **CSSFUN** for styling React components.
@@ -170,5 +255,7 @@ The `examples` folder contains various sample projects demonstrating how to use 
 - **[Rasti with Server-Side Rendering (SSR) Example](https://github.com/8tentaculos/cssfun/tree/master/example/ssr)**: A Rasti application with server-side rendering using Express, highlighting how to use **CSSFUN** for styling in an SSR environment.
 
 ## License
-This project is licensed under the [MIT License](LICENSE).
+CSSFUN is open-source and available under the [MIT License](LICENSE).
 
+## Contributing
+Contributions are welcome! Share feature ideas or report bugs on our [GitHub Issues page](https://github.com/8tentaculos/cssfun/issues).

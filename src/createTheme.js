@@ -54,7 +54,7 @@ const getDiff = (left, right) => {
  * @param {Object} options.themes - The themes object. Themes object `{ light, dark }` will be merged 
  * with the default themes object (if any). Themes object will be converted to css variables that will be 
  * available under the `root` class of the theme StyleSheet instance.  
- * For example: `{ backgroundLevel1 : 'black' }` will be converted to `--fun-background-level1 : black;`.  
+ * For example: `{ backgroundLevel1 : 'black' }` will be converted to `--fun-background-level1`.  
  * You can add `root` class to the root element of your component, for theming a single component. 
  * Or you can add it to the `body` element, for theming the whole page.
  * @param {String} options.cssVarsPrefix - The css variables prefix. Default is `fun`.

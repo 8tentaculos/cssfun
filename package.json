@@ -1,6 +1,6 @@
 {
     "name": "cssfun",
-    "version": "0.0.1",
+    "version": "0.0.0",
     "description": "Next-generation CSS-in-JS library",
     "type": "module",
     "exports": {

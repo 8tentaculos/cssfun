@@ -118,24 +118,70 @@ css({
 ```
  
 #### Global selectors will be rendered as global styles
-```javascript
-css({
-    '@global' : {
-        body : {
+
+- **Global block**
+
+    ```javascript
+    css({
+        '@global' : {
+            body : {
+                backgroundColor : 'black'
+            }
+        }
+    }).toString();
+    ```
+
+    ##### Renders to:
+
+    ```css
+    <style id="fun-1">
+        body {
+            background-color : black;
+        }
+    </style>
+    ```
+
+- **Nested global block**
+
+    ```javascript
+    css({
+        root : {
+            '@global' : {
+                a : {
+                    color : 'black'
+                }
+            }
+        }
+    }).toString();
+    ```
+
+    ##### Renders to:
+    ```css
+    <style id="fun-1">
+        .fun-1-root-1 a {
+            color : black;
+        }
+    </style>
+    ```
+
+- **Global prefix**
+
+    ```javascript
+    css({
+        '@global body' : {
             backgroundColor : 'black'
         }
-    }
-}).toString();
- ```
+    }).toString();
+    ```
 
-##### Renders to:
-```css
-<style id="fun-1">
-    body {
-        background-color : black;
-    }
-</style>
-```
+    ##### Renders to:
+    ```css
+    <style id="fun-1">
+        body {
+            background-color : black;
+        }
+    </style>
+    ```
  
 #### Class references will be replaced by the generated class name
 ```javascript

@@ -110,6 +110,17 @@ describe('cssfun', () => {
             expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1 a{color:red;}</style>');
         });
 
+        it('must use goblal prefix', () => {
+            const instance = css({
+                '@global body' : {
+                    margin : 0
+                }
+            });
+            instance.attach();
+            const style = instance.el;
+            expect(style.outerHTML).to.be.equal('<style id="fun-1">body{margin:0;}</style>');
+        });
+
         it('must support media queries', () => {
             const instance = css({
                 '@media (min-width: 768px)' : {

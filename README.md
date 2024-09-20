@@ -7,7 +7,7 @@
 Next-Generation <a href="https://en.wikipedia.org/wiki/CSS-in-JS" target="_blank">CSS-in-JS</a> Library
 </p>
 
-**CSSFUN** Enables you to write CSS directly within your JavaScript code. This provides a dynamic, seamless way to style your applications while keeping everything modular and maintainable.
+**CSSFUN** Enables you to write CSS directly within your JavaScript code. This provides a dynamic way to style your applications while keeping everything modular and maintainable.
 
 [![Travis (.com)](https://img.shields.io/travis/com/8tentaculos/cssfun?style=flat-square)](https://app.travis-ci.com/8tentaculos/cssfun)
 [![npm version](https://img.shields.io/npm/v/cssfun.svg?style=flat-square)](https://www.npmjs.com/package/cssfun)
@@ -21,7 +21,7 @@ Next-Generation <a href="https://en.wikipedia.org/wiki/CSS-in-JS" target="_blank
   **CSSFUN** ensures that styles are scoped to the specific component they are defined in, preventing unwanted style leakage across your application. This promotes modularity and simplifies the management of styles, as both the component logic and its styling exist in the same file.
 
 - **Framework-Agnostic**  
-  Whether you're using React, Vue, or vanilla JavaScript, **CSSFUN** works with any framework. Its small footprint—only **1.7KB**—allows you to include it in your projects with minimal overhead.
+  Whether you're using React, Vue, or vanilla JavaScript, **CSSFUN** works with any framework. Its small footprint —only **1.7KB**— allows you to include it in your projects with minimal overhead.
 
 - **No Build Tools Required**  
   **CSSFUN** can be used directly in the browser, eliminating the need for complex build tools or configurations.

@@ -8,7 +8,7 @@
 ## Functions
 
 <dl>
-<dt><a href="#createtheme">createTheme(defaultThemes)</a></dt>
+<dt><a href="#createtheme">createTheme(defaultThemes)</a> ⇒ <code>function</code></dt>
 <dd><p>Higher order function that receives an optional default themes object and returns a <code>createTheme</code> function.</p>
 </dd>
 <dt><a href="#createtheme">createTheme(options)</a> ⇒ <code><a href="#StyleSheet">StyleSheet</a></code></dt>
@@ -191,10 +191,11 @@ it and from the DOM.
 
 **Kind**: static method of [<code>StyleSheet</code>](#StyleSheet)  
 <a name="createtheme" id="createtheme"></a>
-## createTheme(defaultThemes)
+## createTheme(defaultThemes) ⇒ <code>function</code>
 Higher order function that receives an optional default themes object and returns a `createTheme` function.
 
 **Kind**: global function  
+**Returns**: <code>function</code> - The `createTheme` function.  
 
 | Param | Type | Description |
 | --- | --- | --- |

@@ -44,6 +44,7 @@ const getDiff = (left, right) => {
  * @module
  * @function
  * @param {Object} defaultThemes - Object with keys `light` and `dark` that contains the default themes.
+ * @returns {Function} The `createTheme` function.
  */
 
 /**

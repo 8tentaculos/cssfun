@@ -83,7 +83,7 @@ When composed, the first renderer receives the styles object, and the final one 
 resulting CSS string.  
 By default, StyleSheets are rendered using `parseStyles` and `renderStyles`.  
 
-These are the default renderer transformations:
+These are the default renderers transformations:
 
 #### Camelized keys will be transformed to dashed keys
 ```javascript
@@ -104,7 +104,7 @@ css({
 ```
 
 #### Nested selectors will be expanded
-Use `&` to reference selector of the parent rule.
+Use `&` to reference a class of the parent rule.
 
 ```javascript
 css({
@@ -136,7 +136,7 @@ css({
 ```
 
 #### Class references will be replaced by the generated class name
-Use $ to reference a local class within the same StyleSheet instance.
+Use `$` to reference a local class within the same StyleSheet instance.
 
 ```javascript
 css({

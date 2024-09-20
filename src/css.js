@@ -18,7 +18,7 @@ import StyleSheet from './StyleSheet.js';
  *     },
  * });
  * // Create a link component. Add the `link` class to it.
- * const Link = ({ children, ...rest }) => <a className={classes.link} ...rest>{children}</a>;
+ * const Link = ({ label, href }) => <a className={classes.link} href={href}>{label}</a>;
  */
 const css = (...args) => new StyleSheet(...args).attach();
 

@@ -279,7 +279,7 @@ document.body.classList.add(theme.classes.root);
 Your theme object is automatically converted into CSS variables. For instance:
 
 ```javascript
-{ backgroundLevel1: 'black' }
+{ backgroundLevel1 : 'black' }
 ```
 
 This will be converted into the CSS variable `--fun-background-level1`.  

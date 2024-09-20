@@ -3,28 +3,34 @@
     <img alt="CSSFUN" src="docs/logo.png">
 </picture>
 
-# A Next-Generation CSS-in-JS Library
+<p align="center">
+Next-Generation <a href="https://en.wikipedia.org/wiki/CSS-in-JS" target="_blank">CSS-in-JS</a> Library
+</p>
 
-**CSSFUN** is a [CSS-in-JS](https://en.wikipedia.org/wiki/CSS-in-JS) library. It enables you to write CSS 
-directly within your JavaScript code. This provides a dynamic, seamless way to style your applications while 
-keeping everything modular and maintainable.
+**CSSFUN** Enables you to write CSS directly within your JavaScript code. This provides a dynamic, seamless way to style your applications while keeping everything modular and maintainable.
+
+[![Travis (.com)](https://img.shields.io/travis/com/8tentaculos/cssfun?style=flat-square)](https://app.travis-ci.com/8tentaculos/cssfun)
+[![npm version](https://img.shields.io/npm/v/cssfun.svg?style=flat-square)](https://www.npmjs.com/package/cssfun)
+[![gzip size](http://img.badgesize.io/https://unpkg.com/cssfun/dist/cssfun.min.js?compression=gzip&label=gzip&style=flat-square)](https://unpkg.com/cssfun/dist/cssfun.min.js)
+[![npm downloads](https://img.shields.io/npm/dm/cssfun.svg?style=flat-square)](https://www.npmjs.com/package/cssfun)
+[![](https://data.jsdelivr.com/v1/package/npm/cssfun/badge)](https://www.jsdelivr.com/package/npm/cssfun)
 
 ## Key Features
 
 - **Component-Scoped Styles**  
-  CSSFUN ensures that styles are scoped to the specific component they are defined in, preventing unwanted style leakage across your application. This promotes modularity and simplifies the management of styles, as both the component logic and its styling exist in the same file.
+  **CSSFUN** ensures that styles are scoped to the specific component they are defined in, preventing unwanted style leakage across your application. This promotes modularity and simplifies the management of styles, as both the component logic and its styling exist in the same file.
 
 - **Framework-Agnostic**  
-  Whether you're using React, Vue, or vanilla JavaScript, CSSFUN works with any framework. Its small footprint—only **4KB**—allows you to include it in your projects with minimal overhead.
+  Whether you're using React, Vue, or vanilla JavaScript, **CSSFUN** works with any framework. Its small footprint—only **1.7KB**—allows you to include it in your projects with minimal overhead.
 
 - **No Build Tools Required**  
-  CSSFUN can be used directly in the browser, eliminating the need for complex build tools or configurations. It's designed to be simple to set up and get started with.
+  **CSSFUN** can be used directly in the browser, eliminating the need for complex build tools or configurations.
 
 - **Server-Side Rendering (SSR) Support**  
-  CSSFUN supports server-side rendering out of the box, optimizing initial load times without duplicating styles. This results in faster performance and improved SEO for your web applications.
+  **CSSFUN** supports server-side rendering out of the box, optimizing initial load times without duplicating styles.
 
 - **Built-in Theme Management**  
-  With built-in support for theme management, CSSFUN leverages CSS variables to easily handle light, dark, and system color schemes. Themes update automatically based on user preferences, without requiring component re-renders.
+  With built-in support for theme management, **CSSFUN** leverages CSS variables to easily handle light, dark, and system color schemes. Themes update automatically based on user preferences, without requiring component re-renders.
 
 ## Getting Started
 
@@ -73,11 +79,11 @@ const Button = () => <button className={classes.button}>Click me</button>;
 
 ## Renderers
 Renderers are functions that transform style objects into CSS strings.  
-When composed, the first parser receives the styles object, and the final one outputs the 
+When composed, the first renderer receives the styles object, and the final one outputs the 
 resulting CSS string.  
 By default, StyleSheets are rendered using `parseStyles` and `renderStyles`.  
 
-These are the default parser transformations:
+These are the default renderer transformations:
 
 #### Camelized keys will be transformed to dashed keys
 ```javascript
@@ -98,11 +104,17 @@ css({
 ```
 
 #### Nested selectors will be expanded
+Use `&` to reference selector of the parent rule.
+
 ```javascript
 css({
-     root : {
+    button : {
+        backgroundColor : 'white',
         '&:hover' : {
             backgroundColor : 'black'
+        },
+        '& span' : {
+            color : 'blue'
         }
     }
 }).toString();
@@ -111,8 +123,46 @@ css({
 ##### Renders to:
 ```css
 <style id="fun-1">
-    .fun-1-root:hover {
+    .fun-1-button {
+        background-color: white;
+    }
+    .fun-1-button:hover {
         background-color: black;
+    }
+    .fun-1-button span {
+        color: blue;
+    }
+</style>
+```
+
+#### Class references will be replaced by the generated class name
+Use $ to reference a local class within the same StyleSheet instance.
+
+```javascript
+css({
+    button : {
+        backgroundColor : 'white'
+    },
+    '$button:hover' : {
+            backgroundColor : 'black'
+        },
+    '$button span' : {
+        color : 'blue'
+    }
+}).toString();
+```
+
+##### Renders to:
+```css
+<style id="fun-1">
+    .fun-1-button {
+        background-color: white;
+    }
+    .fun-1-button:hover {
+        background-color: black;
+    }
+    .fun-1-button span {
+        color: blue;
     }
 </style>
 ```
@@ -183,30 +233,6 @@ css({
     </style>
     ```
  
-#### Class references will be replaced by the generated class name
-```javascript
-css({
-    root : {
-        color : 'black'
-    },
-    '$root:hover' : {
-        color : 'white'
-    }
-}).toString();
-```
-
-#### Renders to:
-```css
-<style id="fun-1">
-    .fun-1-root {
-        color: black;
-    }
-    .fun-1-root:hover {
-        color:white;
-    }
-</style>
-```
-
 ### Custom renderers
 Renderers can be configured through the `renderers` array on the StyleSheet instance. 
 If provided via `options.renderers`, they will be added to the instance. The elements in 
@@ -295,9 +321,9 @@ different environments and frameworks. Each example is a standalone project that
 to see **CSSFUN** in action.
 
 ### Available Examples
-- **[React Example](https://github.com/8tentaculos/cssfun/tree/master/example/react)**: A basic React application demonstrating the use of **CSSFUN** for styling React components.
-- **[Rasti Example](https://github.com/8tentaculos/cssfun/tree/master/example/rasti)**: A simple Rasti application illustrating how to apply **CSSFUN** to style Rasti components.
-- **[Vanilla JS Example](https://github.com/8tentaculos/cssfun/tree/master/example/vanilla)**: A straightforward JavaScript example showing how to use **CSSFUN** for styling HTML elements.
+- **[React Example](https://github.com/8tentaculos/cssfun/tree/master/example/react)**: A basic React application demonstrating the use of **CSSFUN** for styling React components. [Try it](https://plnkr.co/plunk/hLIWLlAHGsE2ojO1).
+- **[Rasti Example](https://github.com/8tentaculos/cssfun/tree/master/example/rasti)**: A simple Rasti application illustrating how to apply **CSSFUN** to style Rasti components. [Try it](https://plnkr.co/plunk/ivxPfUB5szwcuncf).
+- **[Vanilla JS Example](https://github.com/8tentaculos/cssfun/tree/master/example/vanilla)**: A straightforward JavaScript example showing how to use **CSSFUN** for styling HTML components. [Try it](https://plnkr.co/plunk/4ypn83Ru5Z6uwZew).
 - **[Rasti with Server-Side Rendering (SSR) Example](https://github.com/8tentaculos/cssfun/tree/master/example/ssr)**: A Rasti application with server-side rendering using Express, highlighting how to use **CSSFUN** for styling in an SSR environment.
 
 ## License

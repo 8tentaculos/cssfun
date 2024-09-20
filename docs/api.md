@@ -322,5 +322,5 @@ const { classes } = css({
     },
 });
 // Create a link component. Add the `link` class to it.
-const Link = ({ children, ...rest }) => <a className={classes.link} ...rest>{children}</a>;
+const Link = ({ label, href }) => <a className={classes.link} href={href}>{label}</a>;
 ```

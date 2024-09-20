@@ -254,13 +254,13 @@ Create a `createTheme` function with default themes and create a theme StyleShee
 ```javascript
 // Create theme
 const theme = createTheme({
-    light: {
-        color: 'black',
-        backgroundColor: 'white',
+    light : {
+        color : 'black',
+        backgroundColor : 'white',
     },
-    dark: {
-        color: 'white',
-        backgroundColor: 'black',
+    dark : {
+        color : 'white',
+        backgroundColor : 'black',
     },
 })();
 ```
@@ -288,9 +288,9 @@ Similarly, more complex theme structures like:
 
 ```javascript
 {
-    palette: {
-        common: { 
-            black: '#000'
+    palette : {
+        common : { 
+            black : '#000'
         }
     }
 }
@@ -303,9 +303,9 @@ Your components will automatically update when the theme or system color scheme 
 
 ```javascript
 const { classes } = css({
-    button: {
-        color: 'var(--fun-color)',
-        backgroundColor: 'var(--fun-backgroundColor)',
+    button : {
+        color : 'var(--fun-color)',
+        backgroundColor : 'var(--fun-backgroundColor)',
     },
 });
 

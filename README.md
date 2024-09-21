@@ -281,7 +281,7 @@ Your theme object is automatically converted into CSS variables. For instance:
 { backgroundLevel1 : 'black' }
 ```
 
-This will be converted into the CSS variable `--fun-background-level1`.  
+This will be converted into the CSS variable `--fun-backgroundLevel1`.  
 
 Similarly, more complex theme structures like:  
 

@@ -30,7 +30,7 @@ const getDiff = (left, right) => {
  * @param {Object} themes - An object containing light and dark themes: `{ light, dark }`. 
  * Each theme object will be converted to CSS variables available under the `root` class 
  * of the theme StyleSheet instance.  
- * For example: `{ backgroundLevel1: 'black' }` will be converted to `--fun-background-level1`.  
+ * For example: `{ backgroundLevel1: 'black' }` will be converted to `--fun-backgroundLevel1`.  
  * You can add the `root` class to the root element of your component to theme a single component, 
  * or to the `body` element to theme the entire page.
  * @param {Object} options - An options object.

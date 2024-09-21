@@ -203,7 +203,7 @@ Apply it to the element you want to theme. CSS variables will be available for a
 
 | Param | Type | Description |
 | --- | --- | --- |
-| themes | <code>Object</code> | An object containing light and dark themes: `{ light, dark }`.  Each theme object will be converted to CSS variables available under the `root` class  of the theme StyleSheet instance.   For example: `{ backgroundLevel1: 'black' }` will be converted to `--fun-background-level1`.   You can add the `root` class to the root element of your component to theme a single component,  or to the `body` element to theme the entire page. |
+| themes | <code>Object</code> | An object containing light and dark themes: `{ light, dark }`.  Each theme object will be converted to CSS variables available under the `root` class  of the theme StyleSheet instance.   For example: `{ backgroundLevel1: 'black' }` will be converted to `--fun-backgroundLevel1`.   You can add the `root` class to the root element of your component to theme a single component,  or to the `body` element to theme the entire page. |
 | options | <code>Object</code> | An options object. |
 | options.cssVarsPrefix | <code>String</code> | The CSS variables prefix. Default is `fun`. |
 | options.colorScheme | <code>String</code> | The color scheme. Possible values are `light`, `dark`, and `system`. |

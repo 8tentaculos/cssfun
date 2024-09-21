@@ -112,18 +112,26 @@ class StyleSheet {
     renderStyles(styles, level = 1) {
         return Object.keys(styles).reduce((acc, key) => {
             const value = styles[key];
+            // Add the styles to the accumulator recursively.
             if (value.constructor === Object) {
                 if (Object.keys(value).length > 0) {
+                    const renderedStyles = this.renderStyles(value, level + 1);
+
                     const str = StyleSheet.debug ?
-                        `${key} {\n${this.renderStyles(value, level + 1)}}\n` :
-                        `${key}{${this.renderStyles(value, level + 1)}}`;
+                        `${key} {\n${renderedStyles}}\n` :
+                        `${key}{${renderedStyles}}`;
 
                     acc.push(str);
                 }
             } else {
+                // Convert camelCase to dashed-case.
+                // Only convert if the key doesn't already contain a dash.
+                // Allows css vars to contain camelCase parts between dashes.
+                const dashedKey = key.includes('-') ? key : camelizedToDashed(key);
+                // Add the style to the accumulator.
                 const str = StyleSheet.debug ?
-                    `${'    '.repeat(level)}${camelizedToDashed(key)}: ${value};\n` :
-                    `${camelizedToDashed(key)}:${value};`;
+                    `${'    '.repeat(level)}${dashedKey}: ${value};\n` :
+                    `${dashedKey}:${value};`;
 
                 acc.push(str);
             }
@@ -136,29 +144,36 @@ class StyleSheet {
         const replaceClassReferences = selector => selector.replace(StyleSheet.referenceRegex, (match, ref) => fromClasses(ref));
         const replaceClassNested = selector => selector.replace(StyleSheet.nestedRegex, fromClasses(parentSelector));
         const replaceClassGlobalPrefix = selector => selector.replace(StyleSheet.globalPrefixRegex, '');
-
+        // Parse the key and generate a selector.
         const generateKey = key => {
             if (isGlobal && parentSelector) {
+                // Nested global selectors.
                 return `${fromClasses(parentSelector)} ${key}`;
             }
             if (key.match(StyleSheet.globalPrefixRegex)) {
+                // Global prefix.
                 return replaceClassGlobalPrefix(key);
             }
+            // Nested, references and replace class names with created ones.
             return replaceClassNested(replaceClassReferences(fromClasses(key)));
         };
 
         const { result, extra } = Object.keys(styles).reduce((acc, key) => {
             const value = styles[key];
-
+            
             if (value.constructor === Object) {
                 if (key.match(StyleSheet.globalRegex)) {
+                    // Global styles.
                     Object.assign(parent || acc.extra, this.parseStyles(value, acc.extra, parentSelector, true));
                 } else if (key.match(StyleSheet.nestedRegex)) {
+                    // Nested styles.
                     parent[generateKey(key)] = this.parseStyles(value, acc.extra, key);
                 } else {
+                    // Regular styles.
                     acc.result[generateKey(key)] = this.parseStyles(value, acc.extra, key);
                 }
             } else {
+                // Add style rules.
                 acc.result[key] = value;
             }
 

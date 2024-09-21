@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { css, StyleSheet } from '../src/index.js';
+import { StyleSheet, css, createTheme } from '../src/index.js';
 
 describe('cssfun', () => {
     beforeEach(() => {
@@ -8,16 +8,6 @@ describe('cssfun', () => {
         StyleSheet.uid = 0; 
     });
 
-    describe('css', () => {
-        it('must exists', () => {
-            expect(css).to.exist;
-        });
-
-        it('must instantiate a new StyleSheet', () => {
-            const instance = css({ root : { color : 'red' } });
-            expect(instance).to.be.instanceOf(StyleSheet);
-        });
-    });
     describe('StyleSheet', () => {
         it('must exists', () => {
             expect(StyleSheet).to.exist;
@@ -33,6 +23,8 @@ describe('cssfun', () => {
             instance.attach();
             const style = instance.el;
             expect(style).to.exist;
+            expect(style.parentNode).to.be.equal(document.head);
+            expect(document.getElementById(instance.id)).to.exist;
         });
 
         it('must be rendered as element', () => {
@@ -52,8 +44,8 @@ describe('cssfun', () => {
             const instance = css({ root : { color : 'red' } });
             instance.attach();
             instance.destroy();
-            const style = instance.el;
-            expect(style).to.not.exist;
+            expect(document.getElementById(instance.id)).to.not.exist;
+            expect(instance.el).to.not.exist;
             expect(StyleSheet.registry).to.not.include(instance);
         });
 
@@ -146,6 +138,38 @@ describe('cssfun', () => {
             instance.attach();
             const style = instance.el;
             expect(style.outerHTML).to.be.equal('<style id="fun-1">@media (min-width: 768px){.fun-1-root-1{color:red;}}</style>');
+        });
+    });
+
+    describe('css', () => {
+        it('must exists', () => {
+            expect(css).to.exist;
+        });
+
+        it('must instantiate a new StyleSheet', () => {
+            const instance = css({ root : { color : 'red' } });
+            expect(instance).to.be.instanceOf(StyleSheet);
+        });
+    });
+
+    describe('createTheme', () => {
+        it('must exists', () => {
+            expect(createTheme).to.exist;
+        });
+
+        it('must create a new theme', () => {
+            const theme = createTheme();
+            expect(theme).to.be.instanceOf(StyleSheet);
+        });
+
+        it('must create a new theme with options', () => {
+            const theme = createTheme({}, { colorScheme : 'light' });
+            expect(theme).to.be.instanceOf(StyleSheet);
+        });
+
+        it('must create a new theme with light and dark themes', () => {
+            const theme = createTheme({ light : { color : 'red' }, dark : { color : 'blue' } });
+            expect(theme).to.be.instanceOf(StyleSheet);
         });
     });
 });

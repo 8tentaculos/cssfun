@@ -116,7 +116,7 @@ class StyleSheet {
                     const renderedStyles = this.renderStyles(value, level + 1);
 
                     const str = StyleSheet.debug ?
-                        `${key} {\n${renderedStyles}}\n` :
+                        `${StyleSheet.indent.repeat(level)}${key} {\n${renderedStyles}${StyleSheet.indent.repeat(level)}}\n` :
                         `${key}{${renderedStyles}}`;
 
                     acc.push(str);
@@ -128,7 +128,7 @@ class StyleSheet {
                 const dashedKey = key.includes('-') ? key : camelizedToDashed(key);
                 // Add the style to the accumulator.
                 const str = StyleSheet.debug ?
-                    `${'    '.repeat(level)}${dashedKey}: ${value};\n` :
+                    `${StyleSheet.indent.repeat(level)}${dashedKey}: ${value};\n` :
                     `${dashedKey}:${value};`;
 
                 acc.push(str);
@@ -196,7 +196,8 @@ class StyleSheet {
             });
         }
 
-        return `<style id="${this.id}"${attributes.join('')}>${this.render()}</style>`;
+        const nl = StyleSheet.debug ? '\n' : '';
+        return `<style id="${this.id}"${attributes.join('')}>${nl}${this.render()}</style>${nl}`;
     }
 
     /**

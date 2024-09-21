@@ -83,7 +83,7 @@ class StyleSheet {
      * @returns {String} The unique identifier.
      */
     generateId() {
-        return `${StyleSheet.classPrefix}-${++StyleSheet.uid}`;
+        return `${StyleSheet.prefix}-${++StyleSheet.uid}`;
     }
 
     /**
@@ -133,15 +133,15 @@ class StyleSheet {
 
     parseStyles(styles, parent, parentSelector, isGlobal) {
         const fromClasses = selector => selector in this.classes ? `.${this.classes[selector]}` : selector;
-        const replaceClassReferences = selector => selector.replace(StyleSheet.classReferenceRegex, (match, ref) => fromClasses(ref));
-        const replaceClassNested = selector => selector.replace(StyleSheet.classNestedRegex, fromClasses(parentSelector));
-        const replaceClassGlobalPrefix = selector => selector.replace(StyleSheet.classGlobalPrefixRegex, '');
+        const replaceClassReferences = selector => selector.replace(StyleSheet.referenceRegex, (match, ref) => fromClasses(ref));
+        const replaceClassNested = selector => selector.replace(StyleSheet.nestedRegex, fromClasses(parentSelector));
+        const replaceClassGlobalPrefix = selector => selector.replace(StyleSheet.globalPrefixRegex, '');
 
         const generateKey = key => {
             if (isGlobal && parentSelector) {
                 return `${fromClasses(parentSelector)} ${key}`;
             }
-            if (key.match(StyleSheet.classGlobalPrefixRegex)) {
+            if (key.match(StyleSheet.globalPrefixRegex)) {
                 return replaceClassGlobalPrefix(key);
             }
             return replaceClassNested(replaceClassReferences(fromClasses(key)));
@@ -149,10 +149,11 @@ class StyleSheet {
 
         const { result, extra } = Object.keys(styles).reduce((acc, key) => {
             const value = styles[key];
+
             if (value.constructor === Object) {
-                if (key.match(StyleSheet.classGlobalRegex)) {
+                if (key.match(StyleSheet.globalRegex)) {
                     Object.assign(parent || acc.extra, this.parseStyles(value, acc.extra, parentSelector, true));
-                } else if (key.match(StyleSheet.classNestedRegex)) {
+                } else if (key.match(StyleSheet.nestedRegex)) {
                     parent[generateKey(key)] = this.parseStyles(value, acc.extra, key);
                 } else {
                     acc.result[generateKey(key)] = this.parseStyles(value, acc.extra, key);
@@ -160,6 +161,7 @@ class StyleSheet {
             } else {
                 acc.result[key] = value;
             }
+
             return acc;
         }, { result: {}, extra: {} });
 
@@ -261,16 +263,20 @@ class StyleSheet {
     }
 }
 
+// Regular expressions.
+StyleSheet.classRegex = /^\w+$/;
+StyleSheet.globalRegex = /^@global$/;
+StyleSheet.globalPrefixRegex = /^@global\s+/;
+StyleSheet.referenceRegex = /\$(\w+)/g;
+StyleSheet.nestedRegex = /&/g;
+
 /**
  * @static
- * @property {String} classPrefix - The class prefix. Used to generate unique class names.
+ * @property {String} prefix - The class prefix. Used to generate unique class names.
+ * @default 'fun'
  */
-StyleSheet.classPrefix = 'fun';
-StyleSheet.classRegex = /^\w+$/;
-StyleSheet.classGlobalRegex = /^@global$/;
-StyleSheet.classGlobalPrefixRegex = /^@global\s+/;
-StyleSheet.classReferenceRegex = /\$(\w+)/g;
-StyleSheet.classNestedRegex = /&/g;
+StyleSheet.prefix = 'fun';
+
 /**
  * @static
  * @property {String} indent - The indent string. Used to format text when debug is enabled. 

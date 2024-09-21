@@ -8,15 +8,12 @@
 ## Functions
 
 <dl>
-<dt><a href="#createtheme">createTheme(defaultThemes)</a> ⇒ <code>function</code></dt>
-<dd><p>Higher order function that receives an optional default themes object and returns a <code>createTheme</code> function.</p>
+<dt><a href="#createtheme">createTheme(themes, options)</a> ⇒ <code><a href="#StyleSheet">StyleSheet</a></code></dt>
+<dd><p>The <code>createTheme</code> function creates a theme StyleSheet instance.
+It supports light, dark, and system color schemes.</p>
 </dd>
-<dt><a href="#createtheme">createTheme(options)</a> ⇒ <code><a href="#StyleSheet">StyleSheet</a></code></dt>
-<dd><p>The <code>createTheme</code> function receives an options object and returns a theme StyleSheet instance.<br>It supports light, dark and system color schemes.</p>
-</dd>
-<dt><a href="#css">css(rules)</a> ⇒ <code><a href="#StyleSheet">StyleSheet</a></code></dt>
-<dd><p>Function used to create a new StyleSheet instance 
-and attach it to the DOM.</p>
+<dt><a href="#css">css(styles)</a> ⇒ <code><a href="#StyleSheet">StyleSheet</a></code></dt>
+<dd><p>Creates a new StyleSheet instance and attaches it to the DOM.</p>
 </dd>
 </dl>
 
@@ -45,7 +42,7 @@ and attach it to the DOM.</p>
         * [.attach()](#stylesheet__attach) ⇒ [<code>StyleSheet</code>](#StyleSheet)
         * [.destroy()](#stylesheet__destroy) ⇒ [<code>StyleSheet</code>](#StyleSheet)
     * _static_
-        * [.classPrefix](#stylesheet_classprefix)
+        * [.prefix](#stylesheet_prefix)
         * [.indent](#stylesheet_indent)
         * [.registry](#stylesheet_registry)
         * [.uid](#stylesheet_uid)
@@ -128,23 +125,26 @@ from the DOM, if it's present.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
 **Returns**: [<code>StyleSheet</code>](#StyleSheet) - The instance.  
-<a name="stylesheet_classprefix" id="stylesheet_classprefix"></a>
-### StyleSheet.classPrefix
+<a name="stylesheet_prefix" id="stylesheet_prefix"></a>
+### StyleSheet.prefix
 **Kind**: static property of [<code>StyleSheet</code>](#StyleSheet)  
+**Default**: <code>&#x27;fun&#x27;</code>  
 **Properties**
 
 | Name | Type | Description |
 | --- | --- | --- |
-| classPrefix | <code>String</code> | The class prefix. Used to generate unique class names. |
+| prefix | <code>String</code> | The class prefix. Used to generate unique class names. |
 
 <a name="stylesheet_indent" id="stylesheet_indent"></a>
 ### StyleSheet.indent
 **Kind**: static property of [<code>StyleSheet</code>](#StyleSheet)  
+**Default**: <code>&#x27;    &#x27;
+The default is 4 spaces.</code>  
 **Properties**
 
 | Name | Type | Description |
 | --- | --- | --- |
-| indent | <code>String</code> | The indent string. Used to format text when debug is enabled.  The default is 4 spaces. |
+| indent | <code>String</code> | The indent string. Used to format text when debug is enabled. |
 
 <a name="stylesheet_registry" id="stylesheet_registry"></a>
 ### StyleSheet.registry
@@ -167,11 +167,13 @@ from the DOM, if it's present.
 <a name="stylesheet_debug" id="stylesheet_debug"></a>
 ### StyleSheet.debug
 **Kind**: static property of [<code>StyleSheet</code>](#StyleSheet)  
+**Default**: <code>false
+If true, the CSS will be formatted with new lines and indents.</code>  
 **Properties**
 
 | Name | Type | Description |
 | --- | --- | --- |
-| debug | <code>Boolean</code> | The debug flag. Default is `false`. |
+| debug | <code>Boolean</code> | The debug flag. |
 
 <a name="stylesheet_tostring" id="stylesheet_tostring"></a>
 ### StyleSheet.toString() ⇒ <code>string</code>
@@ -191,38 +193,26 @@ it and from the DOM.
 
 **Kind**: static method of [<code>StyleSheet</code>](#StyleSheet)  
 <a name="createtheme" id="createtheme"></a>
-## createTheme(defaultThemes) ⇒ <code>function</code>
-Higher order function that receives an optional default themes object and returns a `createTheme` function.
-
-**Kind**: global function  
-**Returns**: <code>function</code> - The `createTheme` function.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| defaultThemes | <code>Object</code> | Object with keys `light` and `dark` that contains the default themes. |
-
-<a name="createtheme" id="createtheme"></a>
-## createTheme(options) ⇒ [<code>StyleSheet</code>](#StyleSheet)
-The `createTheme` function receives an options object and returns a theme StyleSheet instance.  
-It supports light, dark and system color schemes.
+## createTheme(themes, options) ⇒ [<code>StyleSheet</code>](#StyleSheet)
+The `createTheme` function creates a theme StyleSheet instance.
+It supports light, dark, and system color schemes.
 
 **Kind**: global function  
 **Returns**: [<code>StyleSheet</code>](#StyleSheet) - The theme StyleSheet instance. Use `classes.root` to get the theme class name. 
-Apply it to the element you want to theme. Css variables will be available for all its descendants.  
+Apply it to the element you want to theme. CSS variables will be available for all its descendants.  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| options | <code>Object</code> | The options object. |
-| options.themes | <code>Object</code> | The themes object. Themes object `{ light, dark }` will be merged  with the default themes object (if any). Themes object will be converted to css variables that will be  available under the `root` class of the theme StyleSheet instance.   For example: `{ backgroundLevel1 : 'black' }` will be converted to `--fun-background-level1`.   You can add `root` class to the root element of your component, for theming a single component.  Or you can add it to the `body` element, for theming the whole page. |
-| options.cssVarsPrefix | <code>String</code> | The css variables prefix. Default is `fun`. |
-| options.colorScheme | <code>String</code> | The color scheme. Possible values are `light`, `dark` and `system`.  Default is `system`.   If `light` or `dark` is set, the theme will be fixed to that color scheme. Only necessary css variables  will be generated. If `system` is set, the theme will be generated for both light and dark color schemes.  And by default it will follow the system color scheme. If you want to override the system color scheme, you can set the `data-color-scheme` attribute to `light`  or `dark` on a parent element. |
+| themes | <code>Object</code> | An object containing light and dark themes: `{ light, dark }`.  Each theme object will be converted to CSS variables available under the `root` class  of the theme StyleSheet instance.   For example: `{ backgroundLevel1: 'black' }` will be converted to `--fun-backgroundLevel1`.   You can add the `root` class to the root element of your component to theme a single component,  or to the `body` element to theme the entire page. |
+| options | <code>Object</code> | An options object. |
+| options.cssVarsPrefix | <code>String</code> | The CSS variables prefix. Default is `fun`. |
+| options.colorScheme | <code>String</code> | The color scheme. Possible values are `light`, `dark`, and `system`. |
+| options.createStyleSheet | <code>function</code> | A function used to create a new StyleSheet instance. By default, it uses the `css` function. |
+| options.styleSheetOptions | <code>Object</code> | The options object to be used when creating the StyleSheet instance. Default is `system`.   If `light` or `dark` is set, the theme will be fixed to that color scheme, and only the necessary CSS variables  will be generated. If `system` is set, the theme will be generated for both light and dark color schemes,  and by default, it will follow the system color scheme. To override the system color scheme, set the `data-color-scheme` attribute to `light`  or `dark` on a parent element. |
 
 **Example**  
 ```js
-// Create a default theme and apply it to the whole page.
-//
-// Create a `createTheme` function with default themes.
-// Then create a theme StyleSheet instance with no options.
+// Create a default theme and apply it to the entire page.
 const theme = createTheme({
     light : {
         color : 'black',
@@ -232,84 +222,33 @@ const theme = createTheme({
         color : 'white',
         backgroundColor : 'black',
     },
-})();
+});
 // Add the `root` class (the theme class) to the body element.
-// So the theme will be applied to the whole page.
+// This will apply the theme to the entire page.
 document.body.classList.add(theme.classes.root);
-// Add some styles using the theme css variables.
+// Add some styles using the theme CSS variables.
 const { classes } = css({
     button : {
-        color : '--fun-color',
-        backgroundColor : '--fun-backgroundColor',
+        color : 'var(--fun-color)',
+        backgroundColor : 'var(--fun-backgroundColor)',
     },
 });
 // Add the `button` class to a button component.
-// You may use the vars at your styles even before the theme is applied, or created.
+// You can use the variables in your styles even before the theme is applied or created.
 // Your component will update when the theme is applied.
-// If system color changes, the button will update automatically.
+// If the system color scheme changes, the button will update automatically.
 const Button = ({ label }) => <button className={classes.button}>{label}</button>;
- 
-```
-**Example**  
-```js
-// Create a default theme and apply it to the whole page.
-// Create a secondary theme and apply it to a specific component.
-//
-// Create a `createTheme` function with default themes.
-const ct = createTheme({
-    light : {
-        color : 'black',
-        backgroundColor : 'white',
-    },
-    dark : {
-        color : 'white',
-        backgroundColor : 'black',
-    },
-})();
-// Create a main theme for the app.
-// Use default themes and no options.
-const mainTheme = ct();
-// Add the `root` class (the theme class) to the body element.
-// So the theme will be applied to the whole page.
-document.body.classList.add(mainTheme.classes.root);
-// Create a secondary theme for a specific component.
-// Extend the main theme with some custom styles.
-const secondaryTheme = ct({
-    themes : {
-        light : {
-            color : 'blue',
-        },
-        dark : {
-            backgroundColor : 'blue',
-        },
-    },
-});
-// Add some styles using the theme css variables.
-const { classes } = css({
-    button : {
-        color : '--fun-color',
-        backgroundColor : '--fun-backgroundColor',
-    },
-});
-// Add the `button` class to a button component. It will use the main theme.
-const Button = ({ label }) => <button className={classes.button}>{label}</button>;
-// Add the `button` class and the secondary theme class to a button component. 
-// To use the secondary theme on it.
-const ThemedButton = ({ label }) => (
-    <button className={`${classes.button} ${secondaryTheme.classes.root}`}>{label}</button>;
-);
 ```
 <a name="css" id="css"></a>
-## css(rules) ⇒ [<code>StyleSheet</code>](#StyleSheet)
-Function used to create a new StyleSheet instance 
-and attach it to the DOM.
+## css(styles) ⇒ [<code>StyleSheet</code>](#StyleSheet)
+Creates a new StyleSheet instance and attaches it to the DOM.
 
 **Kind**: global function  
 **Returns**: [<code>StyleSheet</code>](#StyleSheet) - The StyleSheet instance.  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| rules | <code>Object</code> | The CSS rules. |
+| styles | <code>Object</code> | The CSS rules. |
 
 **Example**  
 ```js

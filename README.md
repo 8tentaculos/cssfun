@@ -11,9 +11,9 @@ Next-Generation <a href="https://en.wikipedia.org/wiki/CSS-in-JS">CSS-in-JS</a> 
 
 [![Travis (.com)](https://img.shields.io/travis/com/8tentaculos/cssfun?style=flat-square)](https://app.travis-ci.com/8tentaculos/cssfun)
 [![npm version](https://img.shields.io/npm/v/cssfun.svg?style=flat-square)](https://www.npmjs.com/package/cssfun)
-[![gzip size](http://img.badgesize.io/https://unpkg.com/cssfun/dist/cssfun.min.js?compression=gzip&label=gzip&style=flat-square)](https://unpkg.com/cssfun/dist/cssfun.min.js)
+[![npm package minimized gzipped size](https://img.shields.io/bundlejs/size/cssfun?style=flat-square)](https://unpkg.com/cssfun/dist/cssfun.min.js)
 [![npm downloads](https://img.shields.io/npm/dm/cssfun.svg?style=flat-square)](https://www.npmjs.com/package/cssfun)
-[![](https://data.jsdelivr.com/v1/package/npm/cssfun/badge)](https://www.jsdelivr.com/package/npm/cssfun)
+[![jsDelivr hits (npm)](https://img.shields.io/jsdelivr/npm/hm/cssfun?style=flat-square)](https://www.jsdelivr.com/package/npm/cssfun)
 
 ## Key Features
 
@@ -244,12 +244,11 @@ A theme is a StyleSheet that provides access to CSS variables for consistent sty
 your application. It supports light, dark, and system color schemes, allowing your components 
 to automatically adapt to changes in the user's system preferences.
 
-The higher-order function `createTheme` accepts a default theme configuration object and returns 
-a `createTheme` function with those defaults applied. This function is used to generate 
-theme-specific StyleSheets.
+The `createTheme` function accepts a themes object `{ light, dark }`, and an options object, and 
+returns a theme StyleSheets.
 
 ### Creating a Theme
-Create a `createTheme` function with default themes and create a theme StyleSheet.
+Create theme StyleSheet.
 
 ```javascript
 // Create theme
@@ -262,7 +261,7 @@ const theme = createTheme({
         color : 'white',
         backgroundColor : 'black',
     },
-})();
+});
 ```
 
 #### Applying the Theme Class
@@ -282,7 +281,7 @@ Your theme object is automatically converted into CSS variables. For instance:
 { backgroundLevel1 : 'black' }
 ```
 
-This will be converted into the CSS variable `--fun-background-level1`.  
+This will be converted into the CSS variable `--fun-backgroundLevel1`.  
 
 Similarly, more complex theme structures like:  
 

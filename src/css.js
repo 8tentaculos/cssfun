@@ -1,11 +1,10 @@
 import StyleSheet from './StyleSheet.js';
 
 /**
- * Function used to create a new StyleSheet instance 
- * and attach it to the DOM.
+ * Creates a new StyleSheet instance and attaches it to the DOM.
  * @module
  * @function
- * @param {Object} rules The CSS rules.
+ * @param {Object} styles - The CSS rules.
  * @returns {StyleSheet} The StyleSheet instance.
  * @example
  * // Create some styles for a link component.

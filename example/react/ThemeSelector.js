@@ -17,8 +17,8 @@ const { classes } = css({
         '& label' : {
             display : 'inline-block',
             padding : '10px 20px',
-            background : 'var(--fun-label-bg)',
-            border : '2px solid var(--fun-label-border-color)',
+            background : 'var(--fun-labelBg)',
+            border : '2px solid var(--fun-labelBorderColor)',
             borderRadius : '25px',
             cursor : 'pointer',
             transition : 'all 0.3s ease'
@@ -32,8 +32,8 @@ const { classes } = css({
             color : '#fff'
         },
         '& label:hover' : {
-            backgroundColor : 'var(--fun-label-hover-bg)',
-            borderColor : 'var(--fun-label-hover-border-color)'
+            backgroundColor : 'var(--fun-labelHoverBg)',
+            borderColor : 'var(--fun-labelHoverBorderColor)'
         }
     },
 }).attach();

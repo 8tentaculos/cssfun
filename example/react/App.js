@@ -33,7 +33,7 @@ const { classes } = css({
         position : 'relative',
         display : 'inline-block',
         padding : '20px',
-        background : 'var(--fun-cat-wrapper-bg)',
+        background : 'var(--fun-catWrapperBg)',
         borderRadius : '15px',
         boxShadow : '0px 4px 10px rgba(0, 0, 0, 0.1)',
         marginBottom : '60px'

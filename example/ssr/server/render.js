@@ -28,7 +28,7 @@ const themes = {
     },
 };
 // Creating the theme
-const theme = createTheme()({ themes });
+const theme = createTheme({ themes });
 
 
 export default (req, res) => {

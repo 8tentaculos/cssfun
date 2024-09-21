@@ -21,7 +21,7 @@ Next-Generation <a href="https://en.wikipedia.org/wiki/CSS-in-JS">CSS-in-JS</a> 
   **CSSFUN** ensures that styles are scoped to the specific component they are defined in, preventing unwanted style leakage across your application. This promotes modularity and simplifies the management of styles, as both the component logic and its styling exist in the same file.
 
 - **Framework-Agnostic**  
-  Whether you're using React, Vue, or vanilla JavaScript, **CSSFUN** works with any framework. Its small footprint —only **1.7KB**— allows you to include it in your projects with minimal overhead.
+  Whether you're using React, Vue, or vanilla JavaScript, **CSSFUN** works with any framework. Its small footprint —only **1.6KB**— allows you to include it in your projects with minimal overhead.
 
 - **No Build Tools Required**  
   **CSSFUN** can be used directly in the browser, eliminating the need for complex build tools or configurations.

@@ -280,6 +280,7 @@ StyleSheet.prefix = 'fun';
 /**
  * @static
  * @property {String} indent - The indent string. Used to format text when debug is enabled. 
+ * @default '    '
  * The default is 4 spaces.
  */
 StyleSheet.indent = '    ';
@@ -290,15 +291,19 @@ StyleSheet.indent = '    ';
  * will be added to this array.
  */
 StyleSheet.registry = [];
+
 /**
  * @static
  * @property {Number} uid - The unique identifier counter. 
  * It will be incremented for each generated id.
  */
 StyleSheet.uid = 0;
+
 /**
  * @static
- * @property {Boolean} debug - The debug flag. Default is `false`.
+ * @property {Boolean} debug - The debug flag.
+ * @default false
+ * If true, the CSS will be formatted with new lines and indents.
  */
 StyleSheet.debug = false;
 

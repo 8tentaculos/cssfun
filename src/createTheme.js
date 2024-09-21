@@ -37,8 +37,7 @@ const getDiff = (left, right) => {
  * @param {String} options.cssVarsPrefix - The CSS variables prefix. Default is `fun`.
  * @param {String} options.colorScheme - The color scheme. Possible values are `light`, `dark`, and `system`. 
  * @param {Function} options.createStyleSheet - A function used to create a new StyleSheet instance. By default, it uses the `css` function.
- * @param {Object} options.styleSheetOptions - The options object to be used when creating the StyleSheet instance.
- * Default is `system`.  
+ * @param {Object} options.styleSheetOptions - The options object to be used when creating the StyleSheet instance. Default is `system`.  
  * If `light` or `dark` is set, the theme will be fixed to that color scheme, and only the necessary CSS variables 
  * will be generated.
  * If `system` is set, the theme will be generated for both light and dark color schemes, 

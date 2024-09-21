@@ -1,5 +1,5 @@
 
-import { Component, Model } from 'rasti';
+import { Component } from 'rasti';
 import { css } from 'cssfun';
 
 import ThemeSelector from './ThemeSelector.js';

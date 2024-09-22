@@ -12,9 +12,9 @@ import StyleSheet from './StyleSheet.js';
  *     link : {
  *         color : 'blue',
  *         '&:hover' : {
- *            textDecoration : 'underline',
- *         }, 
- *     },
+ *            textDecoration : 'underline'
+ *         }
+ *     }
  * });
  * // Create a link component. Add the `link` class to it.
  * const Link = ({ label, href }) => <a className={classes.link} href={href}>{label}</a>;

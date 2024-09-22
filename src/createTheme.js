@@ -51,12 +51,12 @@ const getDiff = (left, right) => {
  * const theme = createTheme({
  *     light : {
  *         color : 'black',
- *         backgroundColor : 'white',
+ *         backgroundColor : 'white'
  *     },
  *     dark : {
  *         color : 'white',
- *         backgroundColor : 'black',
- *     },
+ *         backgroundColor : 'black'
+ *     }
  * });
  * // Add the `root` class (the theme class) to the body element.
  * // This will apply the theme to the entire page.
@@ -65,8 +65,8 @@ const getDiff = (left, right) => {
  * const { classes } = css({
  *     button : {
  *         color : 'var(--fun-color)',
- *         backgroundColor : 'var(--fun-backgroundColor)',
- *     },
+ *         backgroundColor : 'var(--fun-backgroundColor)'
+ *     }
  * });
  * // Add the `button` class to a button component.
  * // You can use the variables in your styles even before the theme is applied or created.

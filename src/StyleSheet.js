@@ -31,7 +31,7 @@ const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
  * // Create a new StyleSheet instance with a styles object.
  * const instance = new StyleSheet({
  *     root : {
- *         color : 'black',
+ *         color : 'black'
  *     }
  * });
  * // Attach the StyleSheet instance to the DOM.

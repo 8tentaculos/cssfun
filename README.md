@@ -104,68 +104,99 @@ css({
 ```
 
 #### Nested selectors will be expanded
-Use `&` to reference a class of the parent rule.
+- **Use `&` to reference the selector of the parent rule**
 
-```javascript
-css({
-    button : {
-        backgroundColor : 'white',
-        '&:hover' : {
-            backgroundColor : 'black'
-        },
-        '& span' : {
-            color : 'blue'
+    ```javascript
+    css({
+        button : {
+            backgroundColor : 'white',
+            '&:hover' : {
+                backgroundColor : 'black'
+            },
+            '& span' : {
+                color : 'blue'
+            }
         }
-    }
-}).toString();
-```
+    }).toString();
+    ```
 
-##### Renders to:
-```css
-<style id="fun-1">
-    .fun-1-button {
-        background-color: white;
-    }
-    .fun-1-button:hover {
-        background-color: black;
-    }
-    .fun-1-button span {
-        color: blue;
-    }
-</style>
-```
+    ##### Renders to:
+    ```css
+    <style id="fun-1">
+        .fun-1-button {
+            background-color: white;
+        }
+        .fun-1-button:hover {
+            background-color: black;
+        }
+        .fun-1-button span {
+            color: blue;
+        }
+    </style>
+    ```
+
+- **Deep nesting**
+
+    ```javascript
+    css({
+        button : {
+            backgroundColor : 'white',
+            '&:active' : {
+                backgroundColor : 'black',
+                '&:hover' : {
+                    backgroundColor : 'blue'
+                }
+            }
+        }
+    }).toString();
+    ```
+
+    ##### Renders to:
+    ```css
+    <style id="fun-1">
+        .fun-1-button {
+            background-color: white;
+        }
+        .fun-1-button:active {
+            background-color: black;
+        }
+        .fun-1-button:active:hover {
+            background-color: blue;
+        }
+    </style>
+    ```
 
 #### Class references will be replaced by the generated class name
-Use `$` to reference a local class within the same StyleSheet instance.
+ - **Use `$` to reference a local class within the same StyleSheet instance**
 
-```javascript
-css({
-    button : {
-        backgroundColor : 'white'
-    },
-    '$button:hover' : {
-            backgroundColor : 'black'
+    ```javascript
+    css({
+        button : {
+            backgroundColor : 'white'
         },
-    '$button span' : {
-        color : 'blue'
-    }
-}).toString();
-```
+        '$button:hover' : {
+                backgroundColor : 'black'
+            },
+        '$button span' : {
+            color : 'blue'
+        }
+    }).toString();
+    ```
 
-##### Renders to:
-```css
-<style id="fun-1">
-    .fun-1-button {
-        background-color: white;
-    }
-    .fun-1-button:hover {
-        background-color: black;
-    }
-    .fun-1-button span {
-        color: blue;
-    }
-</style>
-```
+    ##### Renders to:
+    ```css
+    <style id="fun-1">
+        .fun-1-button {
+            background-color: white;
+        }
+        .fun-1-button:hover {
+            background-color: black;
+        }
+        .fun-1-button span {
+            color: blue;
+        }
+    </style>
+    ```
  
 #### Global selectors will be rendered as global styles
 

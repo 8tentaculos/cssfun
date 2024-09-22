@@ -95,18 +95,22 @@ class StyleSheet {
     generateClassName(className) {
         return `${this.id}-${className}-${++this.uid}`;
     }
-
+    
     isBrowser() {
         return typeof document !== 'undefined';
     }
-
+    // Apply the renderers to the styles object.
+    // It will return a string ready to be added to the style
+    // element.
     render() {
         return compose(
             ...(this.renderers || ['renderStyles', 'parseStyles'])
                 .map(parser => (typeof parser === 'string' ? this[parser] : parser).bind(this))
         )(this.styles);
     }
-
+    // Render the styles object as a string.
+    // Its one of the default renderers.
+    // It will return a string ready to be added to the style element.
     renderStyles(styles, level = 1) {
         return Object.keys(styles).reduce((acc, key) => {
             const value = styles[key];
@@ -114,7 +118,7 @@ class StyleSheet {
             if (value.constructor === Object) {
                 if (Object.keys(value).length > 0) {
                     const renderedStyles = this.renderStyles(value, level + 1);
-
+                    // Add rules to the accumulator.
                     const str = StyleSheet.debug ?
                         `${StyleSheet.indent.repeat(level)}${key} {\n${renderedStyles}${StyleSheet.indent.repeat(level)}}\n` :
                         `${key}{${renderedStyles}}`;
@@ -136,17 +140,19 @@ class StyleSheet {
             return acc;
         }, []).join('');
     }
-
+    // Parse the styles object and transform it. Expand nested styles, parse global styles and generate selectors.
+    // Its one of the default renderers.
+    // It will return an object ready to be rendered as string by `renderStyles`.
     parseStyles(styles, parent, parentSelector, isGlobal) {
         const fromClasses = selector => selector in this.classes ? `.${this.classes[selector]}` : selector;
         const replaceClassReferences = selector => selector.replace(StyleSheet.referenceRegex, (match, ref) => fromClasses(ref));
-        const replaceClassNested = selector => selector.replace(StyleSheet.nestedRegex, fromClasses(parentSelector));
+        const replaceClassNested = selector => selector.replace(StyleSheet.nestedRegex, parentSelector);
         const replaceClassGlobalPrefix = selector => selector.replace(StyleSheet.globalPrefixRegex, '');
         // Parse the key and generate a selector.
         const generateKey = key => {
             if (isGlobal && parentSelector) {
                 // Nested global selectors.
-                return `${fromClasses(parentSelector)} ${key}`;
+                return `${parentSelector} ${key}`;
             }
             if (key.match(StyleSheet.globalPrefixRegex)) {
                 // Global prefix.
@@ -156,29 +162,33 @@ class StyleSheet {
             return replaceClassNested(replaceClassReferences(fromClasses(key)));
         };
 
-        const { result, extra } = Object.keys(styles).reduce((acc, key) => {
+        const result = Object.keys(styles).reduce((acc, key) => {
             const value = styles[key];
 
             if (value.constructor === Object) {
                 if (key.match(StyleSheet.globalRegex)) {
                     // Global styles.
-                    Object.assign(parent || acc.extra, this.parseStyles(value, acc.extra, parentSelector, true));
+                    Object.assign(parent || acc, this.parseStyles(value, acc, parentSelector, true));
                 } else if (key.match(StyleSheet.nestedRegex)) {
+                    const selector = generateKey(key);
+                    parent[selector] = {};
                     // Nested styles.
-                    parent[generateKey(key)] = this.parseStyles(value, acc.extra, key);
+                    Object.assign(parent[selector], this.parseStyles(value, parent, selector));
                 } else {
+                    const selector = generateKey(key);
+                    acc[selector] = {};
                     // Regular styles.
-                    acc.result[generateKey(key)] = this.parseStyles(value, acc.extra, key);
+                    Object.assign(acc[selector], this.parseStyles(value, acc, selector));
                 }
             } else {
                 // Add style rules.
-                acc.result[key] = value;
+                acc[key] = value;
             }
 
             return acc;
-        }, { result: {}, extra: {} });
+        }, {});
 
-        return { ...result, ...extra };
+        return result;
     }
 
     /**

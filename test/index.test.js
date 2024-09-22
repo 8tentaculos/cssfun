@@ -74,17 +74,40 @@ describe('cssfun', () => {
             expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{color:red;}.fun-1-root-1:hover{color:blue;}</style>');
         });
 
+        it('must use deep nested styles', () => {
+            const instance = css({
+                root : {
+                    margin : '5px'
+                },
+                button : {
+                    color : 'red',
+                    '&:hover' : {
+                        color : 'blue',
+                        '&:active' : {
+                            color : 'green'
+                        }
+                    }
+                }
+            });
+            instance.attach();
+            const style = instance.el;
+            expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{margin:5px;}.fun-1-button-2{color:red;}.fun-1-button-2:hover{color:blue;}.fun-1-button-2:hover:active{color:green;}</style>');
+        });
+
         it('must use global styles', () => {
             const instance = css({
                 '@global' : {
                     body : {
                         margin : 0
                     }
+                },
+                root : {
+                    color : 'black'
                 }
             });
             instance.attach();
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal('<style id="fun-1">body{margin:0;}</style>');
+            expect(style.outerHTML).to.be.equal('<style id="fun-1">body{margin:0;}.fun-1-root-1{color:black;}</style>');
         });
 
         it('must use nested global styles', () => {
@@ -94,12 +117,16 @@ describe('cssfun', () => {
                         a : {
                             color : 'red'
                         }
-                    }
+                    },
+                    color : 'black'
                 },
+                button : {
+                    color : 'blue'
+                }
             });
             instance.attach();
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1 a{color:red;}</style>');
+            expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{color:black;}.fun-1-root-1 a{color:red;}.fun-1-button-2{color:blue;}</style>');
         });
 
         it('must use goblal prefix', () => {

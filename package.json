@@ -3,13 +3,6 @@
     "version": "0.0.3",
     "description": "Next-generation CSS-in-JS library",
     "type": "module",
-    "exports": {
-        ".": {
-            "import": "./es/index.js",
-            "require": "./lib/index.js"
-        },
-        "./umd": "./dist/index.js"
-    },
     "main": "lib/index.js",
     "module": "es/index.js",
     "browser": "dist/cssfun.min.js",

@@ -110,44 +110,39 @@ class StyleSheet {
     }
     // Render the styles object as a string.
     // Its one of the default renderers.
-    // It will return a string ready to be added to the style element.
+    // It will return a string ready to be added to the `style` element.
     renderStyles(styles, level = 1) {
         return Object.keys(styles).reduce((acc, key) => {
             const value = styles[key];
+            let indent = '', nl = '', whitespace = '';
+            // Format the CSS string.
+            if (StyleSheet.debug) {
+                indent = StyleSheet.indent.repeat(level);
+                nl = '\n';
+                whitespace = ' ';
+            }
             // Add the styles to the accumulator recursively.
             if (value.constructor === Object) {
                 if (Object.keys(value).length > 0) {
                     const renderedStyles = this.renderStyles(value, level + 1);
                     // Add rules to the accumulator.
-                    const str = StyleSheet.debug ?
-                        `${StyleSheet.indent.repeat(level)}${key} {\n${renderedStyles}${StyleSheet.indent.repeat(level)}}\n` :
-                        `${key}{${renderedStyles}}`;
-
-                    acc.push(str);
+                    acc.push(`${indent}${key}${whitespace}{${nl}${renderedStyles}${indent}}${nl}`);
                 }
             } else {
-                // Convert camelCase to dashed-case.
-                // Only convert if the key doesn't already contain a dash.
-                // Allows css vars to contain camelCase parts between dashes.
-                const dashedKey = key.includes('-') ? key : camelizedToDashed(key);
                 // Add the style to the accumulator.
-                const str = StyleSheet.debug ?
-                    `${StyleSheet.indent.repeat(level)}${dashedKey}: ${value};\n` :
-                    `${dashedKey}:${value};`;
-
-                acc.push(str);
+                acc.push(`${indent}${key}:${whitespace}${value};${nl}`);
             }
+
             return acc;
         }, []).join('');
     }
-    // Parse the styles object and transform it. Expand nested styles, parse global styles and generate selectors.
+    // Parse the styles object and transform it.  
+    // Expand nested styles, parse global styles, generate selectors, replace selector references 
+    // and convert camelized keys to dashed-case.
     // Its one of the default renderers.
     // It will return an object ready to be rendered as string by `renderStyles`.
     parseStyles(styles, parent, parentSelector, isGlobal) {
         const fromClasses = selector => selector in this.classes ? `.${this.classes[selector]}` : selector;
-        const replaceClassReferences = selector => selector.replace(StyleSheet.referenceRegex, (match, ref) => fromClasses(ref));
-        const replaceClassNested = selector => selector.replace(StyleSheet.nestedRegex, parentSelector);
-        const replaceClassGlobalPrefix = selector => selector.replace(StyleSheet.globalPrefixRegex, '');
         // Parse the key and generate a selector.
         const generateKey = key => {
             if (isGlobal && parentSelector) {
@@ -156,15 +151,17 @@ class StyleSheet {
             }
             if (key.match(StyleSheet.globalPrefixRegex)) {
                 // Global prefix.
-                return replaceClassGlobalPrefix(key);
+                return key.replace(StyleSheet.globalPrefixRegex, '');
             }
             // Nested, references and replace class names with created ones.
-            return replaceClassNested(replaceClassReferences(fromClasses(key)));
+            return fromClasses(key)
+                .replace(StyleSheet.referenceRegex, (match, ref) => fromClasses(ref))
+                .replace(StyleSheet.nestedRegex, parentSelector);
         };
 
         const result = Object.keys(styles).reduce((acc, key) => {
             const value = styles[key];
-
+            // Parse styles recursively.
             if (value.constructor === Object) {
                 if (key.match(StyleSheet.globalRegex)) {
                     // Global styles.
@@ -182,7 +179,10 @@ class StyleSheet {
                 }
             } else {
                 // Add style rules.
-                acc[key] = value;
+                // Convert camelCase to dashed-case.
+                // Only convert if the key doesn't already contain a dash.
+                // Allows css vars to contain camelCase parts between dashes.
+                acc[key.includes('-') ? key : camelizedToDashed(key)] = value;
             }
 
             return acc;
@@ -197,17 +197,11 @@ class StyleSheet {
      * @returns {String} The instance as a string.
      */
     toString() {
-        let attributes = [];
-
-        if (this.attributes) {
-            Object.keys(this.attributes).forEach(key => {
-                if (key === 'id') return;
-                attributes.push(` ${key}="${this.attributes[key]}"`);
-            });
-        }
-
+        const attrs = { ...this.attributes, id : this.id };
+        const parts = Object.keys(attrs).map(key => ` ${key}="${attrs[key]}"`);
         const nl = StyleSheet.debug ? '\n' : '';
-        return `<style id="${this.id}"${attributes.join('')}>${nl}${this.render()}</style>${nl}`;
+
+        return `<style${parts.join('')}>${nl}${this.render()}</style>${nl}`;
     }
 
     /**
@@ -222,18 +216,9 @@ class StyleSheet {
         }
         // If we're in the browser and the style element doesn't exist, create it.
         if (this.isBrowser() && !document.getElementById(this.id)) {
-            this.el = document.createElement('style');
-
-            if (this.attributes) {
-                Object.keys(this.attributes).forEach(key => {
-                    if (key === 'id') return;
-                    this.el.setAttribute(key, this.attributes[key]);
-                });
-            }
-
-            this.el.id = this.id;
-            this.el.innerHTML = this.render();
-
+            const fragment = document.createElement('template');
+            fragment.innerHTML = this.toString();
+            this.el = fragment.content.firstElementChild;
             document.head.appendChild(this.el);
         }
 

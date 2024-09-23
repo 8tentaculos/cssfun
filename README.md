@@ -21,7 +21,7 @@ Next-Generation <a href="https://en.wikipedia.org/wiki/CSS-in-JS">CSS-in-JS</a> 
   **CSSFUN** ensures that styles are scoped to the specific component they are defined in, preventing unwanted style leakage across your application. This promotes modularity and simplifies the management of styles, as both the component logic and its styling exist in the same file.
 
 - **Framework-Agnostic**  
-  Whether you're using React, Vue, or vanilla JavaScript, **CSSFUN** works with any framework. Its small footprint —only **1.6KB**— allows you to include it in your projects with minimal overhead.
+  Whether you're using React, Vue, or vanilla JavaScript, **CSSFUN** works with any framework. Its small footprint —only **1.5KB**— allows you to include it in your projects with minimal overhead.
 
 - **No Build Tools Required**  
   **CSSFUN** can be used directly in the browser, eliminating the need for complex build tools or configurations.
@@ -296,9 +296,10 @@ const theme = createTheme({
 ```
 
 #### Applying the Theme Class
-The generated theme object contains a `root` class, which represents the theme StyleSheet. 
-You can apply this class to the `body` element to style the entire application, or to any 
-specific component's root element to style just a part of your UI.
+The generated theme includes a `root` class, which makes all the theme's CSS variables available 
+to elements that have this class and their descendants. You can apply this class to the `body` element 
+to style the entire application or to the root element of a specific component to style only a part of 
+your UI.
 
 ```javascript
 // Add theme class to the body

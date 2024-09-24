@@ -67,7 +67,7 @@ server-side rendering.
 | options.generateId | <code>function</code> | The function to generate ids. This id will be used  as the `<style>` element id. |
 | options.generateClassName | <code>function</code> | The function to generate class names.  This class name will be used to generate the unique class names for scoped styles. |
 | options.attributes | <code>Object</code> | The attributes object. This attributes will be added  to the `<style>` element. |
-| options.renderers | <code>Array</code> | The array of renderers.  Renderers are functions that transform style objects into CSS strings.   When composed, the first parser receives the styles object, and the final one outputs the resulting CSS string.   If no renderers array is provided, by default, StyleSheets are rendered using `['renderStyles', 'parseStyles']`. The elements in the `renderers` array can either be functions or strings referencing methods of the StyleSheet  instance. These methods will be bound to the instance automatically. |
+| options.renderers | <code>Array</code> | The array of renderers.  Renderers are functions that transform style objects into CSS strings.     When composed, the first renderer receives the styles object, and the final one outputs the  resulting CSS string.   Elements in the `renderers` array can be either functions or strings that reference methods of the  StyleSheet instance. These methods will be bound to the instance before they are invoked. By default, `StyleSheet` are rendered using the built-in renderers:  `['parseStyles', 'renderStyles']`. |
 
 **Example**  
 ```js

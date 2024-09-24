@@ -84,7 +84,7 @@ const createTheme = (themes = {}, options = {}) => {
     if (colorScheme === 'system') {
         const cssVars = {
             light : makeCssVars(themes.light, prefix),
-            dark : makeCssVars(themes.dark, prefix),
+            dark : makeCssVars(themes.dark, prefix)
         };
 
         const diff = getDiff(cssVars.light, cssVars.dark);
@@ -93,17 +93,17 @@ const createTheme = (themes = {}, options = {}) => {
             root : {
                 ':where(&)' : {
                     colorScheme : 'light',
-                    ...cssVars.light,
+                    ...cssVars.light
                 },
                 ':where([data-color-scheme="dark"] &)' : {
                     colorScheme : 'dark',
                     ...diff.right
-                },
+                }
             },
             '@media (prefers-color-scheme: dark)' : {
                 ':where($root)' : {
                     colorScheme : 'dark',
-                    ...diff.right,
+                    ...diff.right
                 },
                 ':where([data-color-scheme="light"] $root)' : {
                     colorScheme : 'light',

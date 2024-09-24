@@ -12,7 +12,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "cssfun": "^0.0.3",
+    "cssfun": "^0.0.4",
     "express": "^4.19.2",
     "rasti": "^2.1.0-alpha.0"
   },

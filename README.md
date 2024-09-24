@@ -29,11 +29,12 @@ Write modular **CSS** within your **JavaScript** code with built-in **themes** a
   **CSSFUN** can be used directly in the browser, eliminating the need for complex build tools or configurations.
 
 - **Server-Side Rendering (SSR) Support** 🚀  
-  **CSSFUN** supports [server-side rendering](#server-side-rendering-ssr) out of the box, optimizing initial load times without duplicating styles.
+  **CSSFUN** supports [server-side rendering](#server-side-rendering-ssr) out of the box, optimizing initial load 
+  times without duplicating styles.
 
 - **Built-in Theme Management** 🎨  
-  With built-in [theme support](#themes), **CSSFUN** uses CSS variables to manage light, dark, and system color schemes. Themes 
-  update automatically based on user preferences, no re-renders needed.
+  With built-in [theme support](#themes), **CSSFUN** uses [CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) 
+  to manage light, dark, and system color schemes. Themes update automatically based on user preferences, no re-renders needed.
 
 ## Getting Started
 
@@ -285,8 +286,7 @@ By default, [StyleSheet](/docs/api.md#stylesheet) are rendered using the built-i
 
 ## Themes
 
-A theme is a [StyleSheet](/docs/api.md#stylesheet) that provides access to 
-[CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) 
+A theme is a [StyleSheet](/docs/api.md#stylesheet) that provides access to CSS variables
 for consistent styling across your application. It supports light, dark, and system color schemes, 
 allowing your components to automatically adapt to changes in the user's system preferences.
 
@@ -313,8 +313,7 @@ const theme = createTheme({
 
 #### Applying the Theme Class
 
-The generated theme includes a `root` class, which exposes all the theme's 
-[CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) to any element that uses 
+The generated theme includes a `root` class, which exposes all the theme's CSS variables to any element that uses 
 this class and its descendants. You can apply this class to the `body` element to style the entire application, 
 or to the root element of a specific component to apply the theme to just part of your UI.
 

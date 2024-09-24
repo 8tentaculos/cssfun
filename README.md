@@ -4,10 +4,10 @@
 </picture>
 
 <p align="center">
-Next-Generation <a href="https://en.wikipedia.org/wiki/CSS-in-JS">CSS-in-JS</a> Library
+Next-Generation <a href="https://en.wikipedia.org/wiki/CSS-in-JS"><strong>CSS-in-JS</strong></a> Library
 </p>
 
-**CSSFUN** Enables you to write CSS directly within your JavaScript code. This provides a dynamic way to style your applications while keeping everything modular and maintainable.
+Write modular **CSS** within your **JavaScript** code with built-in **themes** and **SSR** support.
 
 [![Travis (.com)](https://img.shields.io/travis/com/8tentaculos/cssfun?style=flat-square)](https://app.travis-ci.com/8tentaculos/cssfun)
 [![npm version](https://img.shields.io/npm/v/cssfun.svg?style=flat-square)](https://www.npmjs.com/package/cssfun)
@@ -17,19 +17,19 @@ Next-Generation <a href="https://en.wikipedia.org/wiki/CSS-in-JS">CSS-in-JS</a> 
 
 ## Key Features
 
-- **Component-Scoped Styles**  
+- **Component-Scoped Styles** ✨  
   **CSSFUN** ensures that styles are scoped to the specific component they are defined in, preventing unwanted style leakage across your application. This promotes modularity and simplifies the management of styles, as both the component logic and its styling exist in the same file.
 
-- **Framework-Agnostic**  
+- **Framework-Agnostic** 🌐  
   Whether you're using React, Vue, or vanilla JavaScript, **CSSFUN** works with any framework. Its small footprint —only **1.5KB**— allows you to include it in your projects with minimal overhead.
 
-- **No Build Tools Required**  
+- **No Build Tools Required** 🛠️  
   **CSSFUN** can be used directly in the browser, eliminating the need for complex build tools or configurations.
 
-- **Server-Side Rendering (SSR) Support**  
+- **Server-Side Rendering (SSR) Support** 🚀  
   **CSSFUN** supports server-side rendering out of the box, optimizing initial load times without duplicating styles.
 
-- **Built-in Theme Management**  
+- **Built-in Theme Management** 🎨  
   With built-in support for theme management, **CSSFUN** leverages CSS variables to easily handle light, dark, and system color schemes. Themes update automatically based on user preferences, without requiring component re-renders.
 
 ## Getting Started

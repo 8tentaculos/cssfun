@@ -97,7 +97,7 @@ css({
 ##### Renders to:
 ```css
 <style id="fun-1">
-    .fun-1-root {
+    .fun-1-root-1 {
         background-color: black;
     }
 </style>
@@ -123,13 +123,13 @@ css({
     ##### Renders to:
     ```css
     <style id="fun-1">
-        .fun-1-button {
+        .fun-1-button-1 {
             background-color: white;
         }
-        .fun-1-button:hover {
+        .fun-1-button-1:hover {
             background-color: black;
         }
-        .fun-1-button span {
+        .fun-1-button-1 span {
             color: blue;
         }
     </style>
@@ -154,13 +154,13 @@ css({
     ##### Renders to:
     ```css
     <style id="fun-1">
-        .fun-1-button {
+        .fun-1-button-1 {
             background-color: white;
         }
-        .fun-1-button:active {
+        .fun-1-button-1:active {
             background-color: black;
         }
-        .fun-1-button:active:hover {
+        .fun-1-button-1:active:hover {
             background-color: blue;
         }
     </style>
@@ -186,13 +186,13 @@ css({
     ##### Renders to:
     ```css
     <style id="fun-1">
-        .fun-1-button {
+        .fun-1-button-1 {
             background-color: white;
         }
-        .fun-1-button:hover {
+        .fun-1-button-1:hover {
             background-color: black;
         }
-        .fun-1-button span {
+        .fun-1-button-1 span {
             color: blue;
         }
     </style>

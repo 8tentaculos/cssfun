@@ -18,10 +18,12 @@ Write modular **CSS** within your **JavaScript** code with built-in **themes** a
 ## Key Features
 
 - **Component-Scoped Styles** ✨  
-  **CSSFUN** ensures that styles are scoped to the specific component they are defined in, preventing unwanted style leakage across your application. This promotes modularity and simplifies the management of styles, as both the component logic and its styling exist in the same file.
+  **CSSFUN** scopes styles to the component, preventing style leakage and promoting modularity. It keeps both logic 
+  and styling in the same file for easier management.
 
 - **Framework-Agnostic** 🌐  
-  Whether you're using React, Vue, or vanilla JavaScript, **CSSFUN** works with any framework. Its small footprint —only **1.5KB**— allows you to include it in your projects with minimal overhead.
+  **CSSFUN** works with any framework, whether it’s React, Vue, or vanilla JavaScript. At just **1.5KB**, it adds 
+  minimal overhead to your projects.
 
 - **No Build Tools Required** 🛠️  
   **CSSFUN** can be used directly in the browser, eliminating the need for complex build tools or configurations.
@@ -30,7 +32,8 @@ Write modular **CSS** within your **JavaScript** code with built-in **themes** a
   **CSSFUN** supports server-side rendering out of the box, optimizing initial load times without duplicating styles.
 
 - **Built-in Theme Management** 🎨  
-  With built-in support for theme management, **CSSFUN** leverages CSS variables to easily handle light, dark, and system color schemes. Themes update automatically based on user preferences, without requiring component re-renders.
+  With built-in theme support, **CSSFUN** uses CSS variables to manage light, dark, and system color schemes. Themes 
+  update automatically based on user preferences, no re-renders needed.
 
 ## Getting Started
 

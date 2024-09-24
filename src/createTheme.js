@@ -1,7 +1,7 @@
 import css from './css.js';
 import StyleSheet from './StyleSheet.js';
 
-const makeCssVars = (theme, prefix) => {
+const makeCssVars = (theme = {}, prefix = '--') => {
     return Object.keys(theme).reduce((acc, key) => {
         if (theme[key].constructor === Object) {
             Object.assign(acc, makeCssVars(theme[key], `${prefix}-${key}`));
@@ -78,66 +78,50 @@ const getDiff = (left, right) => {
 const createTheme = (themes = {}, options = {}) => {
     const colorScheme = options.colorScheme || 'system';
     const prefix = `--${options.cssVarsPrefix ||  StyleSheet.prefix}`;
-    const light = themes.light || {};
-    const dark = themes.dark || {};
 
     let styles;
-    /* eslint-disable */
-    switch (colorScheme) {
-        case 'light' : {
-            styles = {
-                root : {
-                    ':where(&)' : {
-                        colorScheme : 'light',
-                        ...makeCssVars(light, prefix),
-                    },
-                },
-            };
-            break;
-        }
-        case 'dark' : {
-            styles = {
-                root : {
-                    ':where(&)' : {
-                        colorScheme : 'dark',
-                        ...makeCssVars(dark, prefix),
-                    },
-                },
-            };
-            break;
-        }
-        default : {
-            const cssVars = {
-                light : makeCssVars(light, prefix),
-                dark : makeCssVars(dark, prefix),
-            };
 
-            const diff = getDiff(cssVars.light, cssVars.dark);
+    if (colorScheme === 'system') {
+        const cssVars = {
+            light : makeCssVars(themes.light, prefix),
+            dark : makeCssVars(themes.dark, prefix),
+        };
 
-            styles = {
-                root : {},
-                ':where($root)' : {
+        const diff = getDiff(cssVars.light, cssVars.dark);
+
+        styles = {
+            root : {
+                ':where(&)' : {
                     colorScheme : 'light',
                     ...cssVars.light,
                 },
-                ':where([data-color-scheme="dark"] $root)' : {
+                ':where([data-color-scheme="dark"] &)' : {
                     colorScheme : 'dark',
                     ...diff.right
                 },
-                '@media (prefers-color-scheme: dark)' : {
-                    ':where($root)' : {
-                        colorScheme : 'dark',
-                        ...diff.right,
-                    },
-                    ':where([data-color-scheme="light"] $root)' : {
-                        colorScheme : 'light',
-                        ...diff.left
-                    },
+            },
+            '@media (prefers-color-scheme: dark)' : {
+                ':where($root)' : {
+                    colorScheme : 'dark',
+                    ...diff.right,
                 },
-            };
-        }
+                ':where([data-color-scheme="light"] $root)' : {
+                    colorScheme : 'light',
+                    ...diff.left
+                }
+            }
+        };
+    } else {
+        styles = {
+            root : {
+                ':where(&)' : {
+                    colorScheme,
+                    ...makeCssVars(themes[colorScheme], prefix)
+                }
+            }
+        };
     }
-    /* eslint-enable */
+
     return (options.createStyleSheet || css)(styles, options.styleSheetOptions);
 };
 

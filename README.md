@@ -174,7 +174,7 @@ css({
 
 #### Class references will be replaced by the generated class name
 
- - **Use `$` to reference a local class within the same StyleSheet instance**
+ - **Use `$` to reference a local class within the same `StyleSheet` instance**
 
     ```javascript
     css({
@@ -276,22 +276,22 @@ resulting CSS string.
 
 ### Custom Renderers
 
-You can customize the renderers by setting the `renderers` array on the [StyleSheet](/docs/api.md#stylesheet) instance. 
+You can customize the renderers by setting the `renderers` array on the [`StyleSheet`](/docs/api.md#stylesheet) instance. 
 If passed via [`options.renderers`](/docs/api.md#new-stylesheetstyles-options), they will be automatically added to the instance.  
 
-Elements in the `renderers` array can be either functions or strings that reference methods of the StyleSheet instance. These 
+Elements in the `renderers` array can be either functions or strings that reference methods of the [`StyleSheet`](/docs/api.md#stylesheet) instance. These 
 methods will be bound to the instance before they are invoked.
 
-By default, [StyleSheet](/docs/api.md#stylesheet) are rendered using the built-in renderers: `['parseStyles', 'renderStyles']`.
+By default, [`StyleSheet`](/docs/api.md#stylesheet) are rendered using the built-in renderers: `['parseStyles', 'renderStyles']`.
 
 ## Themes
 
-A theme is a [StyleSheet](/docs/api.md#stylesheet) that provides access to CSS variables
+A theme is a [`StyleSheet`](/docs/api.md#stylesheet) that provides access to CSS variables
 for consistent styling across your application. It supports light, dark, and system color schemes, 
 allowing your components to automatically adapt to changes in the user's system preferences.
 
 The [`createTheme`](/docs/api.md#createtheme) function accepts a themes object `{ light, dark }`, and an options object, and 
-returns a theme [StyleSheet](/docs/api.md#stylesheet).
+returns a theme [`StyleSheet`](/docs/api.md#stylesheet).
 
 ### Creating a Theme
 

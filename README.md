@@ -22,7 +22,7 @@ Write modular **CSS** within your **JavaScript** code with built-in **themes** a
   and styling in the same file for easier management.
 
 - **Framework-Agnostic** 🌐  
-  **CSSFUN** works with any framework, whether it’s React, Vue, or vanilla JavaScript. At just **1.5KB**, it adds 
+  **CSSFUN** works with any framework, whether it’s React, Vue, or vanilla JavaScript. At just **2KB**, it adds 
   minimal overhead to your projects.
 
 - **No Build Tools Required** 🛠️  
@@ -56,7 +56,7 @@ import { css } from 'https://esm.run/cssfun';
 ### Using `<script>` tag
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/cssfun/dist/cssfun.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cssfun"></script>
 ```
 
 ```javascript
@@ -345,6 +345,50 @@ const { classes } = css({
 
 const Button = ({ label }) => <button className={classes.button}>{label}</button>;
 ```
+
+## Server-Side Rendering (SSR)
+
+Easily add your styles to the server-rendered HTML by embedding the StyleSheets as a 
+string within the `<head>` of your page.
+
+```javascript
+// Creating a theme
+const theme = createTheme(themes);
+
+// Express route
+app.get('*', (req, res) => {
+    // Render the app as an HTML string
+    const html = renderToString(<App />);
+    
+    // Get all styles as a string of <style> elements
+    const styles = StyleSheet.toString();
+    
+    // Get the root class name from the theme
+    const cls = theme.classes.root;
+    
+    // Create the full HTML page template
+    const template = `
+        <!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Waving Cat</title>
+                ${styles}
+            </head>
+            <body class="${cls}">
+                <div id="root">${html}</div>
+                <script src="/bundle.js"></script>
+            </body>
+        </html>
+    `;
+    
+    // Send the complete HTML response
+    res.send(template);
+});
+```
+
+When the app is hydrated on the client side, the styles are preserved and won’t be recreated.
 
 ## API Documentation
 Complete API documentation can be found [here](/docs/api.md).

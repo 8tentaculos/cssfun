@@ -22,11 +22,13 @@ const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
  * @param {Object} options.attributes - The attributes object. This attributes will be added 
  * to the `<style>` element.  
  * @param {Array} options.renderers - The array of renderers. 
- * Renderers are functions that transform style objects into CSS strings.  
- * When composed, the first parser receives the styles object, and the final one outputs the resulting CSS string.  
- * If no renderers array is provided, by default, StyleSheets are rendered using `['renderStyles', 'parseStyles']`.
- * The elements in the `renderers` array can either be functions or strings referencing methods of the StyleSheet 
- * instance. These methods will be bound to the instance automatically.
+ * Renderers are functions that transform style objects into CSS strings.    
+ * When composed, the first renderer receives the styles object, and the final one outputs the 
+ * resulting CSS string.  
+ * Elements in the `renderers` array can be either functions or strings that reference methods of the 
+ * StyleSheet instance. These methods will be bound to the instance before they are invoked.
+ * By default, `StyleSheet` are rendered using the built-in renderers: 
+ * `['parseStyles', 'renderStyles']`.
  * @example
  * // Create a new StyleSheet instance with a styles object.
  * const instance = new StyleSheet({

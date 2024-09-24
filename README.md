@@ -29,10 +29,10 @@ Write modular **CSS** within your **JavaScript** code with built-in **themes** a
   **CSSFUN** can be used directly in the browser, eliminating the need for complex build tools or configurations.
 
 - **Server-Side Rendering (SSR) Support** 🚀  
-  **CSSFUN** supports server-side rendering out of the box, optimizing initial load times without duplicating styles.
+  **CSSFUN** supports [server-side rendering](#server-side-rendering-ssr) out of the box, optimizing initial load times without duplicating styles.
 
 - **Built-in Theme Management** 🎨  
-  With built-in theme support, **CSSFUN** uses CSS variables to manage light, dark, and system color schemes. Themes 
+  With built-in [theme support](#themes), **CSSFUN** uses CSS variables to manage light, dark, and system color schemes. Themes 
   update automatically based on user preferences, no re-renders needed.
 
 ## Getting Started
@@ -64,6 +64,7 @@ const { css } = CSSFUN;
 ```
 
 ### Create your styles
+
 ```javascript
 const { classes } = css({
     button : {
@@ -76,19 +77,18 @@ const { classes } = css({
 ```
 
 ### Apply the styles to your components:
+
 ```javascript
 const Button = () => <button className={classes.button}>Click me</button>;
 ```
 
 ## Renderers
-Renderers are functions that transform style objects into CSS strings.  
-When composed, the first renderer receives the styles object, and the final one outputs the 
-resulting CSS string.  
-By default, StyleSheets are rendered using `parseStyles` and `renderStyles`.  
 
-These are the default renderers transformations:
+Renderers are functions that transform style objects into CSS strings.  
+These are the built-in renderers transformations:
 
 #### Camelized keys will be transformed to dashed keys
+
 ```javascript
 css({
     root : {
@@ -98,6 +98,7 @@ css({
 ```
 
 ##### Renders to:
+
 ```css
 <style id="fun-1">
     .fun-1-root-1 {
@@ -107,6 +108,7 @@ css({
 ```
 
 #### Nested selectors will be expanded
+
 - **Use `&` to reference the selector of the parent rule**
 
     ```javascript
@@ -170,6 +172,7 @@ css({
     ```
 
 #### Class references will be replaced by the generated class name
+
  - **Use `$` to reference a local class within the same StyleSheet instance**
 
     ```javascript
@@ -267,21 +270,31 @@ css({
     </style>
     ```
  
-### Custom renderers
-Renderers can be configured through the `renderers` array on the StyleSheet instance. 
-If provided via `options.renderers`, they will be added to the instance. The elements in 
-the `renderers` array can either be functions or strings referencing methods of the StyleSheet 
-instance. These methods will be bound to the instance automatically.
+When composed, the first renderer receives the styles object, and the final one outputs the 
+resulting CSS string.  
+
+### Custom Renderers
+
+You can customize the renderers by setting the `renderers` array on the [StyleSheet](/docs/api.md#stylesheet) instance. 
+If passed via [`options.renderers`](/docs/api.md#new-stylesheetstyles-options), they will be automatically added to the instance.  
+
+Elements in the `renderers` array can be either functions or strings that reference methods of the StyleSheet instance. These 
+methods will be bound to the instance before they are invoked.
+
+By default, [StyleSheet](/docs/api.md#stylesheet) are rendered using the built-in renderers: `['parseStyles', 'renderStyles']`.
 
 ## Themes
-A theme is a StyleSheet that provides access to CSS variables for consistent styling across 
-your application. It supports light, dark, and system color schemes, allowing your components 
-to automatically adapt to changes in the user's system preferences.
 
-The `createTheme` function accepts a themes object `{ light, dark }`, and an options object, and 
-returns a theme StyleSheets.
+A theme is a [StyleSheet](/docs/api.md#stylesheet) that provides access to 
+[CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) 
+for consistent styling across your application. It supports light, dark, and system color schemes, 
+allowing your components to automatically adapt to changes in the user's system preferences.
+
+The [`createTheme`](/docs/api.md#createtheme) function accepts a themes object `{ light, dark }`, and an options object, and 
+returns a theme [StyleSheet](/docs/api.md#stylesheet).
 
 ### Creating a Theme
+
 Create theme StyleSheet.
 
 ```javascript
@@ -299,10 +312,11 @@ const theme = createTheme({
 ```
 
 #### Applying the Theme Class
-The generated theme includes a `root` class, which makes all the theme's CSS variables available 
-to elements that have this class and their descendants. You can apply this class to the `body` element 
-to style the entire application or to the root element of a specific component to style only a part of 
-your UI.
+
+The generated theme includes a `root` class, which exposes all the theme's 
+[CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) to any element that uses 
+this class and its descendants. You can apply this class to the `body` element to style the entire application, 
+or to the root element of a specific component to apply the theme to just part of your UI.
 
 ```javascript
 // Add theme class to the body
@@ -310,6 +324,7 @@ document.body.classList.add(theme.classes.root);
 ```
 
 #### Using Theme Variables in Styles
+
 Your theme object is automatically converted into CSS variables. For instance:
 
 ```javascript
@@ -355,12 +370,12 @@ string within the `<head>` of your page.
 // Creating a theme
 const theme = createTheme(themes);
 
-// Express route
+// Express route that renders the app and returns HTML to the browser
 app.get('*', (req, res) => {
     // Render the app as an HTML string
     const html = renderToString(<App />);
     
-    // Get all styles as a string of <style> elements
+    // Get all StyleSheets styles as a string of <style> elements
     const styles = StyleSheet.toString();
     
     // Get the root class name from the theme
@@ -391,21 +406,26 @@ app.get('*', (req, res) => {
 When the app is hydrated on the client side, the styles are preserved and won’t be recreated.
 
 ## API Documentation
+
 Complete API documentation can be found [here](/docs/api.md).
 
 ## Examples
+
 The `examples` folder contains various sample projects demonstrating how to use **CSSFUN** in 
 different environments and frameworks. Each example is a standalone project that you can run locally 
 to see **CSSFUN** in action.
 
 ### Available Examples
+
 - **[React Example](https://github.com/8tentaculos/cssfun/tree/master/example/react)**: A basic React application demonstrating the use of **CSSFUN** for styling React components. [Try it](https://plnkr.co/plunk/hLIWLlAHGsE2ojO1).
 - **[Rasti Example](https://github.com/8tentaculos/cssfun/tree/master/example/rasti)**: A simple Rasti application illustrating how to apply **CSSFUN** to style Rasti components. [Try it](https://plnkr.co/plunk/ivxPfUB5szwcuncf).
 - **[Vanilla JS Example](https://github.com/8tentaculos/cssfun/tree/master/example/vanilla)**: A straightforward JavaScript example showing how to use **CSSFUN** for styling HTML components. [Try it](https://plnkr.co/plunk/4ypn83Ru5Z6uwZew).
 - **[Rasti with Server-Side Rendering (SSR) Example](https://github.com/8tentaculos/cssfun/tree/master/example/ssr)**: A Rasti application with server-side rendering using Express, highlighting how to use **CSSFUN** for styling in an SSR environment.
 
 ## License
-CSSFUN is open-source and available under the [MIT License](LICENSE).
+
+**CSSFUN** is open-source and available under the [MIT License](LICENSE).
 
 ## Contributing
+
 Contributions are welcome! Share feature ideas or report bugs on our [GitHub Issues page](https://github.com/8tentaculos/cssfun/issues).

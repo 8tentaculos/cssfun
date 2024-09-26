@@ -22,7 +22,7 @@ Write modular **CSS** within your **JavaScript** code with built-in **themes** a
   and styling in the same file for easier management.
 
 - **Framework-Agnostic** 🌐  
-  **CSSFUN** works with any framework, whether it’s React, Vue, or vanilla JavaScript. At just **2KB**, it adds 
+  **CSSFUN** works with any framework, whether it’s React, Vue, or vanilla JavaScript. At just **1.5KB**, it adds 
   minimal overhead to your projects.
 
 - **No Build Tools Required** 🛠️  

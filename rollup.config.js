@@ -11,7 +11,7 @@ const config = inputFiles.map(inputFile => ({
             format: 'cjs',
             preserveModules: true,
             exports: 'auto',
-            entryFileNames: '[name].js'
+            entryFileNames: '[name].cjs'
         },
         {
             dir: 'es',

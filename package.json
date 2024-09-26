@@ -3,9 +3,20 @@
     "version": "0.0.4",
     "description": "Next-generation CSS-in-JS library",
     "type": "module",
-    "main": "lib/index.js",
+    "main": "lib/index.cjs",
     "module": "es/index.js",
     "browser": "dist/cssfun.min.js",
+    "exports": {
+        ".": {
+            "import": "./es/index.js",
+            "require": "./lib/index.cjs",
+            "default": "./es/index.js"
+        },
+        "./*": {
+            "import": "./es/*",
+            "require": "./lib/*"
+        }
+    },
     "files": [
         "dist",
         "es",
@@ -35,10 +46,10 @@
         "style",
         "sheet",
         "stylesheet",
+        "styles",
         "css",
-        "components",
-        "css in js",
-        "css-in-js"
+        "css-in-js",
+        "components"
     ],
     "devDependencies": {
         "@rollup/plugin-terser": "^0.4.4",

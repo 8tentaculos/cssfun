@@ -199,7 +199,7 @@ class StyleSheet {
      * @returns {String} The instance as a string.
      */
     toString() {
-        const attrs = { ...this.attributes, id : this.id };
+        const attrs = Object.assign({}, this.attributes, { id : this.id });
         const parts = Object.keys(attrs).map(key => ` ${key}="${attrs[key]}"`);
         const nl = StyleSheet.debug ? '\n' : '';
 

@@ -91,33 +91,18 @@ const createTheme = (themes = {}, options = {}) => {
 
         styles = {
             root : {
-                ':where(&)' : {
-                    colorScheme : 'light',
-                    ...cssVars.light
-                },
-                ':where([data-color-scheme="dark"] &)' : {
-                    colorScheme : 'dark',
-                    ...diff.right
-                }
+                ':where(&)' : Object.assign({ colorScheme : 'light' }, cssVars.light),
+                ':where([data-color-scheme="dark"] &)' : Object.assign({ colorScheme : 'dark' }, diff.right),
             },
             '@media (prefers-color-scheme: dark)' : {
-                ':where($root)' : {
-                    colorScheme : 'dark',
-                    ...diff.right
-                },
-                ':where([data-color-scheme="light"] $root)' : {
-                    colorScheme : 'light',
-                    ...diff.left
-                }
+                ':where($root)' : Object.assign({ colorScheme : 'dark' }, diff.right),
+                ':where([data-color-scheme="light"] $root)' : Object.assign({ colorScheme : 'light' }, diff.left)
             }
         };
     } else {
         styles = {
             root : {
-                ':where(&)' : {
-                    colorScheme,
-                    ...makeCssVars(themes[colorScheme], prefix)
-                }
+                ':where(&)' : Object.assign({ colorScheme }, makeCssVars(themes[colorScheme], prefix))
             }
         };
     }

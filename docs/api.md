@@ -129,7 +129,7 @@ from the DOM, if it's present.
 <a name="stylesheet_prefix" id="stylesheet_prefix"></a>
 ### StyleSheet.prefix
 **Kind**: static property of [<code>StyleSheet</code>](#StyleSheet)  
-**Default**: <code>&#x27;fun&#x27;</code>  
+**Default**: <code>fun</code>  
 **Properties**
 
 | Name | Type | Description |
@@ -139,8 +139,7 @@ from the DOM, if it's present.
 <a name="stylesheet_indent" id="stylesheet_indent"></a>
 ### StyleSheet.indent
 **Kind**: static property of [<code>StyleSheet</code>](#StyleSheet)  
-**Default**: <code>&#x27;    &#x27;
-The default is 4 spaces.</code>  
+**Default**: <code>4 spaces</code>  
 **Properties**
 
 | Name | Type | Description |

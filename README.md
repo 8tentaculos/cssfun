@@ -100,7 +100,7 @@ css({
 
 ##### Renders to:
 
-```css
+```html
 <style id="fun-1">
     .fun-1-root-1 {
         background-color: black;
@@ -127,7 +127,7 @@ css({
     ```
 
     ##### Renders to:
-    ```css
+    ```html
     <style id="fun-1">
         .fun-1-button-1 {
             background-color: white;
@@ -158,7 +158,7 @@ css({
     ```
 
     ##### Renders to:
-    ```css
+    ```html
     <style id="fun-1">
         .fun-1-button-1 {
             background-color: white;
@@ -191,7 +191,7 @@ css({
     ```
 
     ##### Renders to:
-    ```css
+    ```html
     <style id="fun-1">
         .fun-1-button-1 {
             background-color: white;
@@ -221,7 +221,7 @@ css({
 
     ##### Renders to:
 
-    ```css
+    ```html
     <style id="fun-1">
         body {
             background-color : black;
@@ -244,7 +244,7 @@ css({
     ```
 
     ##### Renders to:
-    ```css
+    ```html
     <style id="fun-1">
         .fun-1-root-1 a {
             color : black;
@@ -263,7 +263,7 @@ css({
     ```
 
     ##### Renders to:
-    ```css
+    ```html
     <style id="fun-1">
         body {
             background-color : black;

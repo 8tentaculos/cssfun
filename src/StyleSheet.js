@@ -284,15 +284,14 @@ StyleSheet.nestedRegex = /&/g;
 /**
  * @static
  * @property {String} prefix - The class prefix. Used to generate unique class names.
- * @default 'fun'
+ * @default fun
  */
 StyleSheet.prefix = 'fun';
 
 /**
  * @static
  * @property {String} indent - The indent string. Used to format text when debug is enabled. 
- * @default '    '
- * The default is 4 spaces.
+ * @default 4 spaces
  */
 StyleSheet.indent = '    ';
 

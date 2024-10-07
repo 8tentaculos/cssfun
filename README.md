@@ -270,7 +270,28 @@ css({
         }
     </style>
     ```
- 
+
+- **Nested global prefix**
+
+    ```javascript
+    css({
+        root : {
+            '@global a' : {
+                color : 'black'
+            }
+        }
+    }).toString();
+    ```
+
+    ##### Renders to:
+    ```html
+    <style id="fun-1">
+        .fun-1-root-1 a {
+            color : black;
+        }
+    </style>
+    ```
+
 When composed, the first renderer receives the styles object, and the final one outputs the 
 resulting CSS string.  
 

@@ -20,7 +20,6 @@ describe('cssfun', () => {
 
         it('must attach style element to the head', () => {
             const instance = css({ root : { color : 'red' } });
-            instance.attach();
             const style = instance.el;
             expect(style).to.exist;
             expect(style.parentNode).to.be.equal(document.head);
@@ -29,20 +28,17 @@ describe('cssfun', () => {
 
         it('must be rendered as element', () => {
             const instance = css({ root : { color : 'red' } });
-            instance.attach();
             const style = instance.el;
             expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{color:red;}</style>');
         });
  
         it('must be added to the registry', () => {
             const instance = css({ root : { color : 'red' } });
-            instance.attach();
             expect(StyleSheet.registry).to.include(instance);
         });
 
         it('must be removed from head and registry', () => {
             const instance = css({ root : { color : 'red' } });
-            instance.attach();
             instance.destroy();
             expect(document.getElementById(instance.id)).to.not.exist;
             expect(instance.el).to.not.exist;
@@ -55,7 +51,6 @@ describe('cssfun', () => {
                 button : {},
                 '$root $button' : { color : 'blue' }
             });
-            instance.attach();
             const style = instance.el;
             expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1 .fun-1-button-2{color:blue;}</style>');
         });
@@ -69,7 +64,6 @@ describe('cssfun', () => {
                     }
                 }
             });
-            instance.attach();
             const style = instance.el;
             expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{color:red;}.fun-1-root-1:hover{color:blue;}</style>');
         });
@@ -89,7 +83,6 @@ describe('cssfun', () => {
                     }
                 }
             });
-            instance.attach();
             const style = instance.el;
             expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{margin:5px;}.fun-1-button-2{color:red;}.fun-1-button-2:hover{color:blue;}.fun-1-button-2:hover:active{color:green;}</style>');
         });
@@ -105,7 +98,6 @@ describe('cssfun', () => {
                     color : 'black'
                 }
             });
-            instance.attach();
             const style = instance.el;
             expect(style.outerHTML).to.be.equal('<style id="fun-1">body{margin:0;}.fun-1-root-1{color:black;}</style>');
         });
@@ -124,7 +116,6 @@ describe('cssfun', () => {
                     color : 'blue'
                 }
             });
-            instance.attach();
             const style = instance.el;
             expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{color:black;}.fun-1-root-1 a{color:red;}.fun-1-button-2{color:blue;}</style>');
         });
@@ -135,9 +126,21 @@ describe('cssfun', () => {
                     margin : 0
                 }
             });
-            instance.attach();
             const style = instance.el;
             expect(style.outerHTML).to.be.equal('<style id="fun-1">body{margin:0;}</style>');
+        });
+
+        it('must use nested global prefix', () => {
+            const instance = css({
+                root : {
+                    color : 'black',
+                    '@global a' : {
+                        color : 'red'
+                    }
+                }
+            });
+            const style = instance.el;
+            expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{color:black;}.fun-1-root-1 a{color:red;}</style>');
         });
 
         it('must support media queries', () => {
@@ -148,7 +151,6 @@ describe('cssfun', () => {
                     }
                 }
             });
-            instance.attach();
             const style = instance.el;
             expect(style.outerHTML).to.be.equal('<style id="fun-1">@media (min-width: 768px){a{color:red;}}</style>');
         });
@@ -162,7 +164,6 @@ describe('cssfun', () => {
                     }
                 }
             });
-            instance.attach();
             const style = instance.el;
             expect(style.outerHTML).to.be.equal('<style id="fun-1">@media (min-width: 768px){.fun-1-root-1{color:red;}}</style>');
         });

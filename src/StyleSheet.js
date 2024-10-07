@@ -152,8 +152,8 @@ class StyleSheet {
                 return `${parentSelector} ${key}`;
             }
             if (key.match(StyleSheet.globalPrefixRegex)) {
-                // Global prefix.
-                return key.replace(StyleSheet.globalPrefixRegex, '');
+                // Global prefix and nested global prefix.
+                return `${parentSelector ? `${parentSelector} ` : ''}${key.replace(StyleSheet.globalPrefixRegex, '')}`;
             }
             // Nested, references and replace class names with created ones.
             return fromClasses(key)
@@ -166,12 +166,12 @@ class StyleSheet {
             // Parse styles recursively.
             if (value.constructor === Object) {
                 if (key.match(StyleSheet.globalRegex)) {
-                    // Global styles.
+                    // Global and nested global styles.
                     Object.assign(parent || acc, this.parseStyles(value, acc, parentSelector, true));
-                } else if (key.match(StyleSheet.nestedRegex)) {
+                } else if ((key.match(StyleSheet.nestedRegex) || key.match(StyleSheet.globalPrefixRegex)) && parent) {
                     const selector = generateKey(key);
                     parent[selector] = {};
-                    // Nested styles.
+                    // Nested global prefix and nested styles with reference.
                     Object.assign(parent[selector], this.parseStyles(value, parent, selector));
                 } else {
                     const selector = generateKey(key);

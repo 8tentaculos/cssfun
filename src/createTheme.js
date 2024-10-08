@@ -34,16 +34,17 @@ const getDiff = (left, right) => {
  * You can add the `root` class to the root element of your component to theme a single component, 
  * or to the `body` element to theme the entire page.
  * @param {Object} options - An options object.
- * @param {String} options.cssVarsPrefix - The CSS variables prefix. Default is `fun`.
  * @param {String} options.colorScheme - The color scheme. Possible values are `light`, `dark`, and `system`. 
- * @param {Function} options.createStyleSheet - A function used to create a new StyleSheet instance. By default, it uses the `css` function.
- * @param {Object} options.styleSheetOptions - The options object to be used when creating the StyleSheet instance. Default is `system`.  
  * If `light` or `dark` is set, the theme will be fixed to that color scheme, and only the necessary CSS variables 
- * will be generated.
+ * will be generated. The CSS color-scheme property will be set to that value.
  * If `system` is set, the theme will be generated for both light and dark color schemes, 
  * and by default, it will follow the system color scheme.
+ * The CSS color-scheme property will be set to `light` or `dark` accordingly.
  * To override the system color scheme, set the `data-color-scheme` attribute to `light` 
  * or `dark` on a parent element.
+ * @param {String} options.cssVarsPrefix - The CSS variables prefix. Default is `fun`.
+ * @param {Function} options.createStyleSheet - A function used to create a new StyleSheet instance. By default, it uses the `css` function.
+ * @param {Object} options.styleSheetOptions - The options object to be used when creating the StyleSheet instance. Default is `system`.  
  * @returns {StyleSheet} The theme StyleSheet instance. Use `classes.root` to get the theme class name. 
  * Apply it to the element you want to theme. CSS variables will be available for all its descendants.
  * @example

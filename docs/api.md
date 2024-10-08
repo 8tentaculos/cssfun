@@ -205,10 +205,10 @@ Apply it to the element you want to theme. CSS variables will be available for a
 | --- | --- | --- |
 | themes | <code>Object</code> | An object containing light and dark themes: `{ light, dark }`.  Each theme object will be converted to CSS variables available under the `root` class  of the theme StyleSheet instance.   For example: `{ backgroundLevel1: 'black' }` will be converted to `--fun-backgroundLevel1`.   You can add the `root` class to the root element of your component to theme a single component,  or to the `body` element to theme the entire page. |
 | options | <code>Object</code> | An options object. |
+| options.colorScheme | <code>String</code> | The color scheme. Possible values are `light`, `dark`, and `system`.  If `light` or `dark` is set, the theme will be fixed to that color scheme, and only the necessary CSS variables  will be generated. The CSS color-scheme property will be set to that value. If `system` is set, the theme will be generated for both light and dark color schemes,  and by default, it will follow the system color scheme. The CSS color-scheme property will be set to `light` or `dark` accordingly. To override the system color scheme, set the `data-color-scheme` attribute to `light`  or `dark` on a parent element. |
 | options.cssVarsPrefix | <code>String</code> | The CSS variables prefix. Default is `fun`. |
-| options.colorScheme | <code>String</code> | The color scheme. Possible values are `light`, `dark`, and `system`. |
 | options.createStyleSheet | <code>function</code> | A function used to create a new StyleSheet instance. By default, it uses the `css` function. |
-| options.styleSheetOptions | <code>Object</code> | The options object to be used when creating the StyleSheet instance. Default is `system`.   If `light` or `dark` is set, the theme will be fixed to that color scheme, and only the necessary CSS variables  will be generated. If `system` is set, the theme will be generated for both light and dark color schemes,  and by default, it will follow the system color scheme. To override the system color scheme, set the `data-color-scheme` attribute to `light`  or `dark` on a parent element. |
+| options.styleSheetOptions | <code>Object</code> | The options object to be used when creating the StyleSheet instance. Default is `system`. |
 
 **Example**  
 ```js

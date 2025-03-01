@@ -4,7 +4,7 @@
 </picture>
 
 <p align="center">
-Next-Generation <a href="https://en.wikipedia.org/wiki/CSS-in-JS"><strong>CSS-in-JS</strong></a> Library
+Near-Zero Runtime <a href="https://en.wikipedia.org/wiki/CSS-in-JS"><strong>CSS-in-JS</strong></a> Library
 </p>
 
 Write modular **CSS** within your **JavaScript** code with built-in **themes** and **SSR** support.
@@ -16,6 +16,10 @@ Write modular **CSS** within your **JavaScript** code with built-in **themes** a
 [![jsDelivr hits (npm)](https://img.shields.io/jsdelivr/npm/hm/cssfun?style=flat-square)](https://www.jsdelivr.com/package/npm/cssfun)
 
 ## Key Features
+
+- **Near-Zero Runtime** ⚡  
+  Styles are generated when the module is initialized, rather than during component rendering. This eliminates runtime 
+  style generation, improving performance and reducing complexity.
 
 - **Component-Scoped Styles** ✨  
   **CSSFUN** scopes styles to the component, preventing style leakage and promoting modularity. It keeps both logic 

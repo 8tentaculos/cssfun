@@ -44,7 +44,7 @@ const ThemeSelector = Component.create`
                 id="system"
                 name="theme"
                 value="system"
-                checked=${({ options }) => options.theme === 'system'}
+                ${({ options }) => options.theme === 'system' ? 'checked' : ''}
             />
             <label for="system">System</label>
             
@@ -53,7 +53,7 @@ const ThemeSelector = Component.create`
                 id="light"
                 name="theme"
                 value="light"
-                checked=${({ options }) => options.theme === 'light'}
+                ${({ options }) => options.theme === 'light' ? 'checked' : ''}
             />
             <label for="light">Light</label>
             
@@ -62,7 +62,7 @@ const ThemeSelector = Component.create`
                 id="dark"
                 name="theme"
                 value="dark"
-                checked=${({ options }) => options.theme === 'dark'}
+                ${({ options }) => options.theme === 'dark' ? 'checked' : ''}
             />
             <label for="dark">Dark</label>
         </div>

@@ -1,7 +1,7 @@
 {
     "name": "cssfun",
     "version": "0.0.7",
-    "description": "Near-Zero Runtime CSS-in-JS library",
+    "description": "Near-zero runtime CSS-in-JS library",
     "type": "module",
     "main": "lib/index.cjs",
     "module": "es/index.js",

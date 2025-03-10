@@ -4,7 +4,7 @@
 </picture>
 
 <p align="center">
-    <b>Near-Zero Runtime <a href="https://en.wikipedia.org/wiki/CSS-in-JS" target="_blank">CSS-in-JS</a> Library</b>
+    <b>Near-zero runtime <a href="https://en.wikipedia.org/wiki/CSS-in-JS" target="_blank">CSS-in-JS</a> library</b>
 </p>
 
 Write modular **CSS** within your **JavaScript** code with built-in **themes** and **SSR** support.

@@ -52,7 +52,7 @@ const { classes } = css({
         fontSize : '1.5rem',
         color : 'var(--fun-fg3)'
     },
-}).attach();
+});
 
 const App = () => {
     const div = document.createElement('div');

@@ -14,7 +14,7 @@
   "dependencies": {
     "cssfun": "^0.0.7",
     "express": "^4.19.2",
-    "rasti": "^2.1.0-alpha.1"
+    "rasti": "^3.0.0-alpha.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

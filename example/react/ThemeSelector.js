@@ -36,7 +36,7 @@ const { classes } = css({
             borderColor : 'var(--fun-labelHoverBorderColor)'
         }
     },
-}).attach();
+});
 
 function ThemeSelector({ theme, setTheme }) {
     return h`

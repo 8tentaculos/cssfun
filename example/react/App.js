@@ -57,7 +57,7 @@ const { classes } = css({
         fontSize : '1.5rem',
         color : 'var(--fun-fg3)'
     },
-}).attach();
+});
 
 function App() {
     const [theme, setTheme] = useState(

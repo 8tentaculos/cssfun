@@ -33,7 +33,7 @@ const { classes } = css({
             borderColor : 'var(--fun-labelHoverBorderColor)'
         }
     },
-}).attach();
+});
 
 const ThemeSelector = Component.create`
     <div onChange=${{ 'input' : function(ev) { this.options.setTheme(ev.target.value) } }}>

@@ -17,7 +17,7 @@ It supports light, dark, and system color schemes.</p>
 </dd>
 </dl>
 
-<a name="stylesheet" id="stylesheet"></a>
+<a name="stylesheet" id="stylesheet" class="anchor"></a>
 ## StyleSheet
 **Kind**: global class  
 **Properties**
@@ -51,7 +51,7 @@ It supports light, dark, and system color schemes.</p>
         * [.attach()](#stylesheet_attach)
         * [.destroy()](#stylesheet_destroy)
 
-<a name="new_stylesheet_new" id="new_stylesheet_new"></a>
+<a name="new_stylesheet_new" id="new_stylesheet_new" class="anchor"></a>
 ### new StyleSheet(styles, options)
 The StyleSheet class receives at the constructor a styles object and an options
 object and generate a css StyleSheet.  
@@ -84,14 +84,14 @@ const { classes } = instance;
 // Use the classes object to get the class name and use it in your component.
 function Header = () => <h1 className={classes.root}>Hello World</h1>;
 ```
-<a name="stylesheet__generateid" id="stylesheet__generateid"></a>
+<a name="stylesheet__generateid" id="stylesheet__generateid" class="anchor"></a>
 ### styleSheet.generateId() ⇒ <code>String</code>
 Generate a unique identifier. Used for the style element id.
 May be overridden by `options.generateId`.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
 **Returns**: <code>String</code> - The unique identifier.  
-<a name="stylesheet__generateclassname" id="stylesheet__generateclassname"></a>
+<a name="stylesheet__generateclassname" id="stylesheet__generateclassname" class="anchor"></a>
 ### styleSheet.generateClassName(className) ⇒ <code>String</code>
 Generate a unique class name.
 Transform local selectors that are classes to unique class names
@@ -105,28 +105,28 @@ May be overridden by `options.generateClassName`.
 | --- | --- | --- |
 | className | <code>String</code> | The class name. |
 
-<a name="stylesheet__tostring" id="stylesheet__tostring"></a>
+<a name="stylesheet__tostring" id="stylesheet__tostring" class="anchor"></a>
 ### styleSheet.toString() ⇒ <code>String</code>
 Render the StyleSheet as a style element string.
 Used for server-side rendering.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
 **Returns**: <code>String</code> - The instance as a string.  
-<a name="stylesheet__attach" id="stylesheet__attach"></a>
+<a name="stylesheet__attach" id="stylesheet__attach" class="anchor"></a>
 ### styleSheet.attach() ⇒ [<code>StyleSheet</code>](#StyleSheet)
 Add the instance to the registry and if we are in the browser, 
 attach it to the DOM.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
 **Returns**: [<code>StyleSheet</code>](#StyleSheet) - The instance.  
-<a name="stylesheet__destroy" id="stylesheet__destroy"></a>
+<a name="stylesheet__destroy" id="stylesheet__destroy" class="anchor"></a>
 ### styleSheet.destroy() ⇒ [<code>StyleSheet</code>](#StyleSheet)
 Destroy the instance and remove it from the registry and 
 from the DOM, if it's present.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
 **Returns**: [<code>StyleSheet</code>](#StyleSheet) - The instance.  
-<a name="stylesheet_prefix" id="stylesheet_prefix"></a>
+<a name="stylesheet_prefix" id="stylesheet_prefix" class="anchor"></a>
 ### StyleSheet.prefix
 **Kind**: static property of [<code>StyleSheet</code>](#StyleSheet)  
 **Default**: <code>fun</code>  
@@ -136,7 +136,7 @@ from the DOM, if it's present.
 | --- | --- | --- |
 | prefix | <code>String</code> | The class prefix. Used to generate unique class names. |
 
-<a name="stylesheet_indent" id="stylesheet_indent"></a>
+<a name="stylesheet_indent" id="stylesheet_indent" class="anchor"></a>
 ### StyleSheet.indent
 **Kind**: static property of [<code>StyleSheet</code>](#StyleSheet)  
 **Default**: <code>4 spaces</code>  
@@ -146,7 +146,7 @@ from the DOM, if it's present.
 | --- | --- | --- |
 | indent | <code>String</code> | The indent string. Used to format text when debug is enabled. |
 
-<a name="stylesheet_registry" id="stylesheet_registry"></a>
+<a name="stylesheet_registry" id="stylesheet_registry" class="anchor"></a>
 ### StyleSheet.registry
 **Kind**: static property of [<code>StyleSheet</code>](#StyleSheet)  
 **Properties**
@@ -155,7 +155,7 @@ from the DOM, if it's present.
 | --- | --- | --- |
 | registry | <code>Array</code> | The registry array. StyleSheet instances  will be added to this array. |
 
-<a name="stylesheet_uid" id="stylesheet_uid"></a>
+<a name="stylesheet_uid" id="stylesheet_uid" class="anchor"></a>
 ### StyleSheet.uid
 **Kind**: static property of [<code>StyleSheet</code>](#StyleSheet)  
 **Properties**
@@ -164,7 +164,7 @@ from the DOM, if it's present.
 | --- | --- | --- |
 | uid | <code>Number</code> | The unique identifier counter.  It will be incremented for each generated id. |
 
-<a name="stylesheet_debug" id="stylesheet_debug"></a>
+<a name="stylesheet_debug" id="stylesheet_debug" class="anchor"></a>
 ### StyleSheet.debug
 **Kind**: static property of [<code>StyleSheet</code>](#StyleSheet)  
 **Default**: <code>false
@@ -175,24 +175,24 @@ If true, the CSS will be formatted with new lines and indents.</code>
 | --- | --- | --- |
 | debug | <code>Boolean</code> | The debug flag. |
 
-<a name="stylesheet_tostring" id="stylesheet_tostring"></a>
+<a name="stylesheet_tostring" id="stylesheet_tostring" class="anchor"></a>
 ### StyleSheet.toString() ⇒ <code>string</code>
 Render all instances in the registry as a string.
 
 **Kind**: static method of [<code>StyleSheet</code>](#StyleSheet)  
 **Returns**: <code>string</code> - All instances in the registry as a string.  
-<a name="stylesheet_attach" id="stylesheet_attach"></a>
+<a name="stylesheet_attach" id="stylesheet_attach" class="anchor"></a>
 ### StyleSheet.attach()
 Attach all instances in the registry to the DOM.
 
 **Kind**: static method of [<code>StyleSheet</code>](#StyleSheet)  
-<a name="stylesheet_destroy" id="stylesheet_destroy"></a>
+<a name="stylesheet_destroy" id="stylesheet_destroy" class="anchor"></a>
 ### StyleSheet.destroy()
 Destroy all instances in the registry and remove them from 
 it and from the DOM.
 
 **Kind**: static method of [<code>StyleSheet</code>](#StyleSheet)  
-<a name="createtheme" id="createtheme"></a>
+<a name="createtheme" id="createtheme" class="anchor"></a>
 ## createTheme(themes, options) ⇒ [<code>StyleSheet</code>](#StyleSheet)
 The `createTheme` function creates a theme StyleSheet instance.
 It supports light, dark, and system color schemes.
@@ -239,7 +239,7 @@ const { classes } = css({
 // If the system color scheme changes, the button will update automatically.
 const Button = ({ label }) => <button className={classes.button}>{label}</button>;
 ```
-<a name="css" id="css"></a>
+<a name="css" id="css" class="anchor"></a>
 ## css(styles) ⇒ [<code>StyleSheet</code>](#StyleSheet)
 Creates a new StyleSheet instance and attaches it to the DOM.
 

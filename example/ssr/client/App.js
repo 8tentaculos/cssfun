@@ -1,5 +1,5 @@
 
-import { Component, Model } from 'rasti';
+import { Component } from 'rasti';
 import { css } from 'cssfun';
 
 import ThemeSelector from './ThemeSelector.js';
@@ -54,7 +54,7 @@ const { classes } = css({
         fontSize : '1.5rem',
         color : 'var(--fun-fg3)'
     },
-}).attach();
+});
 
 const App = Component.create`
     <div class="${classes.root}">
@@ -63,14 +63,14 @@ const App = Component.create`
             <div class="${classes.cat}">🐱</div>
             <div class="${classes.text}">*waves paw*</div>
         </div>
-        ${() => ThemeSelector.mount({
+        <${ThemeSelector} ${{
             theme : typeof document !== 'undefined' && 
                 document.documentElement.getAttribute('data-color-scheme') || 'system',
             setTheme : (theme) => {
                 typeof document !== 'undefined' && 
                     document.documentElement.setAttribute('data-color-scheme', theme);
             }
-        })}
+        }} />
     </div>
 `;
 

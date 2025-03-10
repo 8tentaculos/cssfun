@@ -32,7 +32,7 @@ const { classes } = css({
             borderColor : 'var(--fun-labelHoverBorderColor)'
         }
     },
-}).attach();
+});
 
 const ThemeSelector = ({ theme, setTheme }) => {
     const div = document.createElement('div');

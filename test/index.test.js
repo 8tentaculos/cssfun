@@ -5,7 +5,6 @@ import { StyleSheet, css, createTheme } from '../src/index.js';
 describe('cssfun', () => {
     beforeEach(() => {
         StyleSheet.destroy();
-        StyleSheet.uid = 0; 
     });
 
     describe('StyleSheet', () => {
@@ -15,7 +14,7 @@ describe('cssfun', () => {
 
         it('instance must be rendered as string', () => {
             const instance = css({ root : { color : 'red' } });
-            expect(instance.toString()).to.be.equal('<style id="fun-1">.fun-1-root-1{color:red;}</style>');
+            expect(instance.toString()).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root{color:red;}</style>`);
         });
 
         it('must attach style element to the head', () => {
@@ -23,13 +22,35 @@ describe('cssfun', () => {
             const style = instance.el;
             expect(style).to.exist;
             expect(style.parentNode).to.be.equal(document.head);
-            expect(document.getElementById(instance.id)).to.exist;
+            expect(document.querySelector(`style[data-fun-uid="${instance.uid}"]`)).to.be.equal(style);
         });
 
         it('must be rendered as element', () => {
             const instance = css({ root : { color : 'red' } });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{color:red;}</style>');
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root{color:red;}</style>`);
+        });
+
+        it('must be instantiated with custom attributes', () => {
+            const instance = css({ root : { color : 'red' } }, { attributes : { id : 'test' } });
+            expect(instance.el.id).to.be.equal('test');
+        });
+
+        it('must override generateUid', () => {
+            const instance = css({ root : { color : 'red' } }, { generateUid() { return this.prefix + '-1'; } });
+            expect(instance.uid).to.be.equal('fun-1');
+            expect(instance.el.outerHTML).to.be.equal(`<style data-fun-uid="fun-1">.${instance.uid}-root{color:red;}</style>`);
+        });
+
+        it('must override generateClassName', () => {
+            const instance = css({ root : { color : 'red' } }, { generateClassName(className) { return `${this.uid}-${className}-test`; } });
+            expect(instance.el.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root-test{color:red;}</style>`);
+        });
+
+        it('must be instantiated with custom prefix', () => {
+            const instance = css({ root : { color : 'red' } }, { prefix : 'test' });
+            expect(instance.uid).to.contain('test');
+            expect(instance.el.outerHTML).to.be.equal(`<style data-test-uid="${instance.uid}">.${instance.uid}-root{color:red;}</style>`);
         });
  
         it('must be added to the registry', () => {
@@ -39,8 +60,10 @@ describe('cssfun', () => {
 
         it('must be removed from head and registry', () => {
             const instance = css({ root : { color : 'red' } });
+            expect(document.querySelector(`style[data-fun-uid="${instance.uid}"]`)).to.exist;
+            expect(StyleSheet.registry).to.include(instance);
             instance.destroy();
-            expect(document.getElementById(instance.id)).to.not.exist;
+            expect(document.querySelector(`style[data-fun-uid="${instance.uid}"]`)).to.not.exist;
             expect(instance.el).to.not.exist;
             expect(StyleSheet.registry).to.not.include(instance);
         });
@@ -52,7 +75,7 @@ describe('cssfun', () => {
                 '$root $button' : { color : 'blue' }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1 .fun-1-button-2{color:blue;}</style>');
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root .${instance.uid}-button{color:blue;}</style>`);
         });
 
         it('must use nested styles', () => {
@@ -65,7 +88,7 @@ describe('cssfun', () => {
                 }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{color:red;}.fun-1-root-1:hover{color:blue;}</style>');
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root{color:red;}.${instance.uid}-root:hover{color:blue;}</style>`);
         });
 
         it('must use deep nested styles', () => {
@@ -84,7 +107,7 @@ describe('cssfun', () => {
                 }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{margin:5px;}.fun-1-button-2{color:red;}.fun-1-button-2:hover{color:blue;}.fun-1-button-2:hover:active{color:green;}</style>');
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root{margin:5px;}.${instance.uid}-button{color:red;}.${instance.uid}-button:hover{color:blue;}.${instance.uid}-button:hover:active{color:green;}</style>`);
         });
 
         it('must use global styles', () => {
@@ -99,7 +122,7 @@ describe('cssfun', () => {
                 }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal('<style id="fun-1">body{margin:0;}.fun-1-root-1{color:black;}</style>');
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">body{margin:0;}.${instance.uid}-root{color:black;}</style>`);
         });
 
         it('must use nested global styles', () => {
@@ -117,7 +140,7 @@ describe('cssfun', () => {
                 }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{color:black;}.fun-1-root-1 a{color:red;}.fun-1-button-2{color:blue;}</style>');
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root{color:black;}.${instance.uid}-root a{color:red;}.${instance.uid}-button{color:blue;}</style>`);
         });
 
         it('must use goblal prefix', () => {
@@ -127,7 +150,7 @@ describe('cssfun', () => {
                 }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal('<style id="fun-1">body{margin:0;}</style>');
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">body{margin:0;}</style>`);
         });
 
         it('must use nested global prefix', () => {
@@ -140,7 +163,7 @@ describe('cssfun', () => {
                 }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal('<style id="fun-1">.fun-1-root-1{color:black;}.fun-1-root-1 a{color:red;}</style>');
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root{color:black;}.${instance.uid}-root a{color:red;}</style>`);
         });
 
         it('must support media queries', () => {
@@ -152,7 +175,7 @@ describe('cssfun', () => {
                 }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal('<style id="fun-1">@media (min-width: 768px){a{color:red;}}</style>');
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">@media (min-width: 768px){a{color:red;}}</style>`);
         });
 
         it('must support classes in media queries', () => {
@@ -165,7 +188,7 @@ describe('cssfun', () => {
                 }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal('<style id="fun-1">@media (min-width: 768px){.fun-1-root-1{color:red;}}</style>');
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">@media (min-width: 768px){.${instance.uid}-root{color:red;}}</style>`);
         });
     });
 

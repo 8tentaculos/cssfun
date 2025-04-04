@@ -1,47 +1,58 @@
 import terser from '@rollup/plugin-terser';
 import glob from 'glob';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const inputFiles = glob.sync('src/**/*.js');
-
-const config = inputFiles.map(inputFile => ({
-    input: inputFile,
-    output: [
-        {
-            dir: 'lib',
-            format: 'cjs',
-            preserveModules: true,
-            exports: 'auto',
-            entryFileNames: '[name].cjs'
-        },
-        {
-            dir: 'es',
-            format: 'esm',
-            preserveModules: true,
-            entryFileNames: '[name].js'
-        }
-    ],
-    plugins: []
-})).concat([
+const config = [
     {
-        input: 'src/index.js',
-        output: {
-            file: 'dist/cssfun.js',
-            format: 'umd',
-            name: 'CSSFUN'
-        },
-        plugins: []
+        input : Object.fromEntries(
+            glob.sync('src/**/*.js').map(file => [
+                // This removes `src/` as well as the file extension from each
+                // file, so e.g. src/nested/foo.js becomes nested/foo
+                path.relative(
+                    'src',
+                    file.slice(0, file.length - path.extname(file).length)
+                ),
+                // This expands the relative paths to absolute paths, so e.g.
+                // src/nested/foo becomes /project/src/nested/foo.js
+                fileURLToPath(new URL(file, import.meta.url))
+            ])
+        ),
+        output : [
+            {
+                dir : 'lib',
+                format : 'cjs',
+                exports : 'auto',
+                entryFileNames : '[name].cjs'
+            },
+            {
+                dir : 'es',
+                format : 'esm',
+                entryFileNames : '[name].js'
+            }
+        ],
+        plugins : []
     },
     {
-        input: 'src/index.js',
-        output: {
-            file: 'dist/cssfun.min.js',
-            format: 'umd',
-            name: 'CSSFUN'
+        input : 'src/index.js',
+        output : {
+            file : 'dist/cssfun.js',
+            format : 'umd',
+            name : 'CSSFUN'
         },
-        plugins: [
+        plugins : []
+    },
+    {
+        input : 'src/index.js',
+        output : {
+            file : 'dist/cssfun.min.js',
+            format : 'umd',
+            name : 'CSSFUN'
+        },
+        plugins : [
             terser()
         ]
     }
-]);
+];
 
 export default config;

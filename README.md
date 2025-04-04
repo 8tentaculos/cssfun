@@ -25,9 +25,8 @@ Write modular **CSS** within your **JavaScript** code with built-in **themes** a
   **CSSFUN** scopes styles to the component, preventing style leakage and promoting modularity. It keeps both logic 
   and styling in the same file for easier management.
 
-- **Framework-Agnostic** 🌐  
-  **CSSFUN** works with any framework, whether it’s React, Vue, or vanilla JavaScript. At just **1.5KB**, it adds 
-  minimal overhead to your projects.
+- **Framework-Agnostic and Lightweight** 🌍  
+  **CSSFUN** is compatible with any environment. At just **1.7KB**, it adds minimal overhead to your projects.
 
 - **No Build Tools Required** 🛠️  
   **CSSFUN** can be used directly in the browser, eliminating the need for complex build tools or configurations.
@@ -105,8 +104,8 @@ css({
 ##### Renders to:
 
 ```html
-<style id="fun-1">
-    .fun-1-root-1 {
+<style data-fun-uid="fun-uwitok">
+    .fun-uwitok-root {
         background-color: black;
     }
 </style>
@@ -132,14 +131,14 @@ css({
 
     ##### Renders to:
     ```html
-    <style id="fun-1">
-        .fun-1-button-1 {
+    <style data-fun-uid="fun-1pxyvx7">
+        .fun-1pxyvx7-button {
             background-color: white;
         }
-        .fun-1-button-1:hover {
+        .fun-1pxyvx7-button:hover {
             background-color: black;
         }
-        .fun-1-button-1 span {
+        .fun-1pxyvx7-button span {
             color: blue;
         }
     </style>
@@ -163,14 +162,14 @@ css({
 
     ##### Renders to:
     ```html
-    <style id="fun-1">
-        .fun-1-button-1 {
+    <style data-fun-uid="fun-169vukw">
+        .fun-169vukw-button {
             background-color: white;
         }
-        .fun-1-button-1:active {
+        .fun-169vukw-button:active {
             background-color: black;
         }
-        .fun-1-button-1:active:hover {
+        .fun-169vukw-button:active:hover {
             background-color: blue;
         }
     </style>
@@ -196,14 +195,14 @@ css({
 
     ##### Renders to:
     ```html
-    <style id="fun-1">
-        .fun-1-button-1 {
+    <style data-fun-uid="fun-2xfpy0">
+        .fun-2xfpy0-button {
             background-color: white;
         }
-        .fun-1-button-1:hover {
+        .fun-2xfpy0-button:hover {
             background-color: black;
         }
-        .fun-1-button-1 span {
+        .fun-2xfpy0-button span {
             color: blue;
         }
     </style>
@@ -226,9 +225,9 @@ css({
     ##### Renders to:
 
     ```html
-    <style id="fun-1">
+    <style data-fun-uid="fun-ml03n3">
         body {
-            background-color : black;
+            background-color: black;
         }
     </style>
     ```
@@ -249,9 +248,9 @@ css({
 
     ##### Renders to:
     ```html
-    <style id="fun-1">
-        .fun-1-root-1 a {
-            color : black;
+    <style data-fun-uid="fun-1eia2eq">
+        .fun-1eia2eq-root a {
+            color: black;
         }
     </style>
     ```
@@ -268,9 +267,9 @@ css({
 
     ##### Renders to:
     ```html
-    <style id="fun-1">
+    <style data-fun-uid="fun-1p1av20">
         body {
-            background-color : black;
+            background-color: black;
         }
     </style>
     ```
@@ -289,9 +288,9 @@ css({
 
     ##### Renders to:
     ```html
-    <style id="fun-1">
-        .fun-1-root-1 a {
-            color : black;
+    <style data-fun-uid="fun-xvd6jj">
+        .fun-xvd6jj-root a {
+            color: black;
         }
     </style>
     ```

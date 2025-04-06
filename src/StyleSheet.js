@@ -61,8 +61,9 @@ class StyleSheet {
         ['prefix', 'generateUid', 'generateClassName', 'attributes', 'renderers'].forEach(key => {
             if (key in options) this[key] = options[key];
         });
-        // Set defaults.
+        // Set default renderers.
         if (!this.renderers) this.renderers = [this.renderStyles, this.parseStyles];
+        // Set default prefix.
         if (!this.prefix) this.prefix = StyleSheet.prefix;
         // Generate the `StyleSheet` unique identifier.
         this.uid = this.generateUid();
@@ -75,7 +76,7 @@ class StyleSheet {
     }
 
     /**
-     * Generate a unique identifier.
+     * Generate a stable unique identifier.
      * May be overridden by `options.generateUid`.
      * @returns {String} The unique identifier.
      */
@@ -106,10 +107,11 @@ class StyleSheet {
     }
 
     /**
-     * Check if we are in the browser.
-     * @returns {Boolean} True if we are in the browser, false otherwise.
+     * Check if we are in the DOM.
+     * @returns {Boolean} True if we are in the DOM, false otherwise.
+     * @private
      */
-    isBrowser() {
+    isDOM() {
         return typeof document !== 'undefined';
     }
 
@@ -261,7 +263,7 @@ class StyleSheet {
             StyleSheet.registry.push(this);
         }
         // If we're in the browser and the style element doesn't exist, create it.
-        if (this.isBrowser() && !document.querySelector(`style[data-${this.prefix}-uid="${this.uid}"]`)) {
+        if (this.isDOM() && !document.querySelector(`style[data-${this.prefix}-uid="${this.uid}"]`)) {
             // Create the style element.
             this.el = document.createElement('style');
 
@@ -291,7 +293,7 @@ class StyleSheet {
             StyleSheet.registry.splice(index, 1);
         }
         // Remove the style element from the DOM.
-        if (this.isBrowser() && this.el) {
+        if (this.isDOM() && this.el) {
             if (this.el.parentNode) this.el.parentNode.removeChild(this.el);
             this.el = null;
         }
@@ -309,28 +311,48 @@ class StyleSheet {
     }
 
     /**
-     * Attach all instances in the registry to the DOM.
-     * @static
-     */
-    static attach() {
-        StyleSheet.registry.forEach(instance => instance.attach());
-    }
-
-    /**
      * Destroy all instances in the registry and remove them from 
      * it and from the DOM.
      * @static
      */
     static destroy() {
-        StyleSheet.registry.forEach(instance => instance.destroy());
+        StyleSheet.registry.slice().forEach(instance => instance.destroy());
     }
 }
 
-// Regular expressions.
+/**
+ * Regular expressions to match class names.
+ * @static
+ * @private
+ */
 StyleSheet.classRegex = /^\w+$/;
+
+/**
+ * Regular expression to match global styles.
+ * @static
+ * @private
+ */
 StyleSheet.globalRegex = /^@global$/;
+
+/**
+ * Regular expression to match global styles with a prefix.
+ * @static
+ * @private
+ */
 StyleSheet.globalPrefixRegex = /^@global\s+/;
+
+/**
+ * Regular expression to match references to other class names.
+ * @static
+ * @private
+ */
 StyleSheet.referenceRegex = /\$(\w+)/g;
+
+/**
+ * Regular expression to match nested styles.
+ * @static
+ * @private
+ */
 StyleSheet.nestedRegex = /&/g;
 
 /**
@@ -343,7 +365,7 @@ StyleSheet.prefix = 'fun';
 /**
  * @static
  * @property {String} indent - The indent string. Used to format text when debug is enabled. 
- * @default 4 spaces
+ * @default '    '
  */
 StyleSheet.indent = '    ';
 
@@ -356,9 +378,9 @@ StyleSheet.registry = [];
 
 /**
  * @static
- * @property {Boolean} debug - The debug flag.
+ * @property {Boolean} debug - The debug flag. If true, the styles will be formatted with
+ * indentation and new lines.
  * @default false
- * If true, the CSS will be formatted with new lines and indents.
  */
 StyleSheet.debug = false;
 

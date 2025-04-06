@@ -10,7 +10,7 @@
 <dl>
 <dt><a href="#createtheme">createTheme(themes, options)</a> ⇒ <code><a href="#StyleSheet">StyleSheet</a></code></dt>
 <dd><p>The <code>createTheme</code> function creates a theme StyleSheet instance.
-It supports light, dark, and system color schemes.</p>
+It supports light, dark, system, and normal color schemes.</p>
 </dd>
 <dt><a href="#css">css(styles)</a> ⇒ <code><a href="#StyleSheet">StyleSheet</a></code></dt>
 <dd><p>Creates a new StyleSheet instance and attaches it to the DOM.</p>
@@ -37,7 +37,6 @@ It supports light, dark, and system color schemes.</p>
     * _instance_
         * [.generateUid()](#stylesheet__generateuid) ⇒ <code>String</code>
         * [.generateClassName(className)](#stylesheet__generateclassname) ⇒ <code>String</code>
-        * [.isBrowser()](#stylesheet__isbrowser) ⇒ <code>Boolean</code>
         * [.render()](#stylesheet__render) ⇒ <code>String</code>
         * [.toString()](#stylesheet__tostring) ⇒ <code>String</code>
         * [.attach()](#stylesheet__attach) ⇒ [<code>StyleSheet</code>](#StyleSheet)
@@ -48,7 +47,6 @@ It supports light, dark, and system color schemes.</p>
         * [.registry](#stylesheet_registry)
         * [.debug](#stylesheet_debug)
         * [.toString()](#stylesheet_tostring) ⇒ <code>string</code>
-        * [.attach()](#stylesheet_attach)
         * [.destroy()](#stylesheet_destroy)
 
 <a name="new_stylesheet_new" id="new_stylesheet_new" class="anchor"></a>
@@ -86,7 +84,7 @@ function Header = () => <h1 className={classes.root}>Hello World</h1>;
 ```
 <a name="stylesheet__generateuid" id="stylesheet__generateuid" class="anchor"></a>
 ### styleSheet.generateUid() ⇒ <code>String</code>
-Generate a unique identifier.
+Generate a stable unique identifier.
 May be overridden by `options.generateUid`.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
@@ -105,12 +103,6 @@ May be overridden by `options.generateClassName`.
 | --- | --- | --- |
 | className | <code>String</code> | The class name. |
 
-<a name="stylesheet__isbrowser" id="stylesheet__isbrowser" class="anchor"></a>
-### styleSheet.isBrowser() ⇒ <code>Boolean</code>
-Check if we are in the browser.
-
-**Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
-**Returns**: <code>Boolean</code> - True if we are in the browser, false otherwise.  
 <a name="stylesheet__render" id="stylesheet__render" class="anchor"></a>
 ### styleSheet.render() ⇒ <code>String</code>
 Apply the renderers to the styles object.
@@ -152,7 +144,7 @@ from the DOM, if it's present.
 <a name="stylesheet_indent" id="stylesheet_indent" class="anchor"></a>
 ### StyleSheet.indent
 **Kind**: static property of [<code>StyleSheet</code>](#StyleSheet)  
-**Default**: <code>4 spaces</code>  
+**Default**: <code>&#x27;    &#x27;</code>  
 **Properties**
 
 | Name | Type | Description |
@@ -171,13 +163,12 @@ from the DOM, if it's present.
 <a name="stylesheet_debug" id="stylesheet_debug" class="anchor"></a>
 ### StyleSheet.debug
 **Kind**: static property of [<code>StyleSheet</code>](#StyleSheet)  
-**Default**: <code>false
-If true, the CSS will be formatted with new lines and indents.</code>  
+**Default**: <code>false</code>  
 **Properties**
 
 | Name | Type | Description |
 | --- | --- | --- |
-| debug | <code>Boolean</code> | The debug flag. |
+| debug | <code>Boolean</code> | The debug flag. If true, the styles will be formatted with indentation and new lines. |
 
 <a name="stylesheet_tostring" id="stylesheet_tostring" class="anchor"></a>
 ### StyleSheet.toString() ⇒ <code>string</code>
@@ -185,11 +176,6 @@ Render all instances in the registry as a string.
 
 **Kind**: static method of [<code>StyleSheet</code>](#StyleSheet)  
 **Returns**: <code>string</code> - All instances in the registry as a string.  
-<a name="stylesheet_attach" id="stylesheet_attach" class="anchor"></a>
-### StyleSheet.attach()
-Attach all instances in the registry to the DOM.
-
-**Kind**: static method of [<code>StyleSheet</code>](#StyleSheet)  
 <a name="stylesheet_destroy" id="stylesheet_destroy" class="anchor"></a>
 ### StyleSheet.destroy()
 Destroy all instances in the registry and remove them from 
@@ -199,7 +185,7 @@ it and from the DOM.
 <a name="createtheme" id="createtheme" class="anchor"></a>
 ## createTheme(themes, options) ⇒ [<code>StyleSheet</code>](#StyleSheet)
 The `createTheme` function creates a theme StyleSheet instance.
-It supports light, dark, and system color schemes.
+It supports light, dark, system, and normal color schemes.
 
 **Kind**: global function  
 **Returns**: [<code>StyleSheet</code>](#StyleSheet) - The theme StyleSheet instance. Use `classes.root` to get the theme class name. 
@@ -207,9 +193,9 @@ Apply it to the element you want to theme. CSS variables will be available for a
 
 | Param | Type | Description |
 | --- | --- | --- |
-| themes | <code>Object</code> | An object containing light and dark themes: `{ light, dark }`.  Each theme object will be converted to CSS variables available under the `root` class  of the theme StyleSheet instance.   For example: `{ backgroundLevel1: 'black' }` will be converted to `--fun-backgroundLevel1`.   You can add the `root` class to the root element of your component to theme a single component,  or to the `body` element to theme the entire page. |
+| themes | <code>Object</code> | An object containing `light`, `dark`, and optionally `normal` themes: `{ light, dark }`.  Each theme object will be converted to CSS variables available under the `root` class  of the theme StyleSheet instance.   For example: `{ backgroundLevel1 : 'black' }` will be converted to `--fun-backgroundLevel1`.   You can add the `root` class to the root element of your component to theme a single component,  or to the `body` element to theme the entire page. |
 | options | <code>Object</code> | An options object. |
-| options.colorScheme | <code>String</code> | The color scheme. Possible values are `light`, `dark`, and `system`.  If `light` or `dark` is set, the theme will be fixed to that color scheme, and only the necessary CSS variables  will be generated. The CSS color-scheme property will be set to that value. If `system` is set, the theme will be generated for both light and dark color schemes,  and by default, it will follow the system color scheme. The CSS color-scheme property will be set to `light` or `dark` accordingly. To override the system color scheme, set the `data-color-scheme` attribute to `light`  or `dark` on a parent element. |
+| options.colorScheme | <code>String</code> | The color scheme. Possible values are `light`, `dark`, `system`, and `normal`.  If `light` or `dark` is set, the theme will be fixed to that color scheme, and only the necessary CSS variables  will be generated. The CSS color-scheme property will be set to that value. If `system` is set, the theme will be generated for both light and dark color schemes,  and by default, it will follow the system color scheme. The CSS color-scheme property will be set to `light` or `dark` accordingly. To override the system color scheme, set the `data-color-scheme` attribute to `light`  or `dark` on a parent element. If `normal` is set, the `normal` theme will be used, and the CSS color-scheme property  will be set to `normal`. |
 | options.cssVarsPrefix | <code>String</code> | The CSS variables prefix. Default is `fun`. |
 | options.createStyleSheet | <code>function</code> | A function used to create a new StyleSheet instance. By default, it uses the `css` function. |
 | options.styleSheetOptions | <code>Object</code> | The options object to be used when creating the StyleSheet instance. Default is `system`. |

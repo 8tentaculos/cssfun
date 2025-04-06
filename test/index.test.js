@@ -25,6 +25,17 @@ describe('cssfun', () => {
             expect(document.querySelector(`style[data-fun-uid="${instance.uid}"]`)).to.be.equal(style);
         });
 
+        it('must attach style element once', () => {
+            const instance = css({ root : { color : 'red' } });
+            const style = instance.el;
+            expect(style).to.exist;
+            expect(document.querySelectorAll(`style[data-fun-uid="${instance.uid}"]`).length).to.be.equal(1);
+            instance.attach();
+            expect(document.querySelectorAll('style').length).to.be.equal(1);
+            instance.destroy();
+            expect(document.querySelectorAll('style').length).to.be.equal(0);
+        });
+
         it('must be rendered as element', () => {
             const instance = css({ root : { color : 'red' } });
             const style = instance.el;

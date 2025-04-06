@@ -24,17 +24,17 @@ const getDiff = (left, right) => {
 
 /**
  * The `createTheme` function creates a theme StyleSheet instance.
- * It supports light, dark, and system color schemes.
+ * It supports light, dark, system, and normal color schemes.
  * @module
  * @function
- * @param {Object} themes - An object containing light and dark themes: `{ light, dark }`. 
+ * @param {Object} themes - An object containing `light`, `dark`, and optionally `normal` themes: `{ light, dark }`. 
  * Each theme object will be converted to CSS variables available under the `root` class 
  * of the theme StyleSheet instance.  
- * For example: `{ backgroundLevel1: 'black' }` will be converted to `--fun-backgroundLevel1`.  
+ * For example: `{ backgroundLevel1 : 'black' }` will be converted to `--fun-backgroundLevel1`.  
  * You can add the `root` class to the root element of your component to theme a single component, 
  * or to the `body` element to theme the entire page.
  * @param {Object} options - An options object.
- * @param {String} options.colorScheme - The color scheme. Possible values are `light`, `dark`, and `system`. 
+ * @param {String} options.colorScheme - The color scheme. Possible values are `light`, `dark`, `system`, and `normal`. 
  * If `light` or `dark` is set, the theme will be fixed to that color scheme, and only the necessary CSS variables 
  * will be generated. The CSS color-scheme property will be set to that value.
  * If `system` is set, the theme will be generated for both light and dark color schemes, 
@@ -42,6 +42,8 @@ const getDiff = (left, right) => {
  * The CSS color-scheme property will be set to `light` or `dark` accordingly.
  * To override the system color scheme, set the `data-color-scheme` attribute to `light` 
  * or `dark` on a parent element.
+ * If `normal` is set, the `normal` theme will be used, and the CSS color-scheme property 
+ * will be set to `normal`.
  * @param {String} options.cssVarsPrefix - The CSS variables prefix. Default is `fun`.
  * @param {Function} options.createStyleSheet - A function used to create a new StyleSheet instance. By default, it uses the `css` function.
  * @param {Object} options.styleSheetOptions - The options object to be used when creating the StyleSheet instance. Default is `system`.  

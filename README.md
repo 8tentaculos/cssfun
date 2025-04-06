@@ -25,7 +25,7 @@ Write modular **CSS** within your **JavaScript** code with built-in **themes** a
   **CSSFUN** scopes styles to the component, preventing style leakage and promoting modularity. It keeps both logic 
   and styling in the same file for easier management.
 
-- **Framework-Agnostic and Lightweight** 🌍  
+- **Framework-Agnostic and Lightweight** 🌐  
   **CSSFUN** is compatible with any environment. At just **1.7KB**, it adds minimal overhead to your projects.
 
 - **No Build Tools Required** 🛠️  

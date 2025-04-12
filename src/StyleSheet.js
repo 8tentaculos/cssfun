@@ -259,7 +259,7 @@ class StyleSheet {
      */
     attach() {
         // Add the instance to the registry if it's not already there.
-        if (StyleSheet.registry.indexOf(this) === -1) {
+        if (!StyleSheet.registry.some(({ uid }) => uid === this.uid)) {
             StyleSheet.registry.push(this);
         }
         // If we're in the browser and the style element doesn't exist, create it.
@@ -292,11 +292,15 @@ class StyleSheet {
         if (index > -1) {
             StyleSheet.registry.splice(index, 1);
         }
-        // Remove the style element from the DOM.
-        if (this.isBrowser() && this.el) {
-            if (this.el.parentNode) this.el.parentNode.removeChild(this.el);
+
+        if (this.el) {
+            // Remove the style element from the DOM.
+            if (this.el.parentNode) {
+                this.el.parentNode.removeChild(this.el);
+            }
+            // Remove the reference to the style element.
             this.el = null;
-        }
+        } 
 
         return this;
     }

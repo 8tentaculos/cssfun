@@ -5,6 +5,8 @@ import { StyleSheet, css, createTheme } from '../src/index.js';
 describe('cssfun', () => {
     beforeEach(() => {
         StyleSheet.destroy();
+        document.body.className = '';
+        document.documentElement.removeAttribute('data-color-scheme', 'dark');
     });
 
     describe('StyleSheet', () => {
@@ -17,7 +19,7 @@ describe('cssfun', () => {
             expect(instance.toString()).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root{color:red;}</style>`);
         });
 
-        it('must attach style element to the head', () => {
+        it('must add style element to the head', () => {
             const instance = css({ root : { color : 'red' } });
             const style = instance.el;
             expect(style).to.exist;
@@ -25,15 +27,43 @@ describe('cssfun', () => {
             expect(document.querySelector(`style[data-fun-uid="${instance.uid}"]`)).to.be.equal(style);
         });
 
-        it('must attach style element once', () => {
+        it('must add style element once', () => {
             const instance = css({ root : { color : 'red' } });
-            const style = instance.el;
-            expect(style).to.exist;
             expect(document.querySelectorAll(`style[data-fun-uid="${instance.uid}"]`).length).to.be.equal(1);
             instance.attach();
             expect(document.querySelectorAll('style').length).to.be.equal(1);
+            css({ root : { color : 'red' } });
+            expect(document.querySelectorAll('style').length).to.be.equal(1);
+        });
+
+        it('must remove style element', () => {
+            const instance = css({ root : { color : 'red' } });
+            expect(document.querySelectorAll(`style[data-fun-uid="${instance.uid}"]`).length).to.be.equal(1);
             instance.destroy();
             expect(document.querySelectorAll('style').length).to.be.equal(0);
+        });
+
+        it('must be added to the registry', () => {
+            const instance = css({ root : { color : 'red' } });
+            expect(StyleSheet.registry).to.include(instance);
+            expect(StyleSheet.registry.length).to.be.equal(1);
+        });
+
+        it('must be added to the registry once', () => {
+            const instance = css({ root : { color : 'red' } });
+            expect(StyleSheet.registry.length).to.be.equal(1);
+            instance.attach();
+            expect(StyleSheet.registry.length).to.be.equal(1);
+            css({ root : { color : 'red' } });
+            expect(StyleSheet.registry.length).to.be.equal(1);
+        });
+
+        it('must be removed registry', () => {
+            const instance = css({ root : { color : 'red' } });
+            expect(StyleSheet.registry).to.include(instance);
+            instance.destroy();
+            expect(StyleSheet.registry).to.not.include(instance);
+            expect(StyleSheet.registry.length).to.be.equal(0);
         });
 
         it('must be rendered as element', () => {
@@ -45,6 +75,12 @@ describe('cssfun', () => {
         it('must be instantiated with custom attributes', () => {
             const instance = css({ root : { color : 'red' } }, { attributes : { id : 'test' } });
             expect(instance.el.id).to.be.equal('test');
+        });
+
+        it('must generate stable UIDs', () => {
+            const instance = css({ root : { color : 'red' } });
+            const instance2 = css({ root : { color : 'red' } });
+            expect(instance.uid).to.be.equal(instance2.uid);
         });
 
         it('must override generateUid', () => {
@@ -62,21 +98,6 @@ describe('cssfun', () => {
             const instance = css({ root : { color : 'red' } }, { prefix : 'test' });
             expect(instance.uid).to.contain('test');
             expect(instance.el.outerHTML).to.be.equal(`<style data-test-uid="${instance.uid}">.${instance.uid}-root{color:red;}</style>`);
-        });
- 
-        it('must be added to the registry', () => {
-            const instance = css({ root : { color : 'red' } });
-            expect(StyleSheet.registry).to.include(instance);
-        });
-
-        it('must be removed from head and registry', () => {
-            const instance = css({ root : { color : 'red' } });
-            expect(document.querySelector(`style[data-fun-uid="${instance.uid}"]`)).to.exist;
-            expect(StyleSheet.registry).to.include(instance);
-            instance.destroy();
-            expect(document.querySelector(`style[data-fun-uid="${instance.uid}"]`)).to.not.exist;
-            expect(instance.el).to.not.exist;
-            expect(StyleSheet.registry).to.not.include(instance);
         });
 
         it('must use class references', () => {
@@ -224,14 +245,30 @@ describe('cssfun', () => {
             expect(theme).to.be.instanceOf(StyleSheet);
         });
 
-        it('must create a new theme with options', () => {
+        it('must create a new theme with light color scheme', () => {
             const theme = createTheme({}, { colorScheme : 'light' });
             expect(theme).to.be.instanceOf(StyleSheet);
+            document.body.classList.add(theme.classes.root);
+            expect(getComputedStyle(document.body).getPropertyValue('color-scheme')).to.be.equal('light');
         });
 
-        it('must create a new theme with light and dark themes', () => {
+        it('must create a new theme with light and dark color schemes', () => {
             const theme = createTheme({ light : { color : 'red' }, dark : { color : 'blue' } });
             expect(theme).to.be.instanceOf(StyleSheet);
+            document.body.classList.add(theme.classes.root);
+            expect(getComputedStyle(document.body).getPropertyValue('--fun-color')).to.be.equal('red');
+            expect(getComputedStyle(document.body).getPropertyValue('color-scheme')).to.be.equal('light');
+            document.documentElement.setAttribute('data-color-scheme', 'dark');
+            expect(getComputedStyle(document.body).getPropertyValue('--fun-color')).to.be.equal('blue');
+            expect(getComputedStyle(document.body).getPropertyValue('color-scheme')).to.be.equal('dark');
+        });
+
+        it('must create a new theme with normal color scheme', () => {
+            const theme = createTheme({ normal : { color : 'red' } }, { colorScheme : 'normal' });
+            expect(theme).to.be.instanceOf(StyleSheet);
+            document.body.classList.add(theme.classes.root);
+            expect(getComputedStyle(document.body).getPropertyValue('--fun-color')).to.be.equal('red');
+            expect(getComputedStyle(document.body).getPropertyValue('color-scheme')).to.be.equal('normal');
         });
     });
 });

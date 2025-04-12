@@ -257,7 +257,7 @@ describe('cssfun', () => {
             expect(theme).to.be.instanceOf(StyleSheet);
             document.body.classList.add(theme.classes.root);
             expect(getComputedStyle(document.body).getPropertyValue('--fun-color')).to.be.equal('red');
-            expect(getComputedStyle(document.body).getPropertyValue('color-scheme')).to.be.equal('light');
+            expect(getComputedStyle(document.body).getPropertyValue('color-scheme')).to.be.equal('light dark');
             document.documentElement.setAttribute('data-color-scheme', 'dark');
             expect(getComputedStyle(document.body).getPropertyValue('--fun-color')).to.be.equal('blue');
             expect(getComputedStyle(document.body).getPropertyValue('color-scheme')).to.be.equal('dark');

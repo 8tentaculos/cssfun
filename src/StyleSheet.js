@@ -1,6 +1,8 @@
 const camelizedToDashed = str => str.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
 const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
 
+const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'shouldAddToDOM', 'attributes', 'renderers'];
+
 /**
  * The StyleSheet class receives at the constructor a styles object and an options
  * object and generate a css StyleSheet.  
@@ -28,6 +30,7 @@ const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
  * StyleSheet instance. These methods will be bound to the instance before they are invoked.
  * By default, `StyleSheet` are rendered using the built-in renderers: 
  * `['parseStyles', 'renderStyles']`.
+ * @param {Function} options.shouldAddToDOM - The function to determine if the StyleSheet should be added to the DOM.
  * @example
  * // Create a new StyleSheet instance with a styles object.
  * const instance = new StyleSheet({
@@ -58,7 +61,7 @@ class StyleSheet {
         // Original class names object.
         this.classes = {};
         // Set options on the instance.
-        ['prefix', 'generateUid', 'generateClassName', 'attributes', 'renderers'].forEach(key => {
+        styleSheetOptions.forEach(key => {
             if (key in options) this[key] = options[key];
         });
         // Set default renderers.
@@ -104,15 +107,6 @@ class StyleSheet {
      */
     generateClassName(className) {
         return `${this.uid}-${className}`;
-    }
-
-    /**
-     * Check if we are in the browser.
-     * @returns {Boolean} True if we are in the browser, false otherwise.
-     * @private
-     */
-    isBrowser() {
-        return typeof document !== 'undefined';
     }
 
     /**
@@ -253,6 +247,18 @@ class StyleSheet {
     }
 
     /**
+     * Check if the StyleSheet should be added to the DOM.
+     * By default, it returns true if running in a browser environment and no style element
+     * with the same `data-fun-uid` attribute exists in the DOM.
+     * This prevents duplicate style elements and ensures proper behavior for server-side rendering.
+     * May be overridden by `options.shouldAddToDOM`.
+     * @returns {Boolean} True if the StyleSheet should be added to the DOM, false otherwise.
+     */
+    shouldAddToDOM() {
+        return typeof document !== 'undefined' && !document.querySelector(`style[data-${this.prefix}-uid="${this.uid}"]`);
+    }
+
+    /**
      * Add the instance to the registry and if we are in the browser, 
      * attach it to the DOM.
      * @returns {StyleSheet} The instance.
@@ -263,7 +269,7 @@ class StyleSheet {
             StyleSheet.registry.push(this);
         }
         // If we're in the browser and the style element doesn't exist, create it.
-        if (this.isBrowser() && !document.querySelector(`style[data-${this.prefix}-uid="${this.uid}"]`)) {
+        if (this.shouldAddToDOM()) {
             // Create the style element.
             this.el = document.createElement('style');
 

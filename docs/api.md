@@ -39,6 +39,7 @@ It supports light, dark, system, and normal color schemes.</p>
         * [.generateClassName(className)](#stylesheet__generateclassname) ⇒ <code>String</code>
         * [.render()](#stylesheet__render) ⇒ <code>String</code>
         * [.toString()](#stylesheet__tostring) ⇒ <code>String</code>
+        * [.shouldAddToDOM()](#stylesheet__shouldaddtodom) ⇒ <code>Boolean</code>
         * [.attach()](#stylesheet__attach) ⇒ [<code>StyleSheet</code>](#StyleSheet)
         * [.destroy()](#stylesheet__destroy) ⇒ [<code>StyleSheet</code>](#StyleSheet)
     * _static_
@@ -66,6 +67,7 @@ server-side rendering.
 | options.generateClassName | <code>function</code> | The function to generate class names.  This class name will be used to generate the unique class names for scoped styles. |
 | options.attributes | <code>Object</code> | The attributes object. This attributes will be added  to the `<style>` element. |
 | options.renderers | <code>Array</code> | The array of renderers.  Renderers are functions that transform style objects into CSS strings.     When composed, the first renderer receives the styles object, and the final one outputs the  resulting CSS string.   Elements in the `renderers` array can be either functions or strings that reference methods of the  StyleSheet instance. These methods will be bound to the instance before they are invoked. By default, `StyleSheet` are rendered using the built-in renderers:  `['parseStyles', 'renderStyles']`. |
+| options.shouldAddToDOM | <code>function</code> | The function to determine if the StyleSheet should be added to the DOM. |
 
 **Example**  
 ```js
@@ -117,6 +119,16 @@ Used for server-side rendering.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
 **Returns**: <code>String</code> - The instance as a string.  
+<a name="stylesheet__shouldaddtodom" id="stylesheet__shouldaddtodom" class="anchor"></a>
+### styleSheet.shouldAddToDOM() ⇒ <code>Boolean</code>
+Check if the StyleSheet should be added to the DOM.
+By default, it returns true if running in a browser environment and no style element
+with the same `data-fun-uid` attribute exists in the DOM.
+This prevents duplicate style elements and ensures proper behavior for server-side rendering.
+May be overridden by `options.shouldAddToDOM`.
+
+**Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
+**Returns**: <code>Boolean</code> - True if the StyleSheet should be added to the DOM, false otherwise.  
 <a name="stylesheet__attach" id="stylesheet__attach" class="anchor"></a>
 ### styleSheet.attach() ⇒ [<code>StyleSheet</code>](#StyleSheet)
 Add the instance to the registry and if we are in the browser, 

@@ -107,11 +107,11 @@ class StyleSheet {
     }
 
     /**
-     * Check if we are in the DOM.
-     * @returns {Boolean} True if we are in the DOM, false otherwise.
+     * Check if we are in the browser.
+     * @returns {Boolean} True if we are in the browser, false otherwise.
      * @private
      */
-    isDOM() {
+    isBrowser() {
         return typeof document !== 'undefined';
     }
 
@@ -263,7 +263,7 @@ class StyleSheet {
             StyleSheet.registry.push(this);
         }
         // If we're in the browser and the style element doesn't exist, create it.
-        if (this.isDOM() && !document.querySelector(`style[data-${this.prefix}-uid="${this.uid}"]`)) {
+        if (this.isBrowser() && !document.querySelector(`style[data-${this.prefix}-uid="${this.uid}"]`)) {
             // Create the style element.
             this.el = document.createElement('style');
 
@@ -293,7 +293,7 @@ class StyleSheet {
             StyleSheet.registry.splice(index, 1);
         }
         // Remove the style element from the DOM.
-        if (this.isDOM() && this.el) {
+        if (this.isBrowser() && this.el) {
             if (this.el.parentNode) this.el.parentNode.removeChild(this.el);
             this.el = null;
         }

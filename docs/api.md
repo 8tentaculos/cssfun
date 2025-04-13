@@ -9,8 +9,14 @@
 
 <dl>
 <dt><a href="#createtheme">createTheme(themes, options)</a> ⇒ <code><a href="#StyleSheet">StyleSheet</a></code></dt>
-<dd><p>The <code>createTheme</code> function creates a theme StyleSheet instance.
-It supports light, dark, system, and normal color schemes.</p>
+<dd><p>The <code>createTheme</code> function generates a theme StyleSheet instance with CSS variables 
+based on the provided themes and options. It supports multiple color schemes, 
+including <code>light</code>, <code>dark</code>, <code>light dark</code>, and <code>normal</code>. </p>
+<p>The <code>themes</code> object defines the styles for these color schemes. Each key in the object 
+corresponds to a color scheme (<code>light</code>, <code>dark</code>, <code>normal</code>), and its value is an object 
+containing key-value pairs that will be converted into CSS variables. Nested keys are 
+concatenated with <code>-</code> to form the variable name. For example, <code>{ light : { colors : { primary : &#39;blue&#39; } } }</code> 
+generates <code>--fun-colors-primary : blue</code>.</p>
 </dd>
 <dt><a href="#css">css(styles)</a> ⇒ <code><a href="#StyleSheet">StyleSheet</a></code></dt>
 <dd><p>Creates a new StyleSheet instance and attaches it to the DOM.</p>
@@ -39,6 +45,7 @@ It supports light, dark, system, and normal color schemes.</p>
         * [.generateClassName(className)](#stylesheet__generateclassname) ⇒ <code>String</code>
         * [.render()](#stylesheet__render) ⇒ <code>String</code>
         * [.toString()](#stylesheet__tostring) ⇒ <code>String</code>
+        * [.shouldAddToDOM()](#stylesheet__shouldaddtodom) ⇒ <code>Boolean</code>
         * [.attach()](#stylesheet__attach) ⇒ [<code>StyleSheet</code>](#StyleSheet)
         * [.destroy()](#stylesheet__destroy) ⇒ [<code>StyleSheet</code>](#StyleSheet)
     * _static_
@@ -66,6 +73,7 @@ server-side rendering.
 | options.generateClassName | <code>function</code> | The function to generate class names.  This class name will be used to generate the unique class names for scoped styles. |
 | options.attributes | <code>Object</code> | The attributes object. This attributes will be added  to the `<style>` element. |
 | options.renderers | <code>Array</code> | The array of renderers.  Renderers are functions that transform style objects into CSS strings.     When composed, the first renderer receives the styles object, and the final one outputs the  resulting CSS string.   Elements in the `renderers` array can be either functions or strings that reference methods of the  StyleSheet instance. These methods will be bound to the instance before they are invoked. By default, `StyleSheet` are rendered using the built-in renderers:  `['parseStyles', 'renderStyles']`. |
+| options.shouldAddToDOM | <code>function</code> | The function to determine if the StyleSheet should be added to the DOM. |
 
 **Example**  
 ```js
@@ -117,6 +125,16 @@ Used for server-side rendering.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
 **Returns**: <code>String</code> - The instance as a string.  
+<a name="stylesheet__shouldaddtodom" id="stylesheet__shouldaddtodom" class="anchor"></a>
+### styleSheet.shouldAddToDOM() ⇒ <code>Boolean</code>
+Check if the StyleSheet should be added to the DOM.
+By default, it returns true if running in a browser environment and no style element
+with the same `data-fun-uid` attribute exists in the DOM.
+This prevents duplicate style elements and ensures proper behavior for server-side rendering.
+May be overridden by `options.shouldAddToDOM`.
+
+**Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
+**Returns**: <code>Boolean</code> - True if the StyleSheet should be added to the DOM, false otherwise.  
 <a name="stylesheet__attach" id="stylesheet__attach" class="anchor"></a>
 ### styleSheet.attach() ⇒ [<code>StyleSheet</code>](#StyleSheet)
 Add the instance to the registry and if we are in the browser, 
@@ -184,49 +202,61 @@ it and from the DOM.
 **Kind**: static method of [<code>StyleSheet</code>](#StyleSheet)  
 <a name="createtheme" id="createtheme" class="anchor"></a>
 ## createTheme(themes, options) ⇒ [<code>StyleSheet</code>](#StyleSheet)
-The `createTheme` function creates a theme StyleSheet instance.
-It supports light, dark, system, and normal color schemes.
+The `createTheme` function generates a theme StyleSheet instance with CSS variables 
+based on the provided themes and options. It supports multiple color schemes, 
+including `light`, `dark`, `light dark`, and `normal`. 
+
+The `themes` object defines the styles for these color schemes. Each key in the object 
+corresponds to a color scheme (`light`, `dark`, `normal`), and its value is an object 
+containing key-value pairs that will be converted into CSS variables. Nested keys are 
+concatenated with `-` to form the variable name. For example, `{ light : { colors : { primary : 'blue' } } }` 
+generates `--fun-colors-primary : blue`.
 
 **Kind**: global function  
 **Returns**: [<code>StyleSheet</code>](#StyleSheet) - The theme StyleSheet instance. Use `classes.root` to get the theme class name. 
-Apply it to the element you want to theme. CSS variables will be available for all its descendants.  
+Apply this class to the element you want to theme. The CSS variables will be available for all 
+its descendants.  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| themes | <code>Object</code> | An object containing `light`, `dark`, and optionally `normal` themes: `{ light, dark }`.  Each theme object will be converted to CSS variables available under the `root` class  of the theme StyleSheet instance.   For example: `{ backgroundLevel1 : 'black' }` will be converted to `--fun-backgroundLevel1`.   You can add the `root` class to the root element of your component to theme a single component,  or to the `body` element to theme the entire page. |
-| options | <code>Object</code> | An options object. |
-| options.colorScheme | <code>String</code> | The color scheme. Possible values are `light`, `dark`, `system`, and `normal`.  If `light` or `dark` is set, the theme will be fixed to that color scheme, and only the necessary CSS variables  will be generated. The CSS color-scheme property will be set to that value. If `system` is set, the theme will be generated for both light and dark color schemes,  and by default, it will follow the system color scheme. The CSS color-scheme property will be set to `light` or `dark` accordingly. To override the system color scheme, set the `data-color-scheme` attribute to `light`  or `dark` on a parent element. If `normal` is set, the `normal` theme will be used, and the CSS color-scheme property  will be set to `normal`. |
-| options.cssVarsPrefix | <code>String</code> | The CSS variables prefix. Default is `fun`. |
-| options.createStyleSheet | <code>function</code> | A function used to create a new StyleSheet instance. By default, it uses the `css` function. |
-| options.styleSheetOptions | <code>Object</code> | The options object to be used when creating the StyleSheet instance. Default is `system`. |
+| themes | <code>Object</code> | An object defining styles for color schemes (`light`, `dark`, `normal`).  Each key corresponds to a color scheme, and its value is an object of key-value pairs converted  to CSS variables. Nested keys are concatenated with `-` to form variable names. |
+| options | <code>Object</code> | An object to customize the theme generation. It includes options  for selecting color schemes, customizing CSS variable prefixes, and controlling StyleSheet creation. |
+| options.colorScheme | <code>String</code> | Specifies the color scheme(s) to use. Possible values are:  `light` (uses the `light` theme only), `dark` (uses the `dark` theme only), `light dark` (default,  supports both `light` and `dark` themes, adapting to system preferences; can override system  preference with `data-color-scheme` set to `light` or `dark`), and `normal` (uses the `normal` theme only). |
+| options.cssVarsPrefix | <code>String</code> | The prefix for the generated CSS variables. Default is `fun`.  For example, a key `color` in the theme will generate a CSS variable like `--fun-color`. |
+| options.createStyleSheet | <code>function</code> | A function used to create a new StyleSheet instance.  By default, it uses the `css` function. |
+| options.styleSheetOptions | <code>Object</code> | Options to pass when creating the StyleSheet instance.  Default is `system`. |
 
 **Example**  
 ```js
-// Create a default theme and apply it to the entire page.
+// Create a theme with light and dark color schemes and apply it to the entire page.
 const theme = createTheme({
     light : {
-        color : 'black',
-        backgroundColor : 'white'
+        colorPrimary : 'black',
+        backgroundLevel1 : 'white'
     },
     dark : {
-        color : 'white',
-        backgroundColor : 'black'
+        colorPrimary : 'white',
+        backgroundLevel1 : 'black'
     }
 });
+
 // Add the `root` class (the theme class) to the body element.
 // This will apply the theme to the entire page.
 document.body.classList.add(theme.classes.root);
+
 // Add some styles using the theme CSS variables.
 const { classes } = css({
     button : {
-        color : 'var(--fun-color)',
-        backgroundColor : 'var(--fun-backgroundColor)'
+        color : 'var(--fun-colorPrimary)', // Use the CSS variable generated from the theme.
+        backgroundColor : 'var(--fun-backgroundLevel1)'
     }
 });
+
 // Add the `button` class to a button component.
-// You can use the variables in your styles even before the theme is applied or created.
-// Your component will update when the theme is applied.
-// If the system color scheme changes, the button will update automatically.
+// The button will use the CSS variables defined in the theme for its styles.
+// Once the theme is applied, the button will automatically update its styles.
+// If the system color scheme changes (e.g., from light to dark), the button will 
+// dynamically update to reflect the new theme without requiring additional code.
 const Button = ({ label }) => <button className={classes.button}>{label}</button>;
 ```
 <a name="css" id="css" class="anchor"></a>

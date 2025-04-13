@@ -12,9 +12,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "cssfun": "^0.0.8",
+    "cssfun": "^0.0.9",
     "express": "^4.19.2",
-    "rasti": "^3.0.0"
+    "rasti": "^3.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

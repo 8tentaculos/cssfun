@@ -305,7 +305,7 @@ If passed via [`options.renderers`](/docs/api.md#new-stylesheetstyles-options), 
 Elements in the `renderers` array can be either functions or strings that reference methods of the [`StyleSheet`](/docs/api.md#stylesheet) instance. These 
 methods will be bound to the instance before they are invoked.
 
-By default, [`StyleSheet`](/docs/api.md#stylesheet) are rendered using the built-in renderers: `['parseStyles', 'renderStyles']`.
+By default, [`StyleSheet`](/docs/api.md#stylesheet) are rendered using the built-in renderers: `[this.renderStyles, this.parseStyles]`.
 
 ## Themes
 
@@ -318,9 +318,8 @@ or use a fixed color scheme.
 The [`createTheme`](/docs/api.md#createtheme) function generates a theme StyleSheet instance. 
 It accepts a `themes` object, which defines variables for the specified color schemes, and an 
 `options` object to customize the theme generation.  
-Each key in the `themes` object corresponds 
-to a color scheme (`light`, `dark`, `normal`), and its value is an object of key-value pairs 
-that will be converted into CSS variables. Nested keys are concatenated with `-` to form variable names.
+Each key in the `themes` object corresponds to a color scheme (`light`, `dark`, `normal`), 
+and its value is an object of key-value pairs that will be converted into CSS variables.
 
 ### Creating a Theme
 

@@ -23,68 +23,82 @@ const getDiff = (left, right) => {
 };
 
 /**
- * The `createTheme` function creates a theme StyleSheet instance.
- * It supports light, dark, system, and normal color schemes.
+ * The `createTheme` function generates a theme StyleSheet instance with CSS variables 
+ * based on the provided themes and options. It supports multiple color schemes, 
+ * including `light`, `dark`, `light dark`, and `normal`. 
+ * 
+ * The `themes` object defines the styles for these color schemes. Each key in the object 
+ * corresponds to a color scheme (`light`, `dark`, `normal`), and its value is an object 
+ * containing key-value pairs that will be converted into CSS variables. Nested keys are 
+ * concatenated with `-` to form the variable name. For example, `{ light : { colors : { primary : 'blue' } } }` 
+ * generates `--fun-colors-primary : blue`.
+ * 
  * @module
  * @function
- * @param {Object} themes - An object containing `light`, `dark`, and optionally `normal` themes: `{ light, dark }`. 
- * Each theme object will be converted to CSS variables available under the `root` class 
- * of the theme StyleSheet instance.  
- * For example: `{ backgroundLevel1 : 'black' }` will be converted to `--fun-backgroundLevel1`.  
- * You can add the `root` class to the root element of your component to theme a single component, 
- * or to the `body` element to theme the entire page.
- * @param {Object} options - An options object.
- * @param {String} options.colorScheme - The color scheme. Possible values are `light`, `dark`, `system`, and `normal`. 
- * If `light` or `dark` is set, the theme will be fixed to that color scheme, and only the necessary CSS variables 
- * will be generated. The CSS color-scheme property will be set to that value.
- * If `system` is set, the theme will be generated for both light and dark color schemes, 
- * and by default, it will follow the system color scheme.
- * The CSS color-scheme property will be set to `light` or `dark` accordingly.
- * To override the system color scheme, set the `data-color-scheme` attribute to `light` 
- * or `dark` on a parent element.
- * If `normal` is set, the `normal` theme will be used, and the CSS color-scheme property 
- * will be set to `normal`.
- * @param {String} options.cssVarsPrefix - The CSS variables prefix. Default is `fun`.
- * @param {Function} options.createStyleSheet - A function used to create a new StyleSheet instance. By default, it uses the `css` function.
- * @param {Object} options.styleSheetOptions - The options object to be used when creating the StyleSheet instance. Default is `system`.  
+ * @param {Object} themes - An object defining styles for color schemes (`light`, `dark`, `normal`). 
+ * Each key corresponds to a color scheme, and its value is an object of key-value pairs converted 
+ * to CSS variables. Nested keys are concatenated with `-` to form variable names.
+ * 
+ * @param {Object} options - An object to customize the theme generation. It includes options 
+ * for selecting color schemes, customizing CSS variable prefixes, and controlling StyleSheet creation.
+ * 
+ * @param {String} options.colorScheme - Specifies the color scheme(s) to use. Possible values are: 
+ * `light` (uses the `light` theme only), `dark` (uses the `dark` theme only), `light dark` (default, 
+ * supports both `light` and `dark` themes, adapting to system preferences; can override system 
+ * preference with `data-color-scheme` set to `light` or `dark`), and `normal` (uses the `normal` theme only).
+ * 
+ * @param {String} options.cssVarsPrefix - The prefix for the generated CSS variables. Default is `fun`. 
+ * For example, a key `color` in the theme will generate a CSS variable like `--fun-color`.
+ * 
+ * @param {Function} options.createStyleSheet - A function used to create a new StyleSheet instance. 
+ * By default, it uses the `css` function.
+ * 
+ * @param {Object} options.styleSheetOptions - Options to pass when creating the StyleSheet instance. 
+ * Default is `system`.
+ * 
  * @returns {StyleSheet} The theme StyleSheet instance. Use `classes.root` to get the theme class name. 
- * Apply it to the element you want to theme. CSS variables will be available for all its descendants.
+ * Apply this class to the element you want to theme. The CSS variables will be available for all 
+ * its descendants.
+ * 
  * @example
- * // Create a default theme and apply it to the entire page.
+ * // Create a theme with light and dark color schemes and apply it to the entire page.
  * const theme = createTheme({
  *     light : {
- *         color : 'black',
- *         backgroundColor : 'white'
+ *         colorPrimary : 'black',
+ *         backgroundLevel1 : 'white'
  *     },
  *     dark : {
- *         color : 'white',
- *         backgroundColor : 'black'
+ *         colorPrimary : 'white',
+ *         backgroundLevel1 : 'black'
  *     }
  * });
+ * 
  * // Add the `root` class (the theme class) to the body element.
  * // This will apply the theme to the entire page.
  * document.body.classList.add(theme.classes.root);
+ * 
  * // Add some styles using the theme CSS variables.
  * const { classes } = css({
  *     button : {
- *         color : 'var(--fun-color)',
- *         backgroundColor : 'var(--fun-backgroundColor)'
+ *         color : 'var(--fun-colorPrimary)', // Use the CSS variable generated from the theme.
+ *         backgroundColor : 'var(--fun-backgroundLevel1)'
  *     }
  * });
+ * 
  * // Add the `button` class to a button component.
- * // You can use the variables in your styles even before the theme is applied or created.
- * // Your component will update when the theme is applied.
- * // If the system color scheme changes, the button will update automatically.
+ * // The button will use the CSS variables defined in the theme for its styles.
+ * // Once the theme is applied, the button will automatically update its styles.
+ * // If the system color scheme changes (e.g., from light to dark), the button will 
+ * // dynamically update to reflect the new theme without requiring additional code.
  * const Button = ({ label }) => <button className={classes.button}>{label}</button>;
- *
  */
 const createTheme = (themes = {}, options = {}) => {
-    const colorScheme = options.colorScheme || 'system';
+    const colorScheme = options.colorScheme || 'light dark';
     const prefix = `--${options.cssVarsPrefix ||  StyleSheet.prefix}`;
 
     let styles;
 
-    if (colorScheme === 'system') {
+    if (colorScheme === 'light dark') {
         const cssVars = {
             light : makeCssVars(themes.light, prefix),
             dark : makeCssVars(themes.dark, prefix)
@@ -94,7 +108,7 @@ const createTheme = (themes = {}, options = {}) => {
 
         styles = {
             root : {
-                ':where(&)' : Object.assign({ colorScheme : 'light' }, cssVars.light),
+                ':where(&)' : Object.assign({ colorScheme }, cssVars.light),
                 ':where([data-color-scheme="dark"] &)' : Object.assign({ colorScheme : 'dark' }, diff.right),
             },
             '@media (prefers-color-scheme: dark)' : {

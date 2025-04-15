@@ -1,7 +1,7 @@
 const camelizedToDashed = str => str.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
 const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
 
-const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'shouldAddToDOM', 'attributes', 'renderers'];
+const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'shouldAttachToDOM', 'attributes', 'renderers'];
 
 /**
  * The StyleSheet class is responsible for creating and managing a CSS stylesheet.
@@ -27,7 +27,7 @@ const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'should
  * renderer functions or method names. The renderers are composed in sequence, where 
  * the first receives the styles object, and the last outputs the final CSS string. 
  * Strings or functions will be automatically bound to `this`.
- * @param {Function} [options.shouldAddToDOM] - A custom function to determine whether 
+ * @param {Function} [options.shouldAttachToDOM] - A custom function to determine whether 
  * the StyleSheet should be added to the DOM.
  * 
  * @example
@@ -259,10 +259,10 @@ class StyleSheet {
      * By default, it returns true if running in a browser environment and no style element
      * with the same `data-fun-uid` attribute exists in the DOM.
      * This prevents duplicate style elements and ensures proper behavior for server-side rendering.
-     * May be overridden by `options.shouldAddToDOM`.
+     * May be overridden by `options.shouldAttachToDOM`.
      * @returns {Boolean} True if the StyleSheet should be added to the DOM, false otherwise.
      */
-    shouldAddToDOM() {
+    shouldAttachToDOM() {
         return typeof document !== 'undefined' && !document.querySelector(`style[data-${this.prefix}-uid="${this.uid}"]`);
     }
 
@@ -277,7 +277,7 @@ class StyleSheet {
             StyleSheet.registry.push(this);
         }
         // If we're in the browser and the style element doesn't exist, create it.
-        if (this.shouldAddToDOM()) {
+        if (this.shouldAttachToDOM()) {
             // Create the style element.
             this.el = document.createElement('style');
 

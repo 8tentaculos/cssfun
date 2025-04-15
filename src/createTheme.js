@@ -39,21 +39,21 @@ const getDiff = (left, right) => {
  * Each key corresponds to a color scheme, and its value is an object of key-value pairs converted 
  * to CSS variables. Nested keys are concatenated with `-` to form variable names.
  * 
- * @param {Object} options - An object to customize the theme generation. It includes options 
+ * @param {Object} [options] - An optional object to customize the theme generation. It includes options 
  * for selecting color schemes, customizing CSS variable prefixes, and controlling StyleSheet creation.
  * 
- * @param {String} options.colorScheme - Specifies the color scheme(s) to use. Possible values are: 
+ * @param {String} [options.colorScheme] - Specifies the color scheme(s) to use. Possible values are: 
  * `light` (uses the `light` theme only), `dark` (uses the `dark` theme only), `light dark` (default, 
  * supports both `light` and `dark` themes, adapting to system preferences; can override system 
  * preference with `data-color-scheme` set to `light` or `dark`), and `normal` (uses the `normal` theme only).
  * 
- * @param {String} options.cssVarsPrefix - The prefix for the generated CSS variables. Default is `fun`. 
+ * @param {String} [options.cssVarsPrefix] - The prefix for the generated CSS variables. Default is `fun`. 
  * For example, a key `color` in the theme will generate a CSS variable like `--fun-color`.
  * 
- * @param {Function} options.createStyleSheet - A function used to create a new StyleSheet instance. 
+ * @param {Function} [options.createStyleSheet] - A function used to create a new StyleSheet instance. 
  * By default, it uses the `css` function.
  * 
- * @param {Object} options.styleSheetOptions - Options to pass when creating the StyleSheet instance. 
+ * @param {Object} [options.styleSheetOptions] - Options to pass when creating the StyleSheet instance. 
  * Default is `system`.
  * 
  * @returns {StyleSheet} The theme StyleSheet instance. Use `classes.root` to get the theme class name. 

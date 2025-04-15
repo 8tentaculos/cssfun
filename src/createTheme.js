@@ -108,7 +108,7 @@ const createTheme = (themes = {}, options = {}) => {
 
         styles = {
             root : {
-                ':where(&)' : Object.assign({ colorScheme }, cssVars.light),
+                ':where(&)' : Object.assign({ colorScheme : 'light' }, cssVars.light),
                 ':where([data-color-scheme="dark"] &)' : Object.assign({ colorScheme : 'dark' }, diff.right),
             },
             '@media (prefers-color-scheme: dark)' : {

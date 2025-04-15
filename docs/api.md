@@ -18,8 +18,8 @@ containing key-value pairs that will be converted into CSS variables. Nested key
 concatenated with <code>-</code> to form the variable name. For example, <code>{ light : { colors : { primary : &#39;blue&#39; } } }</code> 
 generates <code>--fun-colors-primary : blue</code>.</p>
 </dd>
-<dt><a href="#css">css(styles)</a> ⇒ <code><a href="#StyleSheet">StyleSheet</a></code></dt>
-<dd><p>Creates a new StyleSheet instance and attaches it to the DOM.</p>
+<dt><a href="#css">css(styles, [options])</a> ⇒ <code><a href="#StyleSheet">StyleSheet</a></code></dt>
+<dd><p>Creates and attaches a new StyleSheet instance to the DOM.</p>
 </dd>
 </dl>
 
@@ -260,27 +260,29 @@ const { classes } = css({
 const Button = ({ label }) => <button className={classes.button}>{label}</button>;
 ```
 <a name="css" id="css" class="anchor"></a>
-## css(styles) ⇒ [<code>StyleSheet</code>](#StyleSheet)
-Creates a new StyleSheet instance and attaches it to the DOM.
+## css(styles, [options]) ⇒ [<code>StyleSheet</code>](#StyleSheet)
+Creates and attaches a new StyleSheet instance to the DOM.
 
 **Kind**: global function  
-**Returns**: [<code>StyleSheet</code>](#StyleSheet) - The StyleSheet instance.  
+**Returns**: [<code>StyleSheet</code>](#StyleSheet) - The created StyleSheet instance. Use the `classes` property to access the generated class names.  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| styles | <code>Object</code> | The CSS rules. |
+| styles | <code>Object</code> | An object containing CSS rules. Keys represent selectors, and values represent style objects. |
+| [options] | <code>Object</code> | Optional configuration for the StyleSheet instance. Includes options like `prefix`, `renderers`, and more. |
 
 **Example**  
 ```js
-// Create some styles for a link component.
+// Create styles for a link component.
 const { classes } = css({
     link : {
         color : 'blue',
         '&:hover' : {
-           textDecoration : 'underline'
+            textDecoration : 'underline'
         }
     }
 });
-// Create a link component. Add the `link` class to it.
+
+// Use the generated `link` class in a component.
 const Link = ({ label, href }) => <a className={classes.link} href={href}>{label}</a>;
 ```

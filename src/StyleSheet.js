@@ -316,7 +316,7 @@ class StyleSheet {
             }
             // Remove the reference to the style element.
             this.el = null;
-        } 
+        }
 
         return this;
     }

@@ -1,7 +1,9 @@
-<picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.png">
-    <img alt="CSSFUN" src="docs/logo.png">
-</picture>
+<p align="center">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.11/docs/logo-dark.svg">
+        <img alt="CSSFUN" src="https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.11/docs/logo.svg">
+    </picture>
+</p>
 
 <p align="center">
     <b>Near-zero runtime <a href="https://en.wikipedia.org/wiki/CSS-in-JS" target="_blank">CSS-in-JS</a> library</b>

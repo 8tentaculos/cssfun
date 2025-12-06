@@ -412,28 +412,42 @@ Easily add your styles to the server-rendered HTML by embedding the StyleSheets 
 string within the `<head>` of your page.
 
 ```javascript
-// Creating a theme
-const theme = createTheme(themes);
+import express from 'express';
+import React from 'react';
+import { renderToString } from 'react-dom/server';
+import { StyleSheet, createTheme } from 'cssfun';
+import App from './App.js';
 
-// Express route that renders the app and returns HTML to the browser
+// Create a theme with light and dark modes
+const theme = createTheme({
+    light : {
+        bg : '#fff',
+        color : '#000'
+    },
+    dark : {
+        bg : '#000',
+        color : '#fff'
+    }
+});
+
+const app = express();
+
 app.get('*', (req, res) => {
-    // Render the app as an HTML string
+    // Render the app
     const html = renderToString(<App />);
-    
-    // Get all StyleSheets styles as a string of <style> elements
+
+    // Get generated styles as string
     const styles = StyleSheet.toString();
     
-    // Get the root class name from the theme
+    // Get theme root class
     const cls = theme.classes.root;
-    
-    // Create the full HTML page template
+
     const template = `
         <!DOCTYPE html>
         <html lang="en">
             <head>
                 <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Waving Cat</title>
+                <title>SSR App</title>
                 ${styles}
             </head>
             <body class="${cls}">
@@ -442,8 +456,7 @@ app.get('*', (req, res) => {
             </body>
         </html>
     `;
-    
-    // Send the complete HTML response
+
     res.send(template);
 });
 ```
@@ -465,7 +478,6 @@ to see **CSSFUN** in action.
 - **[React Example](https://github.com/8tentaculos/cssfun/tree/master/example/react)**: A basic React application demonstrating the use of **CSSFUN** for styling React components. [Try it](https://plnkr.co/plunk/hLIWLlAHGsE2ojO1).
 - **[Rasti Example](https://github.com/8tentaculos/cssfun/tree/master/example/rasti)**: A simple Rasti application illustrating how to apply **CSSFUN** to style Rasti components. [Try it](https://plnkr.co/plunk/ivxPfUB5szwcuncf).
 - **[Vanilla JS Example](https://github.com/8tentaculos/cssfun/tree/master/example/vanilla)**: A straightforward JavaScript example showing how to use **CSSFUN** for styling HTML components. [Try it](https://plnkr.co/plunk/4ypn83Ru5Z6uwZew).
-- **[Rasti with Server-Side Rendering (SSR) Example](https://github.com/8tentaculos/cssfun/tree/master/example/ssr)**: A Rasti application with server-side rendering using Express, highlighting how to use **CSSFUN** for styling in an SSR environment.
 
 ## License
 

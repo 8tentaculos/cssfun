@@ -4,6 +4,7 @@ import { StyleSheet, css, createTheme } from '../src/index.js';
 
 describe('cssfun', () => {
     beforeEach(() => {
+        StyleSheet.debug = false;
         StyleSheet.destroy();
         document.body.className = '';
         document.documentElement.removeAttribute('data-color-scheme', 'dark');

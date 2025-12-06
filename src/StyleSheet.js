@@ -1,3 +1,5 @@
+import __DEV__ from './dev.js';
+
 const camelizedToDashed = str => str.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
 const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
 
@@ -144,7 +146,7 @@ class StyleSheet {
             const value = styles[key];
             let indent = '', nl = '', whitespace = '';
             // Format the CSS string.
-            if (StyleSheet.debug) {
+            if (__DEV__ && StyleSheet.debug) {
                 indent = StyleSheet.indent.repeat(level);
                 nl = '\n';
                 whitespace = ' ';
@@ -250,7 +252,7 @@ class StyleSheet {
     toString() {
         const attributes = this.getAttributes();
         const attributesHtml = Object.keys(attributes).map(key => ` ${key}="${attributes[key]}"`).join('');
-        const nl = StyleSheet.debug ? '\n' : '';
+        const nl = (__DEV__ && StyleSheet.debug) ? '\n' : '';
         return `<style${attributesHtml}>${nl}${this.render()}</style>${nl}`;
     }
 
@@ -398,8 +400,8 @@ StyleSheet.registry = [];
  * @static
  * @property {Boolean} debug - The debug flag. If true, the styles will be formatted with
  * indentation and new lines.
- * @default false
+ * @default __DEV__
  */
-StyleSheet.debug = false;
+StyleSheet.debug = __DEV__;
 
 export default StyleSheet;

@@ -52,6 +52,7 @@
         "components"
     ],
     "devDependencies": {
+        "@rollup/plugin-replace": "^6.0.3",
         "@rollup/plugin-terser": "^0.4.4",
         "chai": "^5.1.1",
         "eslint": "^8.57.0",

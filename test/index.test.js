@@ -17,7 +17,7 @@ describe('cssfun', () => {
 
         it('instance must be rendered as string', () => {
             const instance = css({ root : { color : 'red' } });
-            expect(instance.toString()).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root{color:red;}</style>`);
+            expect(instance.toString()).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.prefix}-${instance.uid}-1{color:red;}</style>`);
         });
 
         it('must add style element to the head', () => {
@@ -70,7 +70,7 @@ describe('cssfun', () => {
         it('must be rendered as element', () => {
             const instance = css({ root : { color : 'red' } });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root{color:red;}</style>`);
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.prefix}-${instance.uid}-1{color:red;}</style>`);
         });
 
         it('must be instantiated with custom attributes', () => {
@@ -87,7 +87,7 @@ describe('cssfun', () => {
         it('must override generateUid', () => {
             const instance = css({ root : { color : 'red' } }, { generateUid() { return this.prefix + '-1'; } });
             expect(instance.uid).to.be.equal('fun-1');
-            expect(instance.el.outerHTML).to.be.equal(`<style data-fun-uid="fun-1">.${instance.uid}-root{color:red;}</style>`);
+            expect(instance.el.outerHTML).to.be.equal(`<style data-fun-uid="fun-1">.${instance.prefix}-${instance.uid}-1{color:red;}</style>`);
         });
 
         it('must override generateClassName', () => {
@@ -97,8 +97,9 @@ describe('cssfun', () => {
 
         it('must be instantiated with custom prefix', () => {
             const instance = css({ root : { color : 'red' } }, { prefix : 'test' });
-            expect(instance.uid).to.contain('test');
-            expect(instance.el.outerHTML).to.be.equal(`<style data-test-uid="${instance.uid}">.${instance.uid}-root{color:red;}</style>`);
+            expect(instance.classes).to.have.property('root');
+            expect(instance.classes.root).to.be.equal(`${instance.prefix}-${instance.uid}-1`);
+            expect(instance.el.outerHTML).to.be.equal(`<style data-test-uid="${instance.uid}">.${instance.prefix}-${instance.uid}-1{color:red;}</style>`);
         });
 
         it('must use class references', () => {
@@ -108,7 +109,7 @@ describe('cssfun', () => {
                 '$root $button' : { color : 'blue' }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root .${instance.uid}-button{color:blue;}</style>`);
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.prefix}-${instance.uid}-1 .${instance.prefix}-${instance.uid}-2{color:blue;}</style>`);
         });
 
         it('must use nested styles', () => {
@@ -121,7 +122,7 @@ describe('cssfun', () => {
                 }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root{color:red;}.${instance.uid}-root:hover{color:blue;}</style>`);
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.prefix}-${instance.uid}-1{color:red;}.${instance.prefix}-${instance.uid}-1:hover{color:blue;}</style>`);
         });
 
         it('must use deep nested styles', () => {
@@ -140,7 +141,7 @@ describe('cssfun', () => {
                 }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root{margin:5px;}.${instance.uid}-button{color:red;}.${instance.uid}-button:hover{color:blue;}.${instance.uid}-button:hover:active{color:green;}</style>`);
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.prefix}-${instance.uid}-1{margin:5px;}.${instance.prefix}-${instance.uid}-2{color:red;}.${instance.prefix}-${instance.uid}-2:hover{color:blue;}.${instance.prefix}-${instance.uid}-2:hover:active{color:green;}</style>`);
         });
 
         it('must use global styles', () => {
@@ -155,7 +156,7 @@ describe('cssfun', () => {
                 }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">body{margin:0;}.${instance.uid}-root{color:black;}</style>`);
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">body{margin:0;}.${instance.prefix}-${instance.uid}-1{color:black;}</style>`);
         });
 
         it('must use nested global styles', () => {
@@ -173,7 +174,7 @@ describe('cssfun', () => {
                 }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root{color:black;}.${instance.uid}-root a{color:red;}.${instance.uid}-button{color:blue;}</style>`);
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.prefix}-${instance.uid}-1{color:black;}.${instance.prefix}-${instance.uid}-1 a{color:red;}.${instance.prefix}-${instance.uid}-2{color:blue;}</style>`);
         });
 
         it('must use goblal prefix', () => {
@@ -196,7 +197,7 @@ describe('cssfun', () => {
                 }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.uid}-root{color:black;}.${instance.uid}-root a{color:red;}</style>`);
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.prefix}-${instance.uid}-1{color:black;}.${instance.prefix}-${instance.uid}-1 a{color:red;}</style>`);
         });
 
         it('must support media queries', () => {
@@ -221,7 +222,7 @@ describe('cssfun', () => {
                 }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">@media (min-width: 768px){.${instance.uid}-root{color:red;}}</style>`);
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">@media (min-width: 768px){.${instance.prefix}-${instance.uid}-1{color:red;}}</style>`);
         });
     });
 

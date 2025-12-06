@@ -81,9 +81,10 @@ class StyleSheet {
         // Generate the `StyleSheet` unique identifier.
         this.uid = this.generateUid();
         // Generate class names. Only generate class names for top-level selectors.
+        let counter = 0;
         Object.keys(styles).forEach(selector => {
             if (selector.match(StyleSheet.classRegex)) {
-                this.classes[selector] = this.generateClassName(selector);
+                this.classes[selector] = this.generateClassName(selector, ++counter);
             }
         });
     }
@@ -104,7 +105,7 @@ class StyleSheet {
             hash = (hash * 16777619) >>> 0;
         }
         // Convert the hash to a shorter base-36 string.
-        return `${this.prefix}-${hash.toString(36)}`;
+        return hash.toString(36);
     }
 
     /**
@@ -113,10 +114,11 @@ class StyleSheet {
      * to be used as class names in the styles object.
      * May be overridden by `options.generateClassName`.
      * @param {String} className - The class name.
+     * @param {Number} index - The index of the class name.
      * @returns {String} The unique class name.
      */
-    generateClassName(className) {
-        return `${this.uid}-${className}`;
+    generateClassName(className, index) {
+        return `${this.prefix}-${this.uid}-${__DEV__ && StyleSheet.debug ? className : index}`;
     }
 
     /**

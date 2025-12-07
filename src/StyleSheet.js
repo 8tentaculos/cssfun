@@ -1,5 +1,7 @@
+import __DEV__ from './dev.js';
+
 const camelizedToDashed = str => str.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
-const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
+const compose = fns => fns.reduce((f, g) => (...args) => f(g(...args)));
 
 const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'shouldAttachToDOM', 'attributes', 'renderers'];
 
@@ -14,21 +16,15 @@ const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'should
  * @param {Object} styles - The styles object. This is an object where keys represent 
  * CSS selectors and values are style objects. The styles object is processed through 
  * the renderers to generate the final CSS string. It is stored in the instance as `this.styles`.
- * @param {Object} [options={}] - Optional configuration options for the StyleSheet instance.
- * @param {String} [options.prefix='fun'] - A prefix used for generating unique identifiers 
- * and data attributes.
- * @param {Function} [options.generateUid] - A custom function to generate the unique 
- * identifier for the StyleSheet instance.
- * @param {Function} [options.generateClassName] - A custom function to generate unique 
- * class names for scoped styles.
- * @param {Object} [options.attributes] - An object containing attributes to be added 
- * to the `<style>` element in the DOM.
- * @param {Array} [options.renderers=['parseStyles', 'renderStyles']] - An array of 
- * renderer functions or method names. The renderers are composed in sequence, where 
- * the first receives the styles object, and the last outputs the final CSS string. 
- * Strings or functions will be automatically bound to `this`.
- * @param {Function} [options.shouldAttachToDOM] - A custom function to determine whether 
- * the StyleSheet should be added to the DOM.
+ * @param {Object} [options={}] - Configuration options. The following options are assigned to the instance (`this`):
+ * `prefix`, `generateUid`, `generateClassName`, `shouldAttachToDOM`, `attributes`, `renderers`.
+ * @param {String} [options.prefix='fun'] - Prefix for generating unique identifiers and data attributes.
+ * @param {Function} [options.generateUid] - Custom function to generate the unique identifier.
+ * @param {Function} [options.generateClassName] - Custom function to generate unique class names.
+ * @param {Object} [options.attributes] - Attributes to be added to the `<style>` element.
+ * @param {Array} [options.renderers=['parseStyles', 'renderStyles']] - Array of renderer functions or method names.
+ * Renderers are composed in sequence. Strings or functions are automatically bound to `this`.
+ * @param {Function} [options.shouldAttachToDOM] - Custom function to determine whether the StyleSheet should be added to the DOM.
  * 
  * @example
  * // Create a new StyleSheet instance with a styles object.
@@ -49,18 +45,13 @@ const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'should
  *     return <h1 className={classes.root}>Hello World</h1>;
  * }
  * 
- * @property {Object} classes - An object mapping the original class names to the 
- * generated unique class names. Use this to reference the generated class names 
- * in your components.
+ * @property {Object} classes - Object mapping original class names to generated unique class names.
  * @property {Object} styles - The original styles object provided to the instance.
- * @property {String} uid - A unique identifier for the StyleSheet instance, generated 
- * using `this.generateUid`.
- * @property {Object} attributes - The attributes object, derived from `options.attributes`, 
- * to be added to the `<style>` element.
- * @property {Array} renderers - The array of renderer functions or method names used 
- * to process the styles object.
- * @property {HTMLElement} el - A reference to the `<style>` element in the DOM. This 
- * is created when the instance is attached to the DOM.
+ * @property {String} uid - Unique identifier for the StyleSheet instance, generated using `this.generateUid`.
+ * @property {String} prefix - Prefix for generating unique identifiers. Set via options or subclass.
+ * @property {Object} attributes - Attributes to be added to the `<style>` element. Set via options or subclass.
+ * @property {Array} renderers - Array of renderer functions or method names used to process the styles object. Set via options or subclass.
+ * @property {HTMLElement} el - Reference to the `<style>` element in the DOM. Created when the instance is attached to the DOM.
  */
 class StyleSheet {
     constructor(styles, options = {}) {
@@ -79,9 +70,10 @@ class StyleSheet {
         // Generate the `StyleSheet` unique identifier.
         this.uid = this.generateUid();
         // Generate class names. Only generate class names for top-level selectors.
+        let counter = 0;
         Object.keys(styles).forEach(selector => {
             if (selector.match(StyleSheet.classRegex)) {
-                this.classes[selector] = this.generateClassName(selector);
+                this.classes[selector] = this.generateClassName(selector, ++counter);
             }
         });
     }
@@ -102,19 +94,22 @@ class StyleSheet {
             hash = (hash * 16777619) >>> 0;
         }
         // Convert the hash to a shorter base-36 string.
-        return `${this.prefix}-${hash.toString(36)}`;
+        return hash.toString(36);
     }
 
     /**
      * Generate a unique class name.
      * Transform local selectors that are classes to unique class names
      * to be used as class names in the styles object.
-     * May be overridden by `options.generateClassName`.
+     * May be overridden by `options.generateClassName` or by extending the class.
      * @param {String} className - The class name.
+     * @param {Number} index - The index of the class name.
      * @returns {String} The unique class name.
      */
-    generateClassName(className) {
-        return `${this.uid}-${className}`;
+    generateClassName(className, index) {
+        return __DEV__ && StyleSheet.debug ?
+            `${this.prefix}-${this.uid}-${className}` :
+            `${this.prefix[0]}-${this.uid}-${index}`;
     }
 
     /**
@@ -123,11 +118,11 @@ class StyleSheet {
      * @returns {String} The styles object as a string.
      */
     render() {
-        return compose(
-            ...this.renderers.map(
-                renderer => (typeof renderer === 'string' ? this[renderer] : renderer).bind(this)
-            )
-        )(this.styles);
+        const renderers = this.renderers.map(
+            renderer => (typeof renderer === 'string' ? this[renderer] : renderer).bind(this)
+        );
+
+        return compose(renderers)(this.styles);
     }
 
     /**
@@ -144,7 +139,7 @@ class StyleSheet {
             const value = styles[key];
             let indent = '', nl = '', whitespace = '';
             // Format the CSS string.
-            if (StyleSheet.debug) {
+            if (__DEV__ && StyleSheet.debug) {
                 indent = StyleSheet.indent.repeat(level);
                 nl = '\n';
                 whitespace = ' ';
@@ -211,8 +206,10 @@ class StyleSheet {
                 } else {
                     const selector = generateKey(key);
                     acc[selector] = {};
+                    // Don't expand at-rules.
+                    const args = selector.match(/@/) ? [] : [acc, selector];
                     // Regular styles.
-                    Object.assign(acc[selector], this.parseStyles(value, acc, selector));
+                    Object.assign(acc[selector], this.parseStyles(value, ...args));
                 }
             } else {
                 // Add style rules.
@@ -250,7 +247,7 @@ class StyleSheet {
     toString() {
         const attributes = this.getAttributes();
         const attributesHtml = Object.keys(attributes).map(key => ` ${key}="${attributes[key]}"`).join('');
-        const nl = StyleSheet.debug ? '\n' : '';
+        const nl = (__DEV__ && StyleSheet.debug) ? '\n' : '';
         return `<style${attributesHtml}>${nl}${this.render()}</style>${nl}`;
     }
 
@@ -314,18 +311,29 @@ class StyleSheet {
             }
             // Remove the reference to the style element.
             this.el = null;
-        } 
+        }
 
         return this;
     }
 
     /**
-     * Render all instances in the registry as a string.
+     * Render all instances in the registry as a string, including the style tags.
+     * Can be used to insert style tags in an HTML template for server-side rendering.
      * @returns {string} All instances in the registry as a string.
      * @static
      */
     static toString() {
         return StyleSheet.registry.join('');
+    }
+
+    /**
+     * Render all instances in the registry as CSS string.
+     * Can be used to generate an external CSS file.
+     * @returns {string} All instances in the registry rendered as CSS string.
+     * @static
+     */
+    static toCSS() {
+        return StyleSheet.registry.map(instance => instance.render()).join('');
     }
 
     /**
@@ -398,8 +406,8 @@ StyleSheet.registry = [];
  * @static
  * @property {Boolean} debug - The debug flag. If true, the styles will be formatted with
  * indentation and new lines.
- * @default false
+ * @default __DEV__
  */
-StyleSheet.debug = false;
+StyleSheet.debug = __DEV__;
 
 export default StyleSheet;

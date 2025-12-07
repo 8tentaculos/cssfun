@@ -112,7 +112,7 @@ css({
 ##### Renders to:
 
 ```html
-<style data-fun-uid="fun-uwitok">
+<style data-fun-uid="uwitok">
     .fun-uwitok-root {
         background-color: black;
     }
@@ -139,7 +139,7 @@ css({
 
     ##### Renders to:
     ```html
-    <style data-fun-uid="fun-1pxyvx7">
+    <style data-fun-uid="1pxyvx7">
         .fun-1pxyvx7-button {
             background-color: white;
         }
@@ -170,7 +170,7 @@ css({
 
     ##### Renders to:
     ```html
-    <style data-fun-uid="fun-169vukw">
+    <style data-fun-uid="169vukw">
         .fun-169vukw-button {
             background-color: white;
         }
@@ -203,7 +203,7 @@ css({
 
     ##### Renders to:
     ```html
-    <style data-fun-uid="fun-2xfpy0">
+    <style data-fun-uid="2xfpy0">
         .fun-2xfpy0-button {
             background-color: white;
         }
@@ -233,7 +233,7 @@ css({
     ##### Renders to:
 
     ```html
-    <style data-fun-uid="fun-ml03n3">
+    <style data-fun-uid="ml03n3">
         body {
             background-color: black;
         }
@@ -256,7 +256,7 @@ css({
 
     ##### Renders to:
     ```html
-    <style data-fun-uid="fun-1eia2eq">
+    <style data-fun-uid="1eia2eq">
         .fun-1eia2eq-root a {
             color: black;
         }
@@ -275,7 +275,7 @@ css({
 
     ##### Renders to:
     ```html
-    <style data-fun-uid="fun-1p1av20">
+    <style data-fun-uid="1p1av20">
         body {
             background-color: black;
         }
@@ -296,7 +296,7 @@ css({
 
     ##### Renders to:
     ```html
-    <style data-fun-uid="fun-xvd6jj">
+    <style data-fun-uid="xvd6jj">
         .fun-xvd6jj-root a {
             color: black;
         }

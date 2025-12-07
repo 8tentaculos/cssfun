@@ -42,7 +42,7 @@ generates <code>--fun-colors-primary : blue</code>.</p>
     * [new StyleSheet(styles, [options])](#new_stylesheet_new)
     * _instance_
         * [.generateUid()](#stylesheet__generateuid) ⇒ <code>String</code>
-        * [.generateClassName(className)](#stylesheet__generateclassname) ⇒ <code>String</code>
+        * [.generateClassName(className, index)](#stylesheet__generateclassname) ⇒ <code>String</code>
         * [.render()](#stylesheet__render) ⇒ <code>String</code>
         * [.toString()](#stylesheet__tostring) ⇒ <code>String</code>
         * [.shouldAttachToDOM()](#stylesheet__shouldattachtodom) ⇒ <code>Boolean</code>
@@ -54,6 +54,7 @@ generates <code>--fun-colors-primary : blue</code>.</p>
         * [.registry](#stylesheet_registry)
         * [.debug](#stylesheet_debug)
         * [.toString()](#stylesheet_tostring) ⇒ <code>string</code>
+        * [.toCSS()](#stylesheet_tocss) ⇒ <code>string</code>
         * [.destroy()](#stylesheet_destroy)
 
 <a name="new_stylesheet_new" id="new_stylesheet_new" class="anchor"></a>
@@ -103,7 +104,7 @@ May be overridden by `options.generateUid`.
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
 **Returns**: <code>String</code> - The unique identifier.  
 <a name="stylesheet__generateclassname" id="stylesheet__generateclassname" class="anchor"></a>
-### styleSheet.generateClassName(className) ⇒ <code>String</code>
+### styleSheet.generateClassName(className, index) ⇒ <code>String</code>
 Generate a unique class name.
 Transform local selectors that are classes to unique class names
 to be used as class names in the styles object.
@@ -115,6 +116,7 @@ May be overridden by `options.generateClassName`.
 | Param | Type | Description |
 | --- | --- | --- |
 | className | <code>String</code> | The class name. |
+| index | <code>Number</code> | The index of the class name. |
 
 <a name="stylesheet__render" id="stylesheet__render" class="anchor"></a>
 ### styleSheet.render() ⇒ <code>String</code>
@@ -186,7 +188,7 @@ from the DOM, if it's present.
 <a name="stylesheet_debug" id="stylesheet_debug" class="anchor"></a>
 ### StyleSheet.debug
 **Kind**: static property of [<code>StyleSheet</code>](#StyleSheet)  
-**Default**: <code>false</code>  
+**Default**: <code>__DEV__</code>  
 **Properties**
 
 | Name | Type | Description |
@@ -195,10 +197,18 @@ from the DOM, if it's present.
 
 <a name="stylesheet_tostring" id="stylesheet_tostring" class="anchor"></a>
 ### StyleSheet.toString() ⇒ <code>string</code>
-Render all instances in the registry as a string.
+Render all instances in the registry as a string, including the style tags.
+Can be used to insert style tags in an HTML template for server-side rendering.
 
 **Kind**: static method of [<code>StyleSheet</code>](#StyleSheet)  
 **Returns**: <code>string</code> - All instances in the registry as a string.  
+<a name="stylesheet_tocss" id="stylesheet_tocss" class="anchor"></a>
+### StyleSheet.toCSS() ⇒ <code>string</code>
+Render all instances in the registry as CSS string.
+Can be used to generate an external CSS file.
+
+**Kind**: static method of [<code>StyleSheet</code>](#StyleSheet)  
+**Returns**: <code>string</code> - All instances in the registry rendered as CSS string.  
 <a name="stylesheet_destroy" id="stylesheet_destroy" class="anchor"></a>
 ### StyleSheet.destroy()
 Destroy all instances in the registry and remove them from 

@@ -326,12 +326,23 @@ class StyleSheet {
     }
 
     /**
-     * Render all instances in the registry as a string.
+     * Render all instances in the registry as a string, including the style tags.
+     * Can be used to insert style tags in an HTML template for server-side rendering.
      * @returns {string} All instances in the registry as a string.
      * @static
      */
     static toString() {
         return StyleSheet.registry.join('');
+    }
+
+    /**
+     * Render all instances in the registry as CSS string.
+     * Can be used to generate an external CSS file.
+     * @returns {string} All instances in the registry rendered as CSS string.
+     * @static
+     */
+    static toCSS() {
+        return StyleSheet.registry.map(instance => instance.render()).join('');
     }
 
     /**

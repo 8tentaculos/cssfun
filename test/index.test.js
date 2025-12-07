@@ -223,6 +223,13 @@ describe('cssfun', () => {
             const style = instance.el;
             expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">@media (min-width: 768px){.${instance.prefix}-${instance.uid}-1{color:black;}.${instance.prefix}-${instance.uid}-1 a{color:green;}a{color:red;}h1{color:blue;}}</style>`);
         });
+
+        it('must render all instances in registry as CSS string', () => {
+            const instance1 = css({ root : { color : 'red' } });
+            const instance2 = css({ button : { color : 'blue' } });
+            const cssString = StyleSheet.toCSS();
+            expect(cssString).to.be.equal(`.${instance1.prefix}-${instance1.uid}-1{color:red;}.${instance2.prefix}-${instance2.uid}-1{color:blue;}`);
+        });
     });
 
     describe('css', () => {

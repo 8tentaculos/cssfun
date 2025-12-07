@@ -92,6 +92,13 @@ const Button = () => <button className={classes.button}>Click me</button>;
 Renderers are functions that transform style objects into CSS strings.  
 These are the built-in renderers transformations:
 
+> **Note**: All examples below show class names generated in **development mode**.  
+> In **production**, class names are optimized for smaller bundle size:
+> - **Development**: `.fun-9qkk9s-root { color:red; }` (full prefix + class name)
+> - **Production**: `.f-9qkk9s-1{color:red;}` (first letter of prefix + index)
+> 
+> Customize via [`options.generateClassName`](/docs/api.md#new-stylesheetstyles-options) or by [extending the class](/docs/api.md#stylesheet__generateclassname).
+
 #### Camelized keys will be transformed to dashed keys
 
 ```javascript

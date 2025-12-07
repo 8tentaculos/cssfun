@@ -16,21 +16,15 @@ const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'should
  * @param {Object} styles - The styles object. This is an object where keys represent 
  * CSS selectors and values are style objects. The styles object is processed through 
  * the renderers to generate the final CSS string. It is stored in the instance as `this.styles`.
- * @param {Object} [options={}] - Optional configuration options for the StyleSheet instance.
- * @param {String} [options.prefix='fun'] - A prefix used for generating unique identifiers 
- * and data attributes.
- * @param {Function} [options.generateUid] - A custom function to generate the unique 
- * identifier for the StyleSheet instance.
- * @param {Function} [options.generateClassName] - A custom function to generate unique 
- * class names for scoped styles.
- * @param {Object} [options.attributes] - An object containing attributes to be added 
- * to the `<style>` element in the DOM.
- * @param {Array} [options.renderers=['parseStyles', 'renderStyles']] - An array of 
- * renderer functions or method names. The renderers are composed in sequence, where 
- * the first receives the styles object, and the last outputs the final CSS string. 
- * Strings or functions will be automatically bound to `this`.
- * @param {Function} [options.shouldAttachToDOM] - A custom function to determine whether 
- * the StyleSheet should be added to the DOM.
+ * @param {Object} [options={}] - Configuration options. The following options are assigned to the instance (`this`):
+ * `prefix`, `generateUid`, `generateClassName`, `shouldAttachToDOM`, `attributes`, `renderers`.
+ * @param {String} [options.prefix='fun'] - Prefix for generating unique identifiers and data attributes.
+ * @param {Function} [options.generateUid] - Custom function to generate the unique identifier.
+ * @param {Function} [options.generateClassName] - Custom function to generate unique class names.
+ * @param {Object} [options.attributes] - Attributes to be added to the `<style>` element.
+ * @param {Array} [options.renderers=['parseStyles', 'renderStyles']] - Array of renderer functions or method names.
+ * Renderers are composed in sequence. Strings or functions are automatically bound to `this`.
+ * @param {Function} [options.shouldAttachToDOM] - Custom function to determine whether the StyleSheet should be added to the DOM.
  * 
  * @example
  * // Create a new StyleSheet instance with a styles object.
@@ -51,18 +45,13 @@ const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'should
  *     return <h1 className={classes.root}>Hello World</h1>;
  * }
  * 
- * @property {Object} classes - An object mapping the original class names to the 
- * generated unique class names. Use this to reference the generated class names 
- * in your components.
+ * @property {Object} classes - Object mapping original class names to generated unique class names.
  * @property {Object} styles - The original styles object provided to the instance.
- * @property {String} uid - A unique identifier for the StyleSheet instance, generated 
- * using `this.generateUid`.
- * @property {Object} attributes - The attributes object, derived from `options.attributes`, 
- * to be added to the `<style>` element.
- * @property {Array} renderers - The array of renderer functions or method names used 
- * to process the styles object.
- * @property {HTMLElement} el - A reference to the `<style>` element in the DOM. This 
- * is created when the instance is attached to the DOM.
+ * @property {String} uid - Unique identifier for the StyleSheet instance, generated using `this.generateUid`.
+ * @property {String} prefix - Prefix for generating unique identifiers. Set via options or subclass.
+ * @property {Object} attributes - Attributes to be added to the `<style>` element. Set via options or subclass.
+ * @property {Array} renderers - Array of renderer functions or method names used to process the styles object. Set via options or subclass.
+ * @property {HTMLElement} el - Reference to the `<style>` element in the DOM. Created when the instance is attached to the DOM.
  */
 class StyleSheet {
     constructor(styles, options = {}) {
@@ -112,13 +101,15 @@ class StyleSheet {
      * Generate a unique class name.
      * Transform local selectors that are classes to unique class names
      * to be used as class names in the styles object.
-     * May be overridden by `options.generateClassName`.
+     * May be overridden by `options.generateClassName` or by extending the class.
      * @param {String} className - The class name.
      * @param {Number} index - The index of the class name.
      * @returns {String} The unique class name.
      */
     generateClassName(className, index) {
-        return `${this.prefix}-${this.uid}-${__DEV__ && StyleSheet.debug ? className : index}`;
+        return __DEV__ && StyleSheet.debug ?
+            `${this.prefix}-${this.uid}-${className}` :
+            `${this.prefix[0]}-${this.uid}-${index}`;
     }
 
     /**

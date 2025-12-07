@@ -1,7 +1,7 @@
 import __DEV__ from './dev.js';
 
 const camelizedToDashed = str => str.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
-const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
+const compose = fns => fns.reduce((f, g) => (...args) => f(g(...args)));
 
 const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'shouldAttachToDOM', 'attributes', 'renderers'];
 
@@ -127,11 +127,11 @@ class StyleSheet {
      * @returns {String} The styles object as a string.
      */
     render() {
-        return compose(
-            ...this.renderers.map(
-                renderer => (typeof renderer === 'string' ? this[renderer] : renderer).bind(this)
-            )
-        )(this.styles);
+        const renderers = this.renderers.map(
+            renderer => (typeof renderer === 'string' ? this[renderer] : renderer).bind(this)
+        );
+
+        return compose(renderers)(this.styles);
     }
 
     /**

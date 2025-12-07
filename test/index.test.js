@@ -202,27 +202,26 @@ describe('cssfun', () => {
 
         it('must support media queries', () => {
             const instance = css({
-                '@media (min-width: 768px)' : {
-                    a : {
-                        color : 'red'
-                    }
-                }
-            });
-            const style = instance.el;
-            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">@media (min-width: 768px){a{color:red;}}</style>`);
-        });
-
-        it('must support classes in media queries', () => {
-            const instance = css({
                 root : {},
                 '@media (min-width: 768px)' : {
                     '$root' : {
+                        color : 'black',
+                        '@global a' : {
+                            color : 'green'
+                        }
+                    },
+                    '@global a' : {
                         color : 'red'
+                    },
+                    '@global' : {
+                        h1 : {
+                            color : 'blue'
+                        }
                     }
                 }
             });
             const style = instance.el;
-            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">@media (min-width: 768px){.${instance.prefix}-${instance.uid}-1{color:red;}}</style>`);
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">@media (min-width: 768px){.${instance.prefix}-${instance.uid}-1{color:black;}.${instance.prefix}-${instance.uid}-1 a{color:green;}a{color:red;}h1{color:blue;}}</style>`);
         });
     });
 

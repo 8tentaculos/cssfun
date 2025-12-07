@@ -215,8 +215,10 @@ class StyleSheet {
                 } else {
                     const selector = generateKey(key);
                     acc[selector] = {};
+                    // Don't expand at-rules.
+                    const args = selector.match(/@/) ? [] : [acc, selector];
                     // Regular styles.
-                    Object.assign(acc[selector], this.parseStyles(value, acc, selector));
+                    Object.assign(acc[selector], this.parseStyles(value, ...args));
                 }
             } else {
                 // Add style rules.

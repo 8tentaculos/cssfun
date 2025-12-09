@@ -216,7 +216,7 @@ class StyleSheet {
                 // Convert camelCase to dashed-case.
                 // Only convert if the key doesn't already contain a dash.
                 // Allows css vars to contain camelCase parts between dashes.
-                acc[key.includes('-') ? key : camelizedToDashed(key)] = value;
+                acc[key.match(/-/) ? key : camelizedToDashed(key)] = value;
             }
 
             return acc;

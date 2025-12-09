@@ -42,7 +42,7 @@ Write modular **CSS** within your **JavaScript** code with built-in **themes** a
 
 ## Getting Started
 
-### Using npm
+### Installing via npm
 
 ```bash
 $ npm install cssfun
@@ -94,7 +94,7 @@ These are the built-in renderers transformations:
 
 > **Note**: All examples below show class names generated in **development mode**.  
 > In **production**, class names are optimized for smaller bundle size:
-> - **Development**: `.fun-9qkk9s-root { color:red; }` (full prefix + class name)
+> - **Development**: `.fun-9qkk9s-root { color: red; }` (full prefix + class name)
 > - **Production**: `.f-9qkk9s-1{color:red;}` (first letter of prefix + index)
 > 
 > Customize via [`options.generateClassName`](/docs/api.md#new-stylesheetstyles-options) or by [extending the class](/docs/api.md#stylesheet__generateclassname).

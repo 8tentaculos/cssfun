@@ -1,12 +1,14 @@
 import css from './css.js';
 import StyleSheet from './StyleSheet.js';
+import isObject from './utils/isObject.js';
 
 const makeCssVars = (theme = {}, prefix = '--') => {
     return Object.keys(theme).reduce((acc, key) => {
-        if (theme[key].constructor === Object) {
-            Object.assign(acc, makeCssVars(theme[key], `${prefix}-${key}`));
-        } else {
-            acc[`${prefix}-${key}`] = theme[key];
+        const value = theme[key];
+        if (isObject(value)) {
+            Object.assign(acc, makeCssVars(value, `${prefix}-${key}`));
+        } else if (typeof value !== 'undefined' && value !== null) {
+            acc[`${prefix}-${key}`] = value;
         }
         return acc;
     }, {});

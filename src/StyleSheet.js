@@ -1,4 +1,5 @@
-import __DEV__ from './dev.js';
+import isObject from './utils/isObject.js';
+import __DEV__ from './utils/dev.js';
 
 const camelizedToDashed = str => str.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
 const compose = fns => fns.reduce((f, g) => (...args) => f(g(...args)));
@@ -145,13 +146,13 @@ class StyleSheet {
                 whitespace = ' ';
             }
             // Add the styles to the accumulator recursively.
-            if (value.constructor === Object) {
+            if (isObject(value)) {
                 if (Object.keys(value).length > 0) {
                     const renderedStyles = this.renderStyles(value, level + 1);
                     // Add rules to the accumulator.
                     acc.push(`${indent}${key}${whitespace}{${nl}${renderedStyles}${indent}}${nl}`);
                 }
-            } else {
+            } else if (typeof value !== 'undefined' && value !== null) {
                 // Add the style to the accumulator.
                 acc.push(`${indent}${key}:${whitespace}${value};${nl}`);
             }
@@ -194,7 +195,7 @@ class StyleSheet {
         const result = Object.keys(styles).reduce((acc, key) => {
             const value = styles[key];
             // Parse styles recursively.
-            if (value.constructor === Object) {
+            if (isObject(value)) {
                 if (key.match(StyleSheet.globalRegex)) {
                     // Global and nested global styles.
                     Object.assign(parent || acc, this.parseStyles(value, acc, parentSelector, true));
@@ -211,7 +212,7 @@ class StyleSheet {
                     // Regular styles.
                     Object.assign(acc[selector], this.parseStyles(value, ...args));
                 }
-            } else {
+            } else if (typeof value !== 'undefined' && value !== null) {
                 // Add style rules.
                 // Convert camelCase to dashed-case.
                 // Only convert if the key doesn't already contain a dash.

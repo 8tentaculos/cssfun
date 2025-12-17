@@ -241,6 +241,27 @@ describe('cssfun', () => {
             const instance = css({ root : { color : 'red' } });
             expect(instance).to.be.instanceOf(StyleSheet);
         });
+
+        it('must not render null values in styles', () => {
+            const instance = css({
+                root : {
+                    color : 'red',
+                    backgroundColor : null,
+                    margin : '10px',
+                    padding : null,
+                    border : '1px solid black'
+                }
+            });
+            const style = instance.el;
+            const cssText = style.textContent;
+            // Verify that null values are not rendered.
+            expect(cssText).to.include('color:red');
+            expect(cssText).to.include('margin:10px');
+            expect(cssText).to.include('border:1px solid black');
+            expect(cssText).to.not.include('backgroundColor');
+            expect(cssText).to.not.include('padding');
+            expect(cssText).to.not.include('null');
+        });
     });
 
     describe('createTheme', () => {
@@ -277,6 +298,39 @@ describe('cssfun', () => {
             document.body.classList.add(theme.classes.root);
             expect(getComputedStyle(document.body).getPropertyValue('--fun-color')).to.be.equal('red');
             expect(getComputedStyle(document.body).getPropertyValue('color-scheme')).to.be.equal('normal');
+        });
+
+        it('must not render null values in theme vars', () => {
+            const theme = createTheme({
+                light : {
+                    color : 'red',
+                    backgroundColor : null,
+                    margin : '10px',
+                    padding : null,
+                    border : '1px solid'
+                },
+                dark : {
+                    color : 'blue',
+                    backgroundColor : null,
+                    margin : '20px',
+                    border : '2px solid'
+                }
+            });
+            document.body.classList.add(theme.classes.root);
+            const style = theme.el;
+            const cssText = style.textContent;
+            // Verify that null values are not rendered in the CSS.
+            expect(cssText).to.include('--fun-color');
+            expect(cssText).to.include('--fun-margin');
+            expect(cssText).to.include('--fun-border');
+            expect(cssText).to.not.include('--fun-backgroundColor');
+            expect(cssText).to.not.include('--fun-padding');
+            expect(cssText).to.not.include('null');
+            // Verify that CSS variables are not applied when they are null.
+            expect(getComputedStyle(document.body).getPropertyValue('--fun-color')).to.be.equal('red');
+            expect(getComputedStyle(document.body).getPropertyValue('--fun-margin')).to.be.equal('10px');
+            expect(getComputedStyle(document.body).getPropertyValue('--fun-backgroundColor')).to.be.equal('');
+            expect(getComputedStyle(document.body).getPropertyValue('--fun-padding')).to.be.equal('');
         });
     });
 });

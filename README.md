@@ -11,10 +11,10 @@
 
 Write modular **CSS** within your **JavaScript** code with built-in **themes** and **SSR** support.
 
-[![npm version](https://img.shields.io/npm/v/cssfun.svg?style=flat-square)](https://www.npmjs.com/package/cssfun)
-[![npm package minimized gzipped size](https://img.shields.io/bundlejs/size/cssfun?style=flat-square)](https://unpkg.com/cssfun/dist/cssfun.min.js)
-[![npm downloads](https://img.shields.io/npm/dm/cssfun.svg?style=flat-square)](https://www.npmjs.com/package/cssfun)
-[![jsDelivr hits (npm)](https://img.shields.io/jsdelivr/npm/hm/cssfun?style=flat-square)](https://www.jsdelivr.com/package/npm/cssfun)
+[![npm version](https://img.shields.io/npm/v/cssfun.svg)](https://www.npmjs.com/package/cssfun)
+[![npm package minimized gzipped size](https://img.shields.io/bundlejs/size/cssfun)](https://unpkg.com/cssfun/dist/cssfun.min.js)
+[![npm downloads](https://img.shields.io/npm/dm/cssfun.svg)](https://www.npmjs.com/package/cssfun)
+[![jsDelivr hits (npm)](https://img.shields.io/jsdelivr/npm/hm/cssfun)](https://www.jsdelivr.com/package/npm/cssfun)
 
 ## Key Features
 

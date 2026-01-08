@@ -87,24 +87,62 @@ const { classes } = css({
 const Button = () => <button className={classes.button}>Click me</button>;
 ```
 
+## Class Name Generation
+
+When you call `css()`, **CSSFUN** automatically generates unique, scoped class names for each top-level selector in your styles object. These class names are created **at module initialization**, ensuring near-zero runtime overhead.
+
+### How Classes Are Generated
+
+1. **When**: Classes are generated immediately when `css()` is called, during the StyleSheet instance creation.
+2. **Which selectors**: Only top-level selectors that match valid class name patterns (alphanumeric characters, no special characters) get generated classes.
+3. **Format**: The format differs between development and production modes:
+
+   **Development Mode** (readable, for debugging):
+   ```
+   {prefix}-{uid}-{className}
+   ```
+   Example: `.fun-9qkk9s-button` (prefix `fun` + unique ID `9qkk9s` + original class name `button`)
+
+   **Production Mode** (optimized, smaller bundle):
+   ```
+   {prefix[0]}-{uid}-{index}
+   ```
+   Example: `.f-9qkk9s-1` (first letter of prefix `f` + unique ID `9qkk9s` + sequential index `1`)
+
+4. **Access**: Generated class names are available via the `classes` object returned by `css()`:
+   ```javascript
+   const { classes } = css({
+       button: { color: 'red' },
+       link: { color: 'blue' }
+   });
+   // classes.button → "fun-9qkk9s-button" (dev) or "f-9qkk9s-1" (prod)
+   // classes.link → "fun-9qkk9s-link" (dev) or "f-9qkk9s-2" (prod)
+   ```
+
+> **Note**: All examples in this documentation show class names in **development mode** for clarity.  
+> In **production**, class names are automatically optimized for smaller bundle size.  
+> You can customize class name generation via [`options.generateClassName`](/docs/api.md#new-stylesheetstyles-options) or by [extending the class](/docs/api.md#stylesheet__generateclassname).
+
 ## Renderers
 
-Renderers are functions that transform style objects into CSS strings.  
-These are the built-in renderers transformations:
+Renderers are functions that transform style objects into CSS strings. They are applied in sequence, with each renderer receiving the output of the previous one.
 
-> **Note**: All examples below show class names generated in **development mode**.  
-> In **production**, class names are optimized for smaller bundle size:
-> - **Development**: `.fun-9qkk9s-root { color: red; }` (full prefix + class name)
-> - **Production**: `.f-9qkk9s-1{color:red;}` (first letter of prefix + index)
-> 
-> Customize via [`options.generateClassName`](/docs/api.md#new-stylesheetstyles-options) or by [extending the class](/docs/api.md#stylesheet__generateclassname).
+**CSSFUN** uses two built-in renderers by default:
+1. **`parseStyles`**: Transforms the style object (expands nested selectors, replaces class references, converts camelCase to dashed-case, handles global styles)
+2. **`renderStyles`**: Converts the processed object into a CSS string
+
+The final renderer in the chain outputs the CSS string that gets injected into the DOM.
+
+These are the built-in renderers transformations:
 
 #### Camelized keys will be transformed to dashed keys
 
 ```javascript
 css({
     root : {
-        backgroundColor : 'black'
+        backgroundColor : 'black',
+        fontSize : '16px',
+        paddingTop : '10px'
     }
 }).toString();
 ```
@@ -115,6 +153,8 @@ css({
 <style data-fun-uid="uwitok">
     .fun-uwitok-root {
         background-color: black;
+        font-size: 16px;
+        padding-top: 10px;
     }
 </style>
 ```
@@ -304,7 +344,19 @@ css({
     ```
 
 When composed, the first renderer receives the styles object, and the final one outputs the 
-resulting CSS string.  
+resulting CSS string. The renderers are applied in sequence: each renderer receives the output 
+of the previous one.
+
+**Example flow:**
+```
+Input styles object
+    ↓
+[parseStyles] → Transforms object (expands nested, replaces references, converts camelCase)
+    ↓
+[renderStyles] → Converts object to CSS string
+    ↓
+Output CSS string
+```
 
 ### Custom Renderers
 
@@ -314,7 +366,9 @@ If passed via [`options.renderers`](/docs/api.md#new-stylesheetstyles-options), 
 Elements in the `renderers` array can be either functions or strings that reference methods of the [`StyleSheet`](/docs/api.md#stylesheet) instance. These 
 methods will be bound to the instance before they are invoked.
 
-By default, [`StyleSheet`](/docs/api.md#stylesheet) are rendered using the built-in renderers: `[this.renderStyles, this.parseStyles]`.
+By default, [`StyleSheet`](/docs/api.md#stylesheet) instances are rendered using the built-in renderers: `[this.renderStyles, this.parseStyles]`.
+
+**Note:** The order matters! Renderers are composed, so they execute in reverse order. With `[renderStyles, parseStyles]`, `parseStyles` executes first (transforms the object), then `renderStyles` (converts to CSS string).
 
 ## Themes
 
@@ -473,6 +527,10 @@ When the app is hydrated on the client side, the styles are preserved and won’
 ## API Documentation
 
 Complete API documentation can be found [here](/docs/api.md).
+
+## Working with LLMs
+
+For those working with LLMs, there is an [AI Agents reference guide](/docs/AGENTS.md) that provides API patterns, style syntax, theme management, and best practices, optimized for LLM context. You can share this guide with AI assistants to help them understand **CSSFUN**'s architecture and styling APIs.
 
 ## Examples
 

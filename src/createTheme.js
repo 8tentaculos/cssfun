@@ -2,18 +2,39 @@ import css from './css.js';
 import StyleSheet from './StyleSheet.js';
 import isObject from './utils/isObject.js';
 
-const makeCssVars = (theme = {}, prefix = '--') => {
-    return Object.keys(theme).reduce((acc, key) => {
-        const value = theme[key];
-        if (isObject(value)) {
-            Object.assign(acc, makeCssVars(value, `${prefix}-${key}`));
-        } else if (typeof value !== 'undefined' && value !== null) {
-            acc[`${prefix}-${key}`] = value;
-        }
-        return acc;
-    }, {});
+/**
+ * Flattens a nested theme object into a map of CSS variable names to values.
+ * Nested keys are joined with `-` (e.g. `{ colors: { primary: 'blue' } }` → `--prefix-colors-primary`).
+ * @private
+ * @param {Object} [theme={}] - Nested theme object.
+ * @param {string|null} [prefix] - Prefix for variable names (e.g. `fun` → `--fun-key`). Omit or pass `null`/`''` for no prefix.
+ * @returns {Object} Map of CSS variable names (e.g. `--fun-color`) to values.
+ */
+const makeCssVars = (theme = {}, prefix) => {
+    function build(theme, nameAcc) {
+        return Object.keys(theme).reduce((acc, key) => {
+            const value = theme[key];
+            const name = nameAcc ? `${nameAcc}-${key}` : prefix ? `--${prefix}-${key}` : `--${key}`;
+
+            if (isObject(value)) {
+                Object.assign(acc, build(value, name));
+            } else if (typeof value !== 'undefined' && value !== null) {
+                acc[name] = value;
+            }
+
+            return acc;
+        }, {});
+    }
+    return build(theme);
 };
 
+/**
+ * Returns keys that differ between two objects, with each side’s value.
+ * @private
+ * @param {Object} left - First object.
+ * @param {Object} right - Second object.
+ * @returns {{ left: Object, right: Object }} Objects containing only the differing keys and their values per side.
+ */
 const getDiff = (left, right) => {
     return Object.keys(left).reduce((acc, key) => {
         if (left[key] !== right[key]) {
@@ -49,8 +70,8 @@ const getDiff = (left, right) => {
  * supports both `light` and `dark` themes, adapting to system preferences; can override system 
  * preference with `data-color-scheme` set to `light` or `dark`), and `normal` (uses the `normal` theme only).
  * 
- * @param {String} [options.cssVarsPrefix] - The prefix for the generated CSS variables. Default is `fun`. 
- * For example, a key `color` in the theme will generate a CSS variable like `--fun-color`.
+ * @param {String|null} [options.cssVarsPrefix] - Prefix for the generated CSS variables. Defaults to `StyleSheet.prefix`.
+ * Pass `null` or `''` to generate variables without a prefix (e.g. `--color` instead of `--fun-color`).
  * 
  * @param {Function} [options.createStyleSheet] - A function used to create a new StyleSheet instance. 
  * By default, it uses the `css` function.
@@ -96,7 +117,7 @@ const getDiff = (left, right) => {
  */
 const createTheme = (themes = {}, options = {}) => {
     const colorScheme = options.colorScheme || 'light dark';
-    const prefix = `--${options.cssVarsPrefix ||  StyleSheet.prefix}`;
+    const prefix = 'cssVarsPrefix' in options ? options.cssVarsPrefix : StyleSheet.prefix;
 
     let styles;
 

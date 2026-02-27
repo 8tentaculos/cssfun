@@ -332,5 +332,37 @@ describe('cssfun', () => {
             expect(getComputedStyle(document.body).getPropertyValue('--fun-backgroundColor')).to.be.equal('');
             expect(getComputedStyle(document.body).getPropertyValue('--fun-padding')).to.be.equal('');
         });
+
+        it('must produce CSS vars without prefix when options.cssVarsPrefix is empty string', () => {
+            const theme = createTheme(
+                { light : { color : 'red' }, dark : { color : 'navy' } },
+                { cssVarsPrefix : '' }
+            );
+            document.body.classList.add(theme.classes.root);
+            expect(getComputedStyle(document.body).getPropertyValue('--color')).to.be.equal('red');
+            expect(theme.el.textContent).to.include('--color');
+            expect(theme.el.textContent).to.not.include('--fun-');
+        });
+
+        it('must produce CSS vars without prefix when options.cssVarsPrefix is null', () => {
+            const theme = createTheme(
+                { light : { color : 'green' }, dark : { color : 'teal' } },
+                { cssVarsPrefix : null }
+            );
+            document.body.classList.add(theme.classes.root);
+            expect(getComputedStyle(document.body).getPropertyValue('--color')).to.be.equal('green');
+            expect(theme.el.textContent).to.include('--color');
+            expect(theme.el.textContent).to.not.include('--fun-');
+        });
+
+        it('must use custom cssVarsPrefix when provided', () => {
+            const theme = createTheme(
+                { light : { color : 'red' }, dark : { color : 'blue' } },
+                { cssVarsPrefix : 'app' }
+            );
+            document.body.classList.add(theme.classes.root);
+            expect(getComputedStyle(document.body).getPropertyValue('--app-color')).to.be.equal('red');
+            expect(theme.el.textContent).to.include('--app-color');
+        });
     });
 });

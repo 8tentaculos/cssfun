@@ -25,7 +25,7 @@
     ],
     "scripts": {
         "prepare": "npm run clean && npm run test && npm run build",
-        "clean": "rimraf lib dist es",
+        "clean": "node -e \"const fs=require('fs');['lib','dist','es'].forEach(d=>fs.rmSync(d,{recursive:true,force:true}))\"",
         "test": "mocha --require jsdom-global/register --reporter nyan test/*.js",
         "posttest": "npm run lint",
         "lint": "eslint src test",
@@ -55,16 +55,15 @@
     "devDependencies": {
         "@eslint/js": "^9.34.0",
         "@rollup/plugin-replace": "^6.0.3",
-        "@rollup/plugin-terser": "^0.4.4",
+        "@rollup/plugin-terser": "^1.0.0",
         "chai": "^6.0.1",
         "eslint": "^9.34.0",
-        "glob": "^13.0.0",
+        "glob": "^13.0.6",
         "globals": "^16.3.0",
         "jsdoc-to-markdown": "^9.1.2",
-        "jsdom": "^26.1.0",
+        "jsdom": "^29.0.1",
         "jsdom-global": "3.0.2",
-        "mocha": "^11.7.1",
-        "rimraf": "^6.0.1",
-        "rollup": "^4.48.1"
+        "mocha": "^11.7.5",
+        "rollup": "^4.60.1"
     }
 }

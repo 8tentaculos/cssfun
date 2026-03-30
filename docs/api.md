@@ -238,7 +238,7 @@ its descendants.
 | themes | <code>Object</code> | An object defining styles for color schemes (`light`, `dark`, `normal`).  Each key corresponds to a color scheme, and its value is an object of key-value pairs converted  to CSS variables. Nested keys are concatenated with `-` to form variable names. |
 | [options] | <code>Object</code> | An optional object to customize the theme generation. It includes options  for selecting color schemes, customizing CSS variable prefixes, and controlling StyleSheet creation. |
 | [options.colorScheme] | <code>String</code> | Specifies the color scheme(s) to use. Possible values are:  `light` (uses the `light` theme only), `dark` (uses the `dark` theme only), `light dark` (default,  supports both `light` and `dark` themes, adapting to system preferences; can override system  preference with `data-color-scheme` set to `light` or `dark`), and `normal` (uses the `normal` theme only). |
-| [options.cssVarsPrefix] | <code>String</code> | The prefix for the generated CSS variables. Default is `fun`.  For example, a key `color` in the theme will generate a CSS variable like `--fun-color`. |
+| [options.cssVarsPrefix] | <code>String</code> \| <code>null</code> | Prefix for the generated CSS variables. Defaults to `StyleSheet.prefix`. Pass `null` or `''` to generate variables without a prefix (e.g. `--color` instead of `--fun-color`). |
 | [options.createStyleSheet] | <code>function</code> | A function used to create a new StyleSheet instance.  By default, it uses the `css` function. |
 | [options.styleSheetOptions] | <code>Object</code> | Options to pass when creating the StyleSheet instance.  Default is `system`. |
 

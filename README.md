@@ -40,6 +40,10 @@ Write modular **CSS** within your **JavaScript** code with built-in **themes** a
   With built-in [theme support](#themes), **CSSFUN** uses [CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) 
   to manage light and dark color schemes. Themes update automatically based on user preferences, no re-renders needed.
 
+- **TypeScript Support** 🔷  
+  Ships with type definitions. The `classes` object is fully typed based on your styles — you get autocomplete 
+  for class names and a type error on typos. CSS properties autocomplete via [csstype](https://github.com/frenic/csstype).
+
 ## Getting Started
 
 ### Installing via npm
@@ -94,8 +98,9 @@ When you call `css()`, **CSSFUN** automatically generates unique, scoped class n
 ### How Classes Are Generated
 
 1. **When**: Classes are generated immediately when `css()` is called, during the StyleSheet instance creation.
-2. **Which selectors**: Only top-level selectors that match valid class name patterns (alphanumeric characters, no special characters) get generated classes.
-3. **Format**: The format differs between development and production modes:
+2. **Stable**: The unique ID embedded in each class name is derived from a hash of the styles content. The same styles always produce the same class names — across environments, server and client, hot reloads, and multiple calls with identical styles.
+3. **Which selectors**: Only top-level selectors that match valid class name patterns (alphanumeric characters, no special characters) get generated classes.
+4. **Format**: The format differs between development and production modes:
 
    **Development Mode** (readable, for debugging):
    ```
@@ -109,7 +114,7 @@ When you call `css()`, **CSSFUN** automatically generates unique, scoped class n
    ```
    Example: `.f-9qkk9s-1` (first letter of prefix `f` + unique ID `9qkk9s` + sequential index `1`)
 
-4. **Access**: Generated class names are available via the `classes` object returned by `css()`:
+5. **Access**: Generated class names are available via the `classes` object returned by `css()`:
    ```javascript
    const { classes } = css({
        button: { color: 'red' },

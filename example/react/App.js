@@ -61,7 +61,7 @@ const { classes } = css({
 
 function App() {
     const [theme, setTheme] = useState(
-        document.documentElement.getAttribute('data-color-scheme') || 'system'
+        document.documentElement.getAttribute('data-color-scheme') || ''
     );
 
     useEffect(() => {

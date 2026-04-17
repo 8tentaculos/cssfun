@@ -63,12 +63,10 @@ const App = Component.create`
             <div class="${classes.cat}">🐱</div>
             <div class="${classes.text}">*waves paw*</div>
         </div>
-        <${ThemeSelector} ${{
-            theme : document.documentElement.getAttribute('data-color-scheme') || 'system',
-            setTheme : (theme) => {
-                document.documentElement.setAttribute('data-color-scheme', theme);
-            }
-        }} />
+        <${ThemeSelector}
+            theme="${() => document.documentElement.getAttribute('data-color-scheme') || ''}"
+            setTheme=${(theme) => document.documentElement.setAttribute('data-color-scheme', theme)}
+        />
     </div>
 `;
 

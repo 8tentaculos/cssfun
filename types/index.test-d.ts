@@ -1,6 +1,6 @@
 import { expectType, expectError, expectAssignable } from 'tsd';
 import { css, StyleSheet, createTheme } from './index';
-import type { CSSValue, StyleRule, Styles, StyleSheetOptions, ThemeDefinition, CreateThemeOptions } from './index';
+import type { CSSValue, CSSProperties, StyleRule, Styles, StyleSheetOptions, ThemeVars, ThemeDefinition, CreateThemeOptions } from './index';
 
 /*
  * css(): generic classes inference
@@ -92,6 +92,12 @@ expectAssignable<HTMLStyleElement | null | undefined>(instance.el);
 expectType<typeof instance>(instance.attach());
 expectType<typeof instance>(instance.destroy());
 
+// renderer/internal methods exposed for subclasses
+expectType<string>(instance.renderStyles({ color : 'red' }));
+expectType<Record<string, string>>(instance.getAttributes());
+instance.parseStyles({ root : { color : 'red' } });
+expectAssignable<string>(instance.classes.root);
+
 /*
  * StyleSheet static members
  */
@@ -123,8 +129,14 @@ const theme = createTheme({
     },
 });
 
+// createTheme returns a StyleSheet whose `classes` exposes `root`
+expectType<StyleSheet<{ root: StyleRule }>>(theme);
+expectType<{ readonly root: string }>(theme.classes);
 // classes.root is always available from createTheme
 expectType<string>(theme.classes.root);
+
+// createTheme works with no arguments
+expectType<StyleSheet<{ root: StyleRule }>>(createTheme());
 
 // single color scheme
 createTheme({ normal : { color : 'red' } }, { colorScheme : 'normal' });
@@ -144,7 +156,9 @@ expectError(createTheme({}, { colorScheme : 'invalid' }));
 const styles : Styles = { root : { color : 'red' } };
 const rule : StyleRule = { color : 'blue', '&:hover' : { color : 'red' } };
 const value : CSSValue = 'blue';
+const props : CSSProperties = { color : 'blue', backgroundColor : null, padding : 10 };
 const opts : StyleSheetOptions = { prefix : 'test' };
+const themeVars : ThemeVars = { colorPrimary : 'black', palette : { common : { black : '#000' } } };
 const themeDef : ThemeDefinition = { light : { color : 'white' }, dark : { color : 'black' } };
 const themeOpts : CreateThemeOptions = { colorScheme : 'dark' };
 

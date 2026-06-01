@@ -85,6 +85,19 @@ declare class StyleSheet<S extends Styles = Styles> {
      * Returns a string ready to be added to the style element.
      */
     render(): string;
+    /**
+     * Default renderer. Render a (parsed) styles object as a CSS string.
+     * Exposed for subclasses and custom renderers.
+     */
+    renderStyles(styles: any, level?: number): string;
+    /**
+     * Default renderer. Parse and transform the styles object (expand nested styles,
+     * resolve `$` references, convert camelCase keys, etc.) into an object ready for
+     * `renderStyles`. Exposed for subclasses and custom renderers.
+     */
+    parseStyles(styles: any, parent?: any, parentSelector?: string, isGlobal?: boolean): any;
+    /** Build the attributes object applied to the `<style>` element (includes `data-<prefix>-uid`). */
+    getAttributes(): Record<string, string>;
     /** Render the StyleSheet as a `<style>` element string. Used for server-side rendering. */
     toString(): string;
     /**

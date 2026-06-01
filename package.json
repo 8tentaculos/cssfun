@@ -31,17 +31,12 @@
         "src",
         "types"
     ],
-    "tsd": {
-        "compilerOptions": {
-            "moduleResolution": "bundler"
-        }
-    },
     "scripts": {
         "prepare": "npm run clean && npm run test && npm run build",
         "test:types": "tsd",
         "clean": "node -e \"const fs=require('fs');['lib','dist','es'].forEach(d=>fs.rmSync(d,{recursive:true,force:true}))\"",
         "test": "mocha --require jsdom-global/register --reporter nyan test/*.js",
-        "posttest": "npm run lint",
+        "posttest": "npm run lint && npm run test:types",
         "lint": "eslint src test",
         "build": "rollup -c",
         "version": "node -e \"const fs=require('fs');const {execSync}=require('child_process');const v=require('./package.json').version;const re=/cssfun@(v)?\\d+\\.\\d+\\.\\d+(?:-[\\w.-]+)?/g;const files=['README.md','example/rasti/index.html','example/react/index.html','example/vanilla/index.html'];files.forEach(f=>{const t=fs.readFileSync(f,'utf8');fs.writeFileSync(f,t.replace(re,(m,p)=>'cssfun@'+(p||'')+v));});execSync('git add '+files.join(' '),{stdio:'inherit'});\"",

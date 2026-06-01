@@ -16,6 +16,20 @@ expectType<string>(sheet.classes.button);
 expectError(sheet.classes.typo);
 
 /*
+ * css(): at-rule and $ref keys are excluded from `classes`
+ */
+const mixed = css({
+    root : { color : 'red' },
+    button : { padding : 10 },
+    '@global' : { body : { margin : 0 } },
+    '@keyframes wave' : { '0%, 100%' : { transform : 'rotate(10deg)' } },
+    '@media (min-width: 768px)' : { '$root' : { color : 'black' } },
+    '$root' : { padding : 10 },
+});
+// only plain class-name keys are exposed; at-rules and $refs are filtered out
+expectType<{ readonly root: string; readonly button: string }>(mixed.classes);
+
+/*
  * css(): real-world style patterns
  */
 css({

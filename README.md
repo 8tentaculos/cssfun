@@ -525,6 +525,70 @@ app.get('*', (req, res) => {
 
 When the app is hydrated on the client, the styles are preserved and will not be recreated.
 
+## TypeScript
+
+**CSSFUN** ships with TypeScript declarations out of the box — no `@types/cssfun` needed. The types are bundled in the package and resolved automatically via the `types` field in `package.json`.
+
+### Class name inference
+
+The `css()` function and `StyleSheet` constructor are generic over the styles object. The generated `classes` map is inferred from the keys you pass in, so typos and missing keys are caught at compile time:
+
+```ts
+import { css } from 'cssfun';
+
+const sheet = css({
+    link : { color : 'blue' },
+    button : { padding : 10 }
+});
+
+sheet.classes.link;   // string
+sheet.classes.button; // string
+sheet.classes.typo;   // ❌ Property 'typo' does not exist
+```
+
+At-rule keys (`@global`, `@keyframes …`, `@media …`, `@supports …`) and class reference keys (`$name`) are filtered out of `classes` automatically — they don't produce class names at runtime, so they don't appear in the type either.
+
+### CSS property autocomplete
+
+Style rules use [`csstype`](https://github.com/frenic/csstype) under the hood, so you get full autocomplete and validation on standard CSS properties, with `null`/`undefined` accepted (and filtered at runtime):
+
+```ts
+css({
+    card : {
+        color : 'red',
+        backgroundColor : null,    // ok — filtered at runtime
+        margin : undefined,        // ok
+        padding : 10,              // numbers accepted for length props
+    },
+    root : {
+        color : 'black',
+        '&:hover' : { color : 'blue' },
+        '& span' : { fontSize : 14 },
+    },
+    '@global' : { body : { margin : 0 } },
+    '@keyframes wave' : {
+        '0%, 100%' : { transform : 'rotate(10deg)' },
+        '50%'      : { transform : 'rotate(-10deg)' },
+    },
+});
+```
+
+### Exported types
+
+The following types are exported from the package root for use in your own code:
+
+```ts
+import type {
+    CSSValue,
+    StyleRule,
+    Styles,
+    StyleSheetOptions,
+    ThemeDefinition,
+    ThemeVars,
+    CreateThemeOptions
+} from 'cssfun';
+```
+
 ## API Documentation
 
 Complete API documentation can be found [here](/docs/api.md).

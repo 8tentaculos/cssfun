@@ -1,4 +1,3 @@
-
 import { Component } from 'rasti';
 import { css } from 'cssfun';
 

@@ -1,5 +1,4 @@
 import { css } from 'cssfun';
-
 import ThemeSelector from './ThemeSelector.js';
 
 const { classes } = css({

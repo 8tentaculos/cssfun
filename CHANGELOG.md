@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- TypeScript type definitions for the public API (`css`, `createTheme`, `StyleSheet`).
+  - Bundled `.d.ts` files under `types/` and wired up via the `types`/`exports` fields in `package.json`.
+  - CSS property autocomplete and type checking via `csstype`.
+  - Class name inference from the styles object passed to `css()`.
+  - Exported types: `CSSValue`, `CSSProperties`, `StyleRule`, `Styles`, `StyleSheetOptions`, `ThemeVars`, `ThemeDefinition`, `CreateThemeOptions`.
+
+### Changed
+
+- Documented TypeScript usage in the README (class name inference, CSS property autocomplete, exported types).
+- Added type tests (`tsd`) to the `posttest` step so types are checked on every test run.
+
 ## [0.0.14] - 2026-03-30
 
 ### Changed

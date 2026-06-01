@@ -1,5 +1,4 @@
 import { css } from 'cssfun';
-
 import ThemeSelector from './ThemeSelector.js';
 
 const { classes } = css({
@@ -67,7 +66,7 @@ const App = () => {
     `;
 
     div.replaceChild(ThemeSelector({
-        theme : document.documentElement.getAttribute('data-color-scheme') || 'system',
+        theme : document.documentElement.getAttribute('data-color-scheme') || '',
         setTheme: theme => document.documentElement.setAttribute('data-color-scheme', theme)
     }), div.querySelector('.theme-selector'));
 

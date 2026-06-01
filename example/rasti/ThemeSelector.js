@@ -36,39 +36,38 @@ const { classes } = css({
 });
 
 const ThemeSelector = Component.create`
-    <div onChange=${{ 'input' : function(ev) { this.options.setTheme(ev.target.value) } }}>
+    <div>
         <div class="${classes.label}">Theme</div>
         <div class="${classes.selector}">
             <input
                 type="radio"
                 id="system"
                 name="theme"
-                value="system"
-                ${({ options }) => options.theme === 'system' ? 'checked' : ''}
+                value=""
+                checked="${({ props }) => props.theme === ''}"
+                onChange="${({ props }) => (ev) => props.setTheme(ev.target.value)}"
             />
             <label for="system">System</label>
-            
             <input
                 type="radio"
                 id="light"
                 name="theme"
                 value="light"
-                ${({ options }) => options.theme === 'light' ? 'checked' : ''}
+                checked="${({ props }) => props.theme === 'light'}"
+                onChange="${({ props }) => (ev) => props.setTheme(ev.target.value)}"
             />
             <label for="light">Light</label>
-            
             <input
                 type="radio"
                 id="dark"
                 name="theme"
                 value="dark"
-                ${({ options }) => options.theme === 'dark' ? 'checked' : ''}
+                checked="${({ props }) => props.theme === 'dark'}"
+                onChange="${({ props }) => (ev) => props.setTheme(ev.target.value)}"
             />
             <label for="dark">Dark</label>
         </div>
     </div>
-`.extend({
-    onChange(){}
-});
+`;
 
 export default ThemeSelector;

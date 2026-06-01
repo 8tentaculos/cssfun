@@ -5,32 +5,42 @@
     "type": "module",
     "main": "lib/index.cjs",
     "module": "es/index.js",
-    "browser": "dist/cssfun.min.js",
+    "types": "types/index.d.ts",
     "exports": {
         ".": {
+            "types": "./types/index.d.ts",
             "import": "./es/index.js",
             "require": "./lib/index.cjs",
             "default": "./es/index.js"
         },
         "./*": {
-            "import": "./es/*",
-            "require": "./lib/*"
+            "types": "./types/*.d.ts",
+            "import": "./es/*.js",
+            "require": "./lib/*.cjs"
+        },
+        "./*.js": {
+            "types": "./types/*.d.ts",
+            "import": "./es/*.js",
+            "require": "./lib/*.cjs"
         }
     },
     "files": [
         "dist",
         "es",
         "lib",
-        "src"
+        "src",
+        "types"
     ],
     "scripts": {
         "prepare": "npm run clean && npm run test && npm run build",
+        "test:types": "tsd",
         "clean": "node -e \"const fs=require('fs');['lib','dist','es'].forEach(d=>fs.rmSync(d,{recursive:true,force:true}))\"",
         "test": "mocha --require jsdom-global/register --reporter nyan test/*.js",
-        "posttest": "npm run lint",
+        "posttest": "npm run lint && npm run test:types",
         "lint": "eslint src test",
         "build": "rollup -c",
-        "version": "node -e \"const fs=require('fs');const {execSync}=require('child_process');const v=require('./package.json').version;const re=/cssfun@(v)?\\d+\\.\\d+\\.\\d+(?:-[\\w.-]+)?/g;const files=['README.md','example/rasti/index.html','example/react/index.html','example/vanilla/index.html'];files.forEach(f=>{const t=fs.readFileSync(f,'utf8');fs.writeFileSync(f,t.replace(re,(m,p)=>'cssfun@'+(p||'')+v));});execSync('git add '+files.join(' '),{stdio:'inherit'});\"",
+        "version": "node -e \"const fs=require('fs');const {execSync}=require('child_process');const v=require('./package.json').version;const re=/cssfun@(v)?\\d+\\.\\d+\\.\\d+(?:-[\\w.-]+)?/g;const files=['README.md','docs/AGENTS.md','example/rasti/index.html','example/react/index.html','example/vanilla/index.html'];files.forEach(f=>{const t=fs.readFileSync(f,'utf8');fs.writeFileSync(f,t.replace(re,(m,p)=>'cssfun@'+(p||'')+v));});execSync('git add '+files.join(' '),{stdio:'inherit'});\" && npm run version:changelog",
+        "version:changelog": "node -e \"const fs=require('fs');const {execSync}=require('child_process');const v=require('./package.json').version;if(v.includes('-'))process.exit(0);if(!fs.existsSync('CHANGELOG.md'))process.exit(0);let c=fs.readFileSync('CHANGELOG.md','utf8');if(!/^## \\[Unreleased\\]\\s*$/m.test(c))process.exit(0);const d=new Date();const date=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');const tag='v'+v;c=c.replace(/^## \\[Unreleased\\][ \\t]*\\n+/m,'## [Unreleased]\\n\\n## ['+v+'] - '+date+'\\n\\n');const m=c.match(/^\\[unreleased\\]:\\s*(\\S+?)\\/compare\\/(\\S+?)\\.\\.\\.HEAD\\s*$/im);if(m)c=c.replace(/^\\[unreleased\\]:.*$/im,'[unreleased]: '+m[1]+'/compare/'+tag+'...HEAD\\n['+v+']: '+m[1]+'/compare/'+m[2]+'...'+tag);fs.writeFileSync('CHANGELOG.md',c);execSync('git add CHANGELOG.md',{stdio:'inherit'});\"",
         "docs:api": "jsdoc2md --module-index-format none --helper jsdoc2md/helper.cjs --partial jsdoc2md/header.hbs --partial jsdoc2md/sig-link.hbs --partial jsdoc2md/sig-link-html.hbs --partial jsdoc2md/sig-link-parent.hbs --files src/*.js > docs/api.md"
     },
     "repository": "github:8tentaculos/cssfun",
@@ -64,6 +74,10 @@
         "jsdom": "^29.0.1",
         "jsdom-global": "3.0.2",
         "mocha": "^11.7.5",
-        "rollup": "^4.60.1"
+        "rollup": "^4.60.1",
+        "tsd": "^0.33.0"
+    },
+    "dependencies": {
+        "csstype": "^3.2.3"
     }
 }

@@ -38,7 +38,11 @@ Write modular **CSS** within your **JavaScript** code with built-in **themes** a
 
 - **Built-in Theme Management** 🎨  
   With built-in [theme support](#themes), **CSSFUN** uses [CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) 
-  to manage light and dark color schemes. Themes update automatically based on user preferences, no re-renders needed.
+  to manage light and dark color schemes. Themes update automatically based on user preferences, with no re-renders needed.
+
+- **TypeScript Support** 🔷  
+  Ships with type definitions. The `classes` object is fully typed based on your styles, so you get autocomplete
+  for class names and a type error on typos. CSS properties autocomplete via [csstype](https://github.com/frenic/csstype).
 
 ## Getting Started
 
@@ -93,9 +97,10 @@ When you call `css()`, **CSSFUN** automatically generates unique, scoped class n
 
 ### How Classes Are Generated
 
-1. **When**: Classes are generated immediately when `css()` is called, during the StyleSheet instance creation.
-2. **Which selectors**: Only top-level selectors that match valid class name patterns (alphanumeric characters, no special characters) get generated classes.
-3. **Format**: The format differs between development and production modes:
+1. **When**: Classes are generated immediately when `css()` is called, during StyleSheet instance creation.
+2. **Stable**: The unique ID embedded in each class name is derived from a hash of the styles' content. The same styles always produce the same class names across environments (server and client), hot reloads, and multiple calls with identical styles.
+3. **Which selectors**: Only top-level selectors that match valid class name patterns (alphanumeric characters, no special characters) get generated classes.
+4. **Format**: The format differs between development and production modes:
 
    **Development Mode** (readable, for debugging):
    ```
@@ -109,7 +114,7 @@ When you call `css()`, **CSSFUN** automatically generates unique, scoped class n
    ```
    Example: `.f-9qkk9s-1` (first letter of prefix `f` + unique ID `9qkk9s` + sequential index `1`)
 
-4. **Access**: Generated class names are available via the `classes` object returned by `css()`:
+5. **Access**: Generated class names are available via the `classes` object returned by `css()`:
    ```javascript
    const { classes } = css({
        button: { color: 'red' },
@@ -133,7 +138,7 @@ Renderers are functions that transform style objects into CSS strings. They are 
 
 The final renderer in the chain outputs the CSS string that gets injected into the DOM.
 
-These are the built-in renderers transformations:
+These are the built-in renderer transformations:
 
 #### Camelized keys will be transformed to dashed keys
 
@@ -343,10 +348,6 @@ css({
     </style>
     ```
 
-When composed, the first renderer receives the styles object, and the final one outputs the 
-resulting CSS string. The renderers are applied in sequence: each renderer receives the output 
-of the previous one.
-
 **Example flow:**
 ```
 Input styles object
@@ -522,7 +523,76 @@ app.get('*', (req, res) => {
 });
 ```
 
-When the app is hydrated on the client side, the styles are preserved and won’t be recreated.
+When the app is hydrated on the client, the styles are preserved and will not be recreated.
+
+## TypeScript
+
+**CSSFUN** ships with TypeScript declarations out of the box — no `@types/cssfun` needed. The types are bundled in the package and resolved automatically via the `types` field in `package.json`.
+
+> Requires **TypeScript 4.1+** (the `classes` inference relies on key remapping and template literal types).
+
+### Class name inference
+
+The `css()` function and `StyleSheet` constructor are generic over the styles object. The generated `classes` map is inferred from the keys you pass in, so typos and missing keys are caught at compile time:
+
+```ts
+import { css } from 'cssfun';
+
+const sheet = css({
+    link : { color : 'blue' },
+    button : { padding : 10 }
+});
+
+sheet.classes.link;   // string
+sheet.classes.button; // string
+sheet.classes.typo;   // ❌ Property 'typo' does not exist
+```
+
+At-rule keys (`@global`, `@keyframes …`, `@media …`, `@supports …`) and class reference keys (`$name`) are filtered out of `classes` automatically — they don't produce class names at runtime, so they don't appear in the type either.
+
+Only top-level keys that are valid class-name identifiers (letters, digits and underscores — i.e. matching `/^\w+$/`) get a generated class at runtime. The type can't fully express that pattern, so keys with dashes, spaces or commas (e.g. `'my-card'`) appear in `classes` as `string` but resolve to `undefined` at runtime. Stick to simple identifiers for top-level class keys.
+
+### CSS property autocomplete
+
+Style rules use [`csstype`](https://github.com/frenic/csstype) under the hood, so you get autocomplete on standard CSS properties, with `null`/`undefined` accepted (and filtered at runtime). Note that values are intentionally permissive (any `string` is accepted) so that `var(...)`, custom values and arbitrary nested selectors keep working — so this is autocomplete, not strict validation:
+
+```ts
+css({
+    card : {
+        color : 'red',
+        backgroundColor : null,    // ok — filtered at runtime
+        margin : undefined,        // ok
+        padding : 10,              // numbers accepted for length props
+    },
+    root : {
+        color : 'black',
+        '&:hover' : { color : 'blue' },
+        '& span' : { fontSize : 14 },
+    },
+    '@global' : { body : { margin : 0 } },
+    '@keyframes wave' : {
+        '0%, 100%' : { transform : 'rotate(10deg)' },
+        '50%'      : { transform : 'rotate(-10deg)' },
+    },
+});
+```
+
+### Exported types
+
+The following types are exported from the package root for use in your own code:
+
+```ts
+import type {
+    CSSValue,
+    CSSProperties,
+    StyleRule,
+    Styles,
+    StyleSheetOptions,
+    ThemeDefinition,
+    ThemeVars,
+    CreateThemeOptions
+} from 'cssfun';
+```
 
 ## API Documentation
 

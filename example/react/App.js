@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import htm from "htm";
 import { css } from 'cssfun';
@@ -61,7 +60,7 @@ const { classes } = css({
 
 function App() {
     const [theme, setTheme] = useState(
-        document.documentElement.getAttribute('data-color-scheme') || 'system'
+        document.documentElement.getAttribute('data-color-scheme') || ''
     );
 
     useEffect(() => {

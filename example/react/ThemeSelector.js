@@ -47,9 +47,9 @@ function ThemeSelector({ theme, setTheme }) {
                     type="radio"
                     id="system"
                     name="theme"
-                    value="system"
-                    checked=${theme === 'system'}
-                    onChange=${() => setTheme('system')}
+                    value=""
+                    checked=${theme === ''}
+                    onChange=${() => setTheme('')}
                 />
                 <label for="system">System</label>
                 

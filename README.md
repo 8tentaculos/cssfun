@@ -529,6 +529,8 @@ When the app is hydrated on the client, the styles are preserved and will not be
 
 **CSSFUN** ships with TypeScript declarations out of the box — no `@types/cssfun` needed. The types are bundled in the package and resolved automatically via the `types` field in `package.json`.
 
+> Requires **TypeScript 4.1+** (the `classes` inference relies on key remapping and template literal types).
+
 ### Class name inference
 
 The `css()` function and `StyleSheet` constructor are generic over the styles object. The generated `classes` map is inferred from the keys you pass in, so typos and missing keys are caught at compile time:
@@ -548,9 +550,11 @@ sheet.classes.typo;   // ❌ Property 'typo' does not exist
 
 At-rule keys (`@global`, `@keyframes …`, `@media …`, `@supports …`) and class reference keys (`$name`) are filtered out of `classes` automatically — they don't produce class names at runtime, so they don't appear in the type either.
 
+Only top-level keys that are valid class-name identifiers (letters, digits and underscores — i.e. matching `/^\w+$/`) get a generated class at runtime. The type can't fully express that pattern, so keys with dashes, spaces or commas (e.g. `'my-card'`) appear in `classes` as `string` but resolve to `undefined` at runtime. Stick to simple identifiers for top-level class keys.
+
 ### CSS property autocomplete
 
-Style rules use [`csstype`](https://github.com/frenic/csstype) under the hood, so you get full autocomplete and validation on standard CSS properties, with `null`/`undefined` accepted (and filtered at runtime):
+Style rules use [`csstype`](https://github.com/frenic/csstype) under the hood, so you get autocomplete on standard CSS properties, with `null`/`undefined` accepted (and filtered at runtime). Note that values are intentionally permissive (any `string` is accepted) so that `var(...)`, custom values and arbitrary nested selectors keep working — so this is autocomplete, not strict validation:
 
 ```ts
 css({
@@ -580,6 +584,7 @@ The following types are exported from the package root for use in your own code:
 ```ts
 import type {
     CSSValue,
+    CSSProperties,
     StyleRule,
     Styles,
     StyleSheetOptions,

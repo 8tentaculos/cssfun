@@ -54,8 +54,15 @@ export interface StyleSheetOptions {
 declare class StyleSheet<S extends Styles = Styles> {
     constructor(styles: S, options?: StyleSheetOptions);
 
-    /** Object mapping original class names to generated unique class names. */
-    readonly classes: { readonly [K in keyof S]: string };
+    /**
+     * Object mapping original class names to generated unique class names.
+     * At-rule keys (`@global`, `@keyframes …`, `@media …`, `@supports …`)
+     * and class reference keys (`$name`) are excluded — they don't produce
+     * class names at runtime.
+     */
+    readonly classes: {
+        readonly [K in keyof S as K extends `@${string}` | `$${string}` ? never : K]: string;
+    };
     /** The original styles object provided to the instance. */
     styles: S;
     /** Unique identifier for the StyleSheet instance. */

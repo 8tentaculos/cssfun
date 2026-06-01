@@ -2,7 +2,7 @@
 
 This document provides a comprehensive reference for AI agents working with the CSSFUN library. It covers the core API patterns, style syntax, theme management, and best practices.
 
-For detailed API documentation, see: [API Documentation](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.13/docs/api.md)
+For detailed API documentation, see: [API Documentation](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.14/docs/api.md)
 
 ## 🔧 Core API
 
@@ -42,7 +42,7 @@ const Button = () => <button className={classes.button}>Click me</button>;
 - **Access**: Via `classes` object: `classes.button` returns the generated class name
 
 **Related API:**
-- [`css(styles, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.13/docs/api.md#css) - Creates and attaches a StyleSheet
+- [`css(styles, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.14/docs/api.md#css) - Creates and attaches a StyleSheet
 
 ### Style Object Structure
 
@@ -72,6 +72,72 @@ const { classes } = css({
         textDecoration : 'none'
     }
 });
+```
+
+## 🔷 TypeScript
+
+CSSFUN ships with TypeScript declarations out of the box — no `@types/cssfun` needed. Requires **TypeScript 4.1+** (the `classes` inference relies on key remapping and template literal types).
+
+### Inferred `classes`
+
+`css()` and the `StyleSheet` constructor are generic over the styles object, so `classes` is typed from the keys you pass. Typos and missing keys are compile-time errors.
+
+```ts
+import { css } from 'cssfun';
+
+const sheet = css({
+    link : { color : 'blue' },
+    button : { padding : 10 }
+});
+
+sheet.classes.link;   // string
+sheet.classes.button; // string
+sheet.classes.typo;   // ❌ Property 'typo' does not exist
+```
+
+- At-rule keys (`@global`, `@keyframes …`, `@media …`, `@supports …`) and `$ref` keys are filtered out of `classes` automatically — they don't produce class names at runtime.
+- Only top-level keys matching `/^\w+$/` (letters, digits, underscore) produce a class at runtime. Keys with dashes/spaces/commas (e.g. `'my-card'`) are typed as `string` but resolve to `undefined` at runtime — use simple identifiers for top-level class keys.
+
+### CSS property autocomplete
+
+Style rules use [`csstype`](https://github.com/frenic/csstype), so standard CSS properties autocomplete and `null`/`undefined` are accepted (filtered at runtime). Values are intentionally permissive (any `string` is accepted) so `var(...)`, custom values and arbitrary nested selectors keep working — so this is autocomplete, **not** strict validation. Unknown property names are not type errors, since `StyleRule` has a string index signature to allow nested selectors and at-rules.
+
+### Exported types
+
+```ts
+import type {
+    CSSValue,
+    CSSProperties,
+    StyleRule,
+    Styles,
+    StyleSheetOptions,
+    ThemeVars,
+    ThemeDefinition,
+    CreateThemeOptions
+} from 'cssfun';
+```
+
+### Typing options, themes and subclasses
+
+```ts
+import { css, StyleSheet } from 'cssfun';
+import type { StyleSheetOptions, CreateThemeOptions } from 'cssfun';
+
+// Option callbacks are typed with `this: StyleSheet`.
+const opts : StyleSheetOptions = {
+    prefix : 'app',
+    generateClassName(className, index) { return `${this.uid}-${className}-${index}`; }
+};
+
+// createTheme is typed too; classes.root is always available.
+const themeOpts : CreateThemeOptions = { colorScheme : 'dark' };
+
+// Subclassing: renderStyles / parseStyles / getAttributes are exposed for custom renderers.
+class MySheet extends StyleSheet {
+    renderStyles(styles : any, level? : number) {
+        return super.renderStyles(styles, level);
+    }
+}
 ```
 
 ## 🎯 Selectors and Nesting
@@ -349,7 +415,7 @@ const theme = createTheme({
 ```
 
 **Related API:**
-- [`createTheme(themes, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.13/docs/api.md#createtheme) - Creates a theme StyleSheet
+- [`createTheme(themes, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.14/docs/api.md#createtheme) - Creates a theme StyleSheet
 
 ## 🚀 Server-Side Rendering (SSR)
 
@@ -413,8 +479,8 @@ const css = StyleSheet.toCSS();
 ```
 
 **Related API:**
-- [`StyleSheet.toString()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.13/docs/api.md#stylesheet_tostring) - Static method to render all instances as HTML
-- [`StyleSheet.toCSS()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.13/docs/api.md#stylesheet_tocss) - Static method to render all instances as CSS
+- [`StyleSheet.toString()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.14/docs/api.md#stylesheet_tostring) - Static method to render all instances as HTML
+- [`StyleSheet.toCSS()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.14/docs/api.md#stylesheet_tocss) - Static method to render all instances as CSS
 
 ## 🛠️ Advanced Usage
 
@@ -485,7 +551,7 @@ const { classes } = css({
 ```
 
 **Related API:**
-- [`StyleSheet`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.13/docs/api.md#stylesheet) - StyleSheet class documentation
+- [`StyleSheet`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.14/docs/api.md#stylesheet) - StyleSheet class documentation
 
 ## ⚠️ CSSFUN Best Practices
 
@@ -577,6 +643,6 @@ const Button = ({ children, disabled, onClick }) => (
 
 ## Additional Resources
 
-- **Full API Documentation**: [api.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.13/docs/api.md)
+- **Full API Documentation**: [api.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.0.14/docs/api.md)
 - **GitHub Repository**: [8tentaculos/cssfun](https://github.com/8tentaculos/cssfun)
 - **Examples**: Check the `example/` folder in the repository

@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Documented TypeScript usage in the README (class name inference, CSS property autocomplete, exported types).
 - Added type tests (`tsd`) to the `posttest` step so types are checked on every test run.
+- Added test coverage for empty string values and CSS variables.
+- Updated modules.
 
 ## [0.0.14] - 2026-03-30
 

@@ -76,8 +76,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Breaking:** Renamed `shouldAddToDOM` to `shouldAttachToDOM`.
-- Improve docs.
+- **BREAKING:** Renamed `shouldAddToDOM` to `shouldAttachToDOM`.
+- Improved docs.
 
 ## [0.0.10] - 2025-04-15
 
@@ -91,10 +91,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Expose `this.shouldAddToDOM` so that it can be overridden in subclasses.
-- Check for `this.uid` when checking if a `StyleSheet` is already in the registry.
-- **Breaking:** `system` default color scheme option is now `light dark` for consistency with `color-scheme` property.
-- Improve docs.
+- Exposed `this.shouldAddToDOM` so it can be overridden in subclasses.
+- Added a registry check using `this.uid` to determine if a `StyleSheet` is already registered.
+- **BREAKING:** `system` default color scheme option is now `light dark` for consistency with `color-scheme` property.
+- Improved docs.
 
 ## [0.0.8] - 2025-04-06
 
@@ -103,8 +103,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduced stable class names generated using hashes.
 - Replaced `id` with a data attribute for identifying style elements.
 
-- **Breaking:** Renamed the `id` property and `generateId` method to `uid` and `generateUid`, respectively.
-- **Breaking:** Removed the `attach` static method.
+- **BREAKING:** Renamed the `id` property and `generateId` method to `uid` and `generateUid`, respectively.
+- **BREAKING:** Removed the `attach` static method.
 
 - Added comprehensive tests.
 - Updated documentation for clarity and accuracy.
@@ -113,7 +113,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Add nested global prefix.
+- Added nested global prefix.
 
     ```javascript
     css({
@@ -138,46 +138,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Use es6.
-- Docs.
+- Migrated to ES6.
+- Updated docs.
 
 ## [0.0.5] - 2024-09-26
 
 ### Fixed
 
-- Fix package exports for node and bundlers.
+- Fixed package exports for Node and bundlers.
 
 ## [0.0.4] - 2024-09-24
 
 ### Changed
 
-- Improve code for `StyleSheet` parse and render.
-- Improve `createTheme` code.
+- Improved code for `StyleSheet` parse and render.
+- Improved `createTheme` code.
 
 ## [0.0.3] - 2024-09-22
 
 ### Changed
 
-- Docs.
-- Improve `parseStyles`.
+- Updated docs.
+- Improved `parseStyles`.
 
 ### Fixed
 
-- Fix deep nested parent reference at `parseStyles`.
+- Fixed deep nested parent reference in `parseStyles`.
 
 ## [0.0.2] - 2024-09-21
 
 ### Changed
 
 #### `StyleSheet`
-- Make prefix for ids configurable as `options.idPrefix`.
+- Made prefix for ids configurable as `options.idPrefix`.
 #### `createTheme`
-- Add `options.createStyleSheet` to configure `StyleSheet` creation. By default `css` is used.
+- Added `options.createStyleSheet` to configure `StyleSheet` creation. Defaults to `css`.
 #### `StyleSheet`
-- **Breaking:** `StyleSheet.classPrefix` is now `StyleSheet.prefix`
+- **BREAKING:** `StyleSheet.classPrefix` is now `StyleSheet.prefix`
 #### `createTheme`
-- **Breaking:** `createTheme` is not more a higher order function. Now it receives a themes object and an options object and returns a theme `StyleSheet`.
-- **Breaking:** Fix css vars. Use dashes for nested objects. And keep camelized keys. `{ palette : { backgroundColor : 'black' } }` will be transformed into `--fun-palette-backgroundColor` instead of `--fun-palette-background-color`.
+- **BREAKING:** `createTheme` is no longer a higher-order function. It now receives a themes object and an options object and returns a theme `StyleSheet`.
+- **BREAKING:** Fixed CSS vars to use dashes for nested objects and preserve camelized keys. `{ palette : { backgroundColor : 'black' } }` will be transformed into `--fun-palette-backgroundColor` instead of `--fun-palette-background-color`.
 
 ## [0.0.1] - 2024-09-19
 

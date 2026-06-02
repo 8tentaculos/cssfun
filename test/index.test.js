@@ -224,22 +224,15 @@ describe('cssfun', () => {
             expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">@media (min-width: 768px){.${instance.prefix[0]}-${instance.uid}-1{color:black;}.${instance.prefix[0]}-${instance.uid}-1 a{color:green;}a{color:red;}h1{color:blue;}}</style>`);
         });
 
-        it('must render all instances in registry as CSS string', () => {
-            const instance1 = css({ root : { color : 'red' } });
-            const instance2 = css({ button : { color : 'blue' } });
-            const cssString = StyleSheet.toCSS();
-            expect(cssString).to.be.equal(`.${instance1.prefix[0]}-${instance1.uid}-1{color:red;}.${instance2.prefix[0]}-${instance2.uid}-1{color:blue;}`);
-        });
-    });
-
-    describe('css', () => {
-        it('must exists', () => {
-            expect(css).to.exist;
-        });
-
-        it('must instantiate a new StyleSheet', () => {
-            const instance = css({ root : { color : 'red' } });
-            expect(instance).to.be.instanceOf(StyleSheet);
+        it('must render css variables', () => {
+            const instance = css({
+                root : {
+                    '--my-var' : 'red',
+                    color : 'var(--my-var)'
+                }
+            });
+            const style = instance.el;
+            expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">.${instance.prefix[0]}-${instance.uid}-1{--my-var:red;color:var(--my-var);}</style>`);
         });
 
         it('must not render null values in styles', () => {
@@ -261,6 +254,37 @@ describe('cssfun', () => {
             expect(cssText).to.not.include('backgroundColor');
             expect(cssText).to.not.include('padding');
             expect(cssText).to.not.include('null');
+        });
+
+        it('must render empty string values in styles', () => {
+            const instance = css({
+                root : {
+                    '--empty' : '',
+                    color : 'red'
+                }
+            });
+            const cssText = instance.el.textContent;
+            // Empty strings are rendered. Only null and undefined are skipped.
+            expect(cssText).to.include('--empty:;');
+            expect(cssText).to.include('color:red');
+        });
+
+        it('must render all instances in registry as CSS string', () => {
+            const instance1 = css({ root : { color : 'red' } });
+            const instance2 = css({ button : { color : 'blue' } });
+            const cssString = StyleSheet.toCSS();
+            expect(cssString).to.be.equal(`.${instance1.prefix[0]}-${instance1.uid}-1{color:red;}.${instance2.prefix[0]}-${instance2.uid}-1{color:blue;}`);
+        });
+    });
+
+    describe('css', () => {
+        it('must exists', () => {
+            expect(css).to.exist;
+        });
+
+        it('must instantiate a new StyleSheet', () => {
+            const instance = css({ root : { color : 'red' } });
+            expect(instance).to.be.instanceOf(StyleSheet);
         });
     });
 

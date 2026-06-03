@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - CSS property autocomplete and type checking via `csstype`.
   - Class name inference from the styles object passed to `css()`.
   - Exported types: `CSSValue`, `CSSProperties`, `StyleRule`, `Styles`, `StyleSheetOptions`, `ThemeVars`, `ThemeDefinition`, `CreateThemeOptions`.
+- npm provenance attestations for published packages (verifiable supply chain).
 
 ### Changed
 

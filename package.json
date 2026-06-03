@@ -39,8 +39,7 @@
         "posttest": "npm run lint && npm run test:types",
         "lint": "eslint src test",
         "build": "rollup -c",
-        "version": "node -e \"const fs=require('fs');const {execSync}=require('child_process');const v=require('./package.json').version;const re=/cssfun@(v)?\\d+\\.\\d+\\.\\d+(?:-[\\w.-]+)?/g;const files=['README.md','docs/AGENTS.md','example/rasti/index.html','example/react/index.html','example/vanilla/index.html'];files.forEach(f=>{const t=fs.readFileSync(f,'utf8');fs.writeFileSync(f,t.replace(re,(m,p)=>'cssfun@'+(p||'')+v));});execSync('git add '+files.join(' '),{stdio:'inherit'});\" && npm run version:changelog",
-        "version:changelog": "node -e \"const fs=require('fs');const {execSync}=require('child_process');const v=require('./package.json').version;if(v.includes('-'))process.exit(0);if(!fs.existsSync('CHANGELOG.md'))process.exit(0);let c=fs.readFileSync('CHANGELOG.md','utf8');if(!/^## \\[Unreleased\\]\\s*$/m.test(c))process.exit(0);const d=new Date();const date=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');const tag='v'+v;c=c.replace(/^## \\[Unreleased\\][ \\t]*\\n+/m,'## [Unreleased]\\n\\n## ['+v+'] - '+date+'\\n\\n');const m=c.match(/^\\[unreleased\\]:\\s*(\\S+?)\\/compare\\/(\\S+?)\\.\\.\\.HEAD\\s*$/im);if(m)c=c.replace(/^\\[unreleased\\]:.*$/im,'[unreleased]: '+m[1]+'/compare/'+tag+'...HEAD\\n['+v+']: '+m[1]+'/compare/'+m[2]+'...'+tag);fs.writeFileSync('CHANGELOG.md',c);execSync('git add CHANGELOG.md',{stdio:'inherit'});\"",
+        "version": "node scripts/bump-cdn-links.js && node scripts/release-changelog.js",
         "docs:api": "jsdoc2md --module-index-format none --helper jsdoc2md/helper.cjs --partial jsdoc2md/header.hbs --partial jsdoc2md/sig-link.hbs --partial jsdoc2md/sig-link-html.hbs --partial jsdoc2md/sig-link-parent.hbs --files src/*.js > docs/api.md"
     },
     "repository": "github:8tentaculos/cssfun",

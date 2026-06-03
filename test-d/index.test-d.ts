@@ -1,6 +1,6 @@
 import { expectType, expectError, expectAssignable } from 'tsd';
-import { css, StyleSheet, createTheme } from './index';
-import type { CSSValue, CSSProperties, StyleRule, Styles, StyleSheetOptions, ThemeVars, ThemeDefinition, CreateThemeOptions } from './index';
+import { css, StyleSheet, createTheme } from '../types/index';
+import type { CSSValue, CSSProperties, StyleRule, Styles, StyleSheetOptions, ThemeVars, ThemeDefinition, CreateThemeOptions } from '../types/index';
 
 /*
  * css(): generic classes inference

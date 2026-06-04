@@ -173,3 +173,25 @@ const combined : string = [multi.classes.a, multi.classes.b].join(' ');
  */
 const allStyles : string = StyleSheet.toString();
 const allCss : string = StyleSheet.toCSS();
+
+/*
+ * subclassing: extend StyleSheet to customize behavior (e.g. generateClassName)
+ */
+class CustomStyleSheet extends StyleSheet {
+    generateClassName(className : string, index : number) : string {
+        return `custom-${className}-${index}`;
+    }
+}
+
+const custom = new CustomStyleSheet({ root : { color : 'red' } });
+expectType<string>(custom.classes.root);
+// attach()/destroy() return the subclass type (chainable)
+expectType<CustomStyleSheet>(custom.attach());
+expectType<CustomStyleSheet>(custom.destroy());
+
+/*
+ * createTheme: custom createStyleSheet may return a StyleSheet subclass
+ */
+createTheme({ light : { c : 'black' } }, {
+    createStyleSheet : (styles, options) => new CustomStyleSheet(styles, options),
+});

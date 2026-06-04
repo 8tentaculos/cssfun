@@ -55,7 +55,8 @@ declare class StyleSheet<S extends Styles = Styles> {
     constructor(styles: S, options?: StyleSheetOptions);
 
     /**
-     * Object mapping original class names to generated unique class names.
+     * Object mapping each top-level selector key (those matching `/^\w+$/`) to its
+     * generated unique class name string.
      * At-rule keys (`@global`, `@keyframes …`, `@media …`, `@supports …`)
      * and class reference keys (`$name`) are excluded — they don't produce
      * class names at runtime.
@@ -69,8 +70,8 @@ declare class StyleSheet<S extends Styles = Styles> {
     uid: string;
     /** Prefix for generating unique identifiers. */
     prefix: string;
-    /** Attributes to be added to the `<style>` element. */
-    attributes: Record<string, string>;
+    /** Attributes to be added to the `<style>` element. Optional — only set when passed as an option or assigned manually. */
+    attributes?: Record<string, string>;
     /** Array of renderer functions or method names used to process the styles object. */
     renderers: Array<string | ((this: StyleSheet<any>, styles: any) => any)>;
     /** Reference to the `<style>` element in the DOM. Set after `attach()`, `null` after `destroy()`. */

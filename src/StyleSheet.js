@@ -46,7 +46,8 @@ const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'should
  *     return <h1 className={classes.root}>Hello World</h1>;
  * }
  * 
- * @property {Object} classes - Object mapping original class names to generated unique class names.
+ * @property {Object} classes - Object mapping each top-level selector key (those matching `/^\w+$/`)
+ * to its generated unique class name string.
  * @property {Object} styles - The original styles object provided to the instance.
  * @property {String} uid - Unique identifier for the StyleSheet instance, generated using `this.generateUid`.
  * @property {String} prefix - Prefix for generating unique identifiers. Set via options or subclass.
@@ -188,7 +189,7 @@ class StyleSheet {
             }
             // Nested, references and replace class names with created ones.
             return fromClasses(key)
-                .replace(StyleSheet.referenceRegex, (match, ref) => fromClasses(ref))
+                .replace(StyleSheet.referenceRegex, (_match, ref) => fromClasses(ref))
                 .replace(StyleSheet.nestedRegex, parentSelector);
         };
 
@@ -235,7 +236,7 @@ class StyleSheet {
      * @private
      */
     getAttributes() {
-        const attributes = Object.assign({}, this.attributes);
+        const attributes = Object.assign({}, this['attributes']);
         attributes[`data-${this.prefix}-uid`] = this.uid;
         return attributes;
     }

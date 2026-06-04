@@ -7,7 +7,8 @@ import StyleSheet from './StyleSheet.js';
  * @function
  * @param {Object} styles - An object containing CSS rules. Keys represent selectors, and values represent style objects.
  * @param {Object} [options] - Optional configuration for the StyleSheet instance. Includes options like `prefix`, `renderers`, and more.
- * @returns {StyleSheet} The created StyleSheet instance. Use the `classes` property to access the generated class names.
+ * @returns {StyleSheet} The created and attached StyleSheet instance. Its `classes` property maps
+ * each top-level selector to its generated class name.
  * 
  * @example
  * // Create styles for a link component.

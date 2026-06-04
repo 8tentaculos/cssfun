@@ -27,7 +27,7 @@ Write modular **CSS** within your **JavaScript** code with built-in **themes** a
   and styling in the same file for easier management.
 
 - **Framework-Agnostic and Lightweight** 🌐  
-  **CSSFUN** is compatible with any environment. At just **1.7KB**, it adds minimal overhead to your projects.
+  **CSSFUN** is compatible with any environment. At just **1.8KB**, it adds minimal overhead to your projects.
 
 - **No Build Tools Required** 🛠️  
   **CSSFUN** can be used directly in the browser, eliminating the need for complex build tools or configurations.
@@ -74,6 +74,8 @@ const { css } = CSSFUN;
 
 ### Create your styles
 
+`css()` injects the styles and returns a `StyleSheet` instance. Its `classes` property holds the generated class names, one per top-level selector:
+
 ```javascript
 const { classes } = css({
     button : {
@@ -91,42 +93,53 @@ const { classes } = css({
 const Button = () => <button className={classes.button}>Click me</button>;
 ```
 
+See [Class Name Generation](#class-name-generation) for how the names are built.
+
 ## Class Name Generation
 
-When you call `css()`, **CSSFUN** automatically generates unique, scoped class names for each top-level selector in your styles object. These class names are created **at module initialization**, ensuring near-zero runtime overhead.
+`css(styles)` returns a [`StyleSheet`](/docs/api.md#stylesheet) instance. Its `classes` property is an object that maps each top-level selector in your styles to a unique, scoped class name:
 
-### How Classes Are Generated
+```javascript
+const sheet = css({
+    button: { color: 'red' },
+    link: { color: 'blue' }
+});
 
-1. **When**: Classes are generated immediately when `css()` is called, during StyleSheet instance creation.
-2. **Stable**: The unique ID embedded in each class name is derived from a hash of the styles' content. The same styles always produce the same class names across environments (server and client), hot reloads, and multiple calls with identical styles.
-3. **Which selectors**: Only top-level selectors that match valid class name patterns (alphanumeric characters, no special characters) get generated classes.
-4. **Format**: The format differs between development and production modes:
+sheet.classes;        // { button: "fun-9qkk9s-button", link: "fun-9qkk9s-link" }
+sheet.classes.button; // "fun-9qkk9s-button"
+```
 
-   **Development Mode** (readable, for debugging):
-   ```
-   {prefix}-{uid}-{className}
-   ```
-   Example: `.fun-9qkk9s-button` (prefix `fun` + unique ID `9qkk9s` + original class name `button`)
+Destructure `classes` to use the generated names as `className`:
 
-   **Production Mode** (optimized, smaller bundle):
-   ```
-   {prefix[0]}-{uid}-{index}
-   ```
-   Example: `.f-9qkk9s-1` (first letter of prefix `f` + unique ID `9qkk9s` + sequential index `1`)
+```javascript
+const { classes } = css({ button: { color: 'red' } });
 
-5. **Access**: Generated class names are available via the `classes` object returned by `css()`:
-   ```javascript
-   const { classes } = css({
-       button: { color: 'red' },
-       link: { color: 'blue' }
-   });
-   // classes.button → "fun-9qkk9s-button" (dev) or "f-9qkk9s-1" (prod)
-   // classes.link → "fun-9qkk9s-link" (dev) or "f-9qkk9s-2" (prod)
-   ```
+const Button = () => <button className={classes.button}>Click me</button>;
+```
 
-> **Note**: All examples in this documentation show class names in **development mode** for clarity.  
-> In **production**, class names are automatically optimized for smaller bundle size.  
-> You can customize class name generation via [`options.generateClassName`](/docs/api.md#new-stylesheetstyles-options) or by [extending the class](/docs/api.md#stylesheet__generateclassname).
+Generation happens once, when the instance is created — never during rendering — so there is no per-render overhead.
+
+### Which selectors get a class
+
+Only top-level keys that are plain identifiers (matching `/^\w+$/` — letters, digits and underscores) get a generated class. At-rules (`@global`, `@media …`, `@keyframes …`), `$` references and keys with dashes, spaces or commas are left untouched and don't appear in `classes`.
+
+### Stable across environments
+
+Each class name embeds a `uid` hashed from the styles' content, so identical styles always produce identical class names — across server and client, hot reloads, and repeated calls. This is what makes [SSR hydration](#server-side-rendering-ssr) seamless.
+
+### Name format
+
+The format depends on the build:
+
+| Build | Format | Example |
+| --- | --- | --- |
+| Development | `{prefix}-{uid}-{name}` | `fun-9qkk9s-button` |
+| Production | `{prefix[0]}-{uid}-{index}` | `f-9qkk9s-1` |
+
+In production, the original name is replaced by a 1-based index to keep the output small. The default `prefix` is `fun`.
+
+> **Note**: Examples in this documentation use the development format for readability.
+> You can override generation via [`options.generateClassName`](/docs/api.md#new-stylesheetstyles-options) or by [extending `StyleSheet`](/docs/api.md#stylesheet__generateclassname).
 
 ## Renderers
 

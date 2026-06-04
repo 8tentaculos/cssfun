@@ -7,7 +7,8 @@ import type { Styles, StyleSheetOptions } from './StyleSheet';
  * @template S - The styles object type. Used to infer the keys of the `classes` property.
  * @param styles - An object containing CSS rules. Keys represent selectors, values represent style objects.
  * @param options - Optional configuration for the StyleSheet instance.
- * @returns The created StyleSheet instance. Use the `classes` property to access the generated class names.
+ * @returns The created and attached StyleSheet instance. Its `classes` property maps
+ *   each top-level selector to its generated class name.
  */
 declare function css<S extends Styles>(styles: S, options?: StyleSheetOptions): StyleSheet<S>;
 

@@ -30,7 +30,7 @@ generates <code>--fun-colors-primary : blue</code>.</p>
 
 | Name | Type | Description |
 | --- | --- | --- |
-| classes | <code>Object</code> | Object mapping original class names to generated unique class names. |
+| classes | <code>Object</code> | Object mapping each top-level selector key (those matching `/^\w+$/`) to its generated unique class name string. |
 | styles | <code>Object</code> | The original styles object provided to the instance. |
 | uid | <code>String</code> | Unique identifier for the StyleSheet instance, generated using `this.generateUid`. |
 | prefix | <code>String</code> | Prefix for generating unique identifiers. Set via options or subclass. |
@@ -280,7 +280,8 @@ const Button = ({ label }) => <button className={classes.button}>{label}</button
 Creates and attaches a new StyleSheet instance to the DOM.
 
 **Kind**: global function  
-**Returns**: [<code>StyleSheet</code>](#StyleSheet) - The created StyleSheet instance. Use the `classes` property to access the generated class names.  
+**Returns**: [<code>StyleSheet</code>](#StyleSheet) - The created and attached StyleSheet instance. Its `classes` property maps
+each top-level selector to its generated class name.  
 
 | Param | Type | Description |
 | --- | --- | --- |

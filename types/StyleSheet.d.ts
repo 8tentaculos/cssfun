@@ -25,20 +25,36 @@ export interface StyleRule extends CSSProperties {
 /** Top-level styles object mapping class names and selectors to style rules. */
 export type Styles = Record<string, StyleRule>;
 
+/** A renderer function: receives the current value and returns the next, called with the StyleSheet as `this`. */
+type RendererFn = (this: StyleSheet<any>, styles: any) => any;
+
+/** A value provided directly or as a function returning it (called with the StyleSheet as `this`). */
+type Resolvable<T> = T | ((this: StyleSheet<any>) => T);
+
 /** Options for the StyleSheet constructor. Accepts custom keys for subclasses and custom renderers. */
 export interface StyleSheetOptions {
-    /** Prefix for generating unique identifiers and data attributes. Default: `'fun'`. */
-    prefix?: string;
+    /**
+     * Prefix for generating unique identifiers and data attributes. Default: `'fun'`.
+     * May be a function returning the prefix, evaluated when the instance is created.
+     */
+    prefix?: Resolvable<string>;
     /** Custom function to generate the unique identifier. */
     generateUid?: (this: StyleSheet<any>) => string;
     /** Custom function to generate unique class names. */
     generateClassName?: (this: StyleSheet<any>, className: string, index: number) => string;
     /** Custom function to determine whether the StyleSheet should be added to the DOM. */
     shouldAttachToDOM?: (this: StyleSheet<any>) => boolean;
-    /** Attributes to be added to the `<style>` element. */
-    attributes?: Record<string, string>;
-    /** Array of renderer functions or method names. Default: `['parseStyles', 'renderStyles']`. */
-    renderers?: Array<string | ((this: StyleSheet<any>, styles: any) => any)>;
+    /**
+     * Attributes to be added to the `<style>` element.
+     * May be a function returning the attributes object, evaluated lazily by `getAttributes`.
+     */
+    attributes?: Resolvable<Record<string, string>>;
+    /**
+     * Renderer functions or method names (or a function returning such an array).
+     * Default: `['parseStyles', 'renderStyles']`. Resolved when the instance is created
+     * and applied in order, each renderer receiving the previous one's output.
+     */
+    renderers?: Resolvable<Array<string | RendererFn>>;
     /** Any additional custom options, e.g. for subclasses or custom renderers. */
     [key: string]: unknown;
 }
@@ -55,6 +71,15 @@ declare class StyleSheet<S extends Styles = Styles> {
     constructor(styles: S, options?: StyleSheetOptions);
 
     /**
+     * Hook run at the very start of the constructor, before `styles`/`options` are
+     * applied and before `renderers`, `prefix`, `uid` and `classes` are computed.
+     * Does nothing by default. Override it in a subclass to run setup logic or define
+     * instance properties such as `prefix`, `attributes` or `renderers`. Values set
+     * here are still overridden by the matching `options`.
+     */
+    preinitialize(styles: S, options?: StyleSheetOptions): void;
+
+    /**
      * Object mapping each top-level selector key (those matching `/^\w+$/`) to its
      * generated unique class name string.
      * At-rule keys (`@global`, `@keyframes …`, `@media …`, `@supports …`)
@@ -68,12 +93,19 @@ declare class StyleSheet<S extends Styles = Styles> {
     styles: S;
     /** Unique identifier for the StyleSheet instance. */
     uid: string;
-    /** Prefix for generating unique identifiers. */
+    /** Prefix for generating unique identifiers. Resolved to a string when the instance is created. */
     prefix: string;
-    /** Attributes to be added to the `<style>` element. Optional — only set when passed as an option or assigned manually. */
-    attributes?: Record<string, string>;
-    /** Array of renderer functions or method names used to process the styles object. */
-    renderers: Array<string | ((this: StyleSheet<any>, styles: any) => any)>;
+    /**
+     * Attributes to be added to the `<style>` element. Optional — may be `undefined`
+     * (only set when passed as an option or assigned manually), an object, or a function
+     * returning the attributes object (resolved lazily by `getAttributes`).
+     */
+    attributes?: Resolvable<Record<string, string>>;
+    /**
+     * Renderer functions used to process the styles object. Method-name strings passed
+     * via options are resolved to methods when the instance is created.
+     */
+    renderers: RendererFn[];
     /** Reference to the `<style>` element in the DOM. Set after `attach()`, `null` after `destroy()`. */
     el: HTMLStyleElement | null | undefined;
 

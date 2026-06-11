@@ -28,8 +28,11 @@ export interface CreateThemeOptions {
      * Pass `null` or `''` to generate variables without a prefix.
      */
     cssVarsPrefix?: string | null;
-    /** A function used to create a new StyleSheet instance. By default, uses the `css` function. */
-    createStyleSheet?: <S extends Styles>(styles: S, options?: StyleSheetOptions) => StyleSheet<S>;
+    /**
+     * A function used to create a new StyleSheet instance. By default, uses the `css` function.
+     * Accepts `StyleSheet` subclasses so you can plug in a custom implementation.
+     */
+    createStyleSheet?: (styles: Styles, options?: StyleSheetOptions) => StyleSheet;
     /** Options to pass when creating the StyleSheet instance. */
     styleSheetOptions?: StyleSheetOptions;
 }

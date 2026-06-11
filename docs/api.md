@@ -30,23 +30,24 @@ generates <code>--fun-colors-primary : blue</code>.</p>
 
 | Name | Type | Description |
 | --- | --- | --- |
-| classes | <code>Object</code> | Object mapping original class names to generated unique class names. |
+| classes | <code>Object</code> | Object mapping each top-level selector key (those matching `/^\w+$/`) to its generated unique class name string. |
 | styles | <code>Object</code> | The original styles object provided to the instance. |
-| uid | <code>String</code> | Unique identifier for the StyleSheet instance, generated using `this.generateUid`. |
-| prefix | <code>String</code> | Prefix for generating unique identifiers. Set via options or subclass. |
-| attributes | <code>Object</code> | Attributes to be added to the `<style>` element. Set via options or subclass. |
-| renderers | <code>Array</code> | Array of renderer functions or method names used to process the styles object. Set via options or subclass. |
+| uid | <code>string</code> | Unique identifier for the StyleSheet instance, generated using `this.generateUid`. |
+| prefix | <code>string</code> | Prefix for generating unique identifiers. Resolved to a string when the instance is created (may be supplied as a function via options or a subclass). |
+| [attributes] | <code>Object</code> \| <code>function</code> | Optional attributes to be added to the `<style>` element. May be `undefined`, an object, or a function returning the attributes object (evaluated lazily by `getAttributes`). |
+| renderers | <code>Array</code> | Array of renderer functions used to process the styles object. Method-name strings passed via options are resolved to methods when the instance is created. |
 | el | <code>HTMLElement</code> | Reference to the `<style>` element in the DOM. Created when the instance is attached to the DOM. |
 
 
 * [StyleSheet](#stylesheet)
     * [new StyleSheet(styles, [options])](#new_stylesheet_new)
     * _instance_
-        * [.generateUid()](#stylesheet__generateuid) ⇒ <code>String</code>
-        * [.generateClassName(className, index)](#stylesheet__generateclassname) ⇒ <code>String</code>
-        * [.render()](#stylesheet__render) ⇒ <code>String</code>
-        * [.toString()](#stylesheet__tostring) ⇒ <code>String</code>
-        * [.shouldAttachToDOM()](#stylesheet__shouldattachtodom) ⇒ <code>Boolean</code>
+        * [.preinitialize(styles, [options])](#stylesheet__preinitialize) ⇒ <code>void</code>
+        * [.generateUid()](#stylesheet__generateuid) ⇒ <code>string</code>
+        * [.generateClassName(className, index)](#stylesheet__generateclassname) ⇒ <code>string</code>
+        * [.render()](#stylesheet__render) ⇒ <code>string</code>
+        * [.toString()](#stylesheet__tostring) ⇒ <code>string</code>
+        * [.shouldAttachToDOM()](#stylesheet__shouldattachtodom) ⇒ <code>boolean</code>
         * [.attach()](#stylesheet__attach) ⇒ [<code>StyleSheet</code>](#StyleSheet)
         * [.destroy()](#stylesheet__destroy) ⇒ [<code>StyleSheet</code>](#StyleSheet)
     * _static_
@@ -70,11 +71,11 @@ rendered as a string for server-side rendering.
 | --- | --- | --- | --- |
 | styles | <code>Object</code> |  | The styles object. This is an object where keys represent  CSS selectors and values are style objects. The styles object is processed through  the renderers to generate the final CSS string. It is stored in the instance as `this.styles`. |
 | [options] | <code>Object</code> | <code>{}</code> | Configuration options. The following options are assigned to the instance (`this`): `prefix`, `generateUid`, `generateClassName`, `shouldAttachToDOM`, `attributes`, `renderers`. |
-| [options.prefix] | <code>String</code> | <code>&#x27;fun&#x27;</code> | Prefix for generating unique identifiers and data attributes. |
+| [options.prefix] | <code>string</code> \| <code>function</code> | <code>&quot;&#x27;fun&#x27;&quot;</code> | Prefix for generating unique identifiers and data attributes. May be a function returning the prefix, evaluated when the instance is created. |
 | [options.generateUid] | <code>function</code> |  | Custom function to generate the unique identifier. |
 | [options.generateClassName] | <code>function</code> |  | Custom function to generate unique class names. |
-| [options.attributes] | <code>Object</code> |  | Attributes to be added to the `<style>` element. |
-| [options.renderers] | <code>Array</code> | <code>[&#x27;parseStyles&#x27;, &#x27;renderStyles&#x27;]</code> | Array of renderer functions or method names. Renderers are composed in sequence. Strings or functions are automatically bound to `this`. |
+| [options.attributes] | <code>Object</code> \| <code>function</code> |  | Attributes to be added to the `<style>` element. May be a function returning the attributes object, evaluated lazily by `getAttributes`. |
+| [options.renderers] | <code>Array</code> \| <code>function</code> | <code>[&#x27;parseStyles&#x27;, &#x27;renderStyles&#x27;]</code> | Array of renderer functions or method names (or a function returning such an array). Resolved when the instance is created and applied in order by `render`, each renderer receiving the previous one's output. Renderers are called with the instance as `this`. |
 | [options.shouldAttachToDOM] | <code>function</code> |  | Custom function to determine whether the StyleSheet should be added to the DOM. |
 
 **Example**  
@@ -97,44 +98,61 @@ function Header() {
     return <h1 className={classes.root}>Hello World</h1>;
 }
 ```
+<a name="stylesheet__preinitialize" id="stylesheet__preinitialize" class="anchor"></a>
+### styleSheet.preinitialize(styles, [options]) ⇒ <code>void</code>
+Hook run at the very start of the constructor, before `styles` and `options`
+are applied and before `renderers`, `prefix`, `uid` and `classes` are computed.
+Does nothing by default. Override it in a subclass to run setup logic or define
+instance properties such as `prefix`, `attributes` or `renderers`. Values set
+here are still overridden by the matching `options`.
+
+**Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| styles | <code>Object</code> | The styles object passed to the constructor. |
+| [options] | <code>Object</code> | The options object passed to the constructor (may be `undefined`). |
+
 <a name="stylesheet__generateuid" id="stylesheet__generateuid" class="anchor"></a>
-### styleSheet.generateUid() ⇒ <code>String</code>
+### styleSheet.generateUid() ⇒ <code>string</code>
 Generate a stable unique identifier.
 May be overridden by `options.generateUid`.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
-**Returns**: <code>String</code> - The unique identifier.  
+**Returns**: <code>string</code> - The unique identifier.  
 <a name="stylesheet__generateclassname" id="stylesheet__generateclassname" class="anchor"></a>
-### styleSheet.generateClassName(className, index) ⇒ <code>String</code>
+### styleSheet.generateClassName(className, index) ⇒ <code>string</code>
 Generate a unique class name.
 Transform local selectors that are classes to unique class names
 to be used as class names in the styles object.
 May be overridden by `options.generateClassName` or by extending the class.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
-**Returns**: <code>String</code> - The unique class name.  
+**Returns**: <code>string</code> - The unique class name.  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| className | <code>String</code> | The class name. |
-| index | <code>Number</code> | The index of the class name. |
+| className | <code>string</code> | The class name. |
+| index | <code>number</code> | The index of the class name. |
 
 <a name="stylesheet__render" id="stylesheet__render" class="anchor"></a>
-### styleSheet.render() ⇒ <code>String</code>
+### styleSheet.render() ⇒ <code>string</code>
 Apply the renderers to the styles object.
+Renderers are applied in order, starting from `this.styles`, with each renderer
+receiving the previous one's output and called with the instance as `this`.
 It will return a string ready to be added to the style element.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
-**Returns**: <code>String</code> - The styles object as a string.  
+**Returns**: <code>string</code> - The styles object as a string.  
 <a name="stylesheet__tostring" id="stylesheet__tostring" class="anchor"></a>
-### styleSheet.toString() ⇒ <code>String</code>
+### styleSheet.toString() ⇒ <code>string</code>
 Render the StyleSheet as a style element string.
 Used for server-side rendering.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
-**Returns**: <code>String</code> - The instance as a string.  
+**Returns**: <code>string</code> - The instance as a string.  
 <a name="stylesheet__shouldattachtodom" id="stylesheet__shouldattachtodom" class="anchor"></a>
-### styleSheet.shouldAttachToDOM() ⇒ <code>Boolean</code>
+### styleSheet.shouldAttachToDOM() ⇒ <code>boolean</code>
 Check if the StyleSheet should be added to the DOM.
 By default, it returns true if running in a browser environment and no style element
 with the same `data-fun-uid` attribute exists in the DOM.
@@ -142,7 +160,7 @@ This prevents duplicate style elements and ensures proper behavior for server-si
 May be overridden by `options.shouldAttachToDOM`.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
-**Returns**: <code>Boolean</code> - True if the StyleSheet should be added to the DOM, false otherwise.  
+**Returns**: <code>boolean</code> - True if the StyleSheet should be added to the DOM, false otherwise.  
 <a name="stylesheet__attach" id="stylesheet__attach" class="anchor"></a>
 ### styleSheet.attach() ⇒ [<code>StyleSheet</code>](#StyleSheet)
 Add the instance to the registry and if we are in the browser, 
@@ -165,7 +183,7 @@ from the DOM, if it's present.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| prefix | <code>String</code> | The class prefix. Used to generate unique class names. |
+| prefix | <code>string</code> | The class prefix. Used to generate unique class names. |
 
 <a name="stylesheet_indent" id="stylesheet_indent" class="anchor"></a>
 ### StyleSheet.indent
@@ -175,7 +193,7 @@ from the DOM, if it's present.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| indent | <code>String</code> | The indent string. Used to format text when debug is enabled. |
+| indent | <code>string</code> | The indent string. Used to format text when debug is enabled. |
 
 <a name="stylesheet_registry" id="stylesheet_registry" class="anchor"></a>
 ### StyleSheet.registry
@@ -194,7 +212,7 @@ from the DOM, if it's present.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| debug | <code>Boolean</code> | The debug flag. If true, the styles will be formatted with indentation and new lines. |
+| debug | <code>boolean</code> | The debug flag. If true, the styles will be formatted with indentation and new lines. |
 
 <a name="stylesheet_tostring" id="stylesheet_tostring" class="anchor"></a>
 ### StyleSheet.toString() ⇒ <code>string</code>
@@ -280,7 +298,8 @@ const Button = ({ label }) => <button className={classes.button}>{label}</button
 Creates and attaches a new StyleSheet instance to the DOM.
 
 **Kind**: global function  
-**Returns**: [<code>StyleSheet</code>](#StyleSheet) - The created StyleSheet instance. Use the `classes` property to access the generated class names.  
+**Returns**: [<code>StyleSheet</code>](#StyleSheet) - The created and attached StyleSheet instance. Its `classes` property maps
+each top-level selector to its generated class name.  
 
 | Param | Type | Description |
 | --- | --- | --- |

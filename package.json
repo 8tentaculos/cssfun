@@ -31,25 +31,25 @@
         "src",
         "types"
     ],
+    "directories": {
+        "example": "example",
+        "test": "test",
+        "doc": "docs"
+    },
     "scripts": {
         "prepare": "npm run clean && npm run test && npm run build",
-        "test:types": "tsd",
-        "clean": "node -e \"const fs=require('fs');['lib','dist','es'].forEach(d=>fs.rmSync(d,{recursive:true,force:true}))\"",
         "test": "mocha --require jsdom-global/register --reporter nyan test/*.js",
+        "test:types": "tsd",
         "posttest": "npm run lint && npm run test:types",
         "lint": "eslint src test",
         "build": "rollup -c",
+        "clean": "node -e \"const fs=require('fs');['lib','dist','es'].forEach(d=>fs.rmSync(d,{recursive:true,force:true}))\"",
         "version": "node scripts/bump-cdn-links.js && node scripts/release-changelog.js",
         "docs:api": "jsdoc2md --module-index-format none --helper jsdoc2md/helper.cjs --partial jsdoc2md/header.hbs --partial jsdoc2md/sig-link.hbs --partial jsdoc2md/sig-link-html.hbs --partial jsdoc2md/sig-link-parent.hbs --files src/*.js > docs/api.md"
     },
     "repository": "github:8tentaculos/cssfun",
     "homepage": "https://cssfun.js.org",
     "bugs": "https://github.com/8tentaculos/cssfun/issues",
-    "directories": {
-        "example": "example",
-        "test": "test",
-        "doc": "docs"
-    },
     "author": "Alberto Masuelli <alberto.masuelli@gmail.com> (https://github.com/8tentaculos)",
     "license": "MIT",
     "keywords": [

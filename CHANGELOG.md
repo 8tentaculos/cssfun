@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Class name inference from the styles object passed to `css()`.
   - Exported types: `CSSValue`, `CSSProperties`, `StyleRule`, `Styles`, `StyleSheetOptions`, `ThemeVars`, `ThemeDefinition`, `CreateThemeOptions`.
 - npm provenance attestations for published packages (verifiable supply chain).
+- `StyleSheet.preinitialize()` hook, run at the start of the constructor (no-op by default).
+  - Override it in a subclass to run setup logic or define `prefix`, `attributes` or `renderers` before they are used.
+- Function values for `prefix`, `attributes` and `renderers` (and their matching options).
+  - Each may now be a function, called with the instance as `this`, to compute the value at runtime.
 
 ### Changed
 
@@ -22,6 +26,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added type tests (`tsd`) to the `posttest` step so types are checked on every test run.
 - Added test coverage for empty string values and CSS variables.
 - Updated modules.
+- **BREAKING:** Renderers now run in array order, each receiving the previous one's output (was reverse order). Reorder any custom `renderers`:
+
+    ```javascript
+    // Before
+    css(styles, { renderers : ['renderStyles', 'parseStyles'] });
+    // After
+    css(styles, { renderers : ['parseStyles', 'renderStyles'] });
+    ```
 
 ## [0.0.14] - 2026-03-30
 

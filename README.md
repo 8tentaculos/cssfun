@@ -11,10 +11,12 @@
 
 Write modular **CSS** within your **JavaScript** code with built-in **themes** and **SSR** support.
 
+[![CI](https://github.com/8tentaculos/cssfun/actions/workflows/ci.yml/badge.svg)](https://github.com/8tentaculos/cssfun/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/cssfun.svg)](https://www.npmjs.com/package/cssfun)
 [![npm package minimized gzipped size](https://img.shields.io/bundlejs/size/cssfun)](https://unpkg.com/cssfun/dist/cssfun.min.js)
 [![npm downloads](https://img.shields.io/npm/dm/cssfun.svg)](https://www.npmjs.com/package/cssfun)
 [![jsDelivr hits (npm)](https://img.shields.io/jsdelivr/npm/hm/cssfun)](https://www.jsdelivr.com/package/npm/cssfun)
+[![license](https://img.shields.io/npm/l/cssfun.svg)](https://github.com/8tentaculos/cssfun/blob/master/LICENSE)
 
 ## Key Features
 
@@ -374,15 +376,21 @@ Output CSS string
 
 ### Custom Renderers
 
-You can customize the renderers by setting the `renderers` array on the [`StyleSheet`](/docs/api.md#stylesheet) instance. 
-If passed via [`options.renderers`](/docs/api.md#new-stylesheetstyles-options), they will be automatically added to the instance.  
+You can customize the renderers via [`options.renderers`](/docs/api.md#new-stylesheetstyles-options) (or by setting `renderers` on a [`StyleSheet`](/docs/api.md#stylesheet) subclass).
 
-Elements in the `renderers` array can be either functions or strings that reference methods of the [`StyleSheet`](/docs/api.md#stylesheet) instance. These 
-methods will be bound to the instance before they are invoked.
+Elements in the `renderers` array can be either functions or strings that reference methods of the [`StyleSheet`](/docs/api.md#stylesheet) instance. Method-name strings are resolved to methods when the instance is created, and every renderer is called with the instance as `this`.
 
-By default, [`StyleSheet`](/docs/api.md#stylesheet) instances are rendered using the built-in renderers: `[this.renderStyles, this.parseStyles]`.
+Renderers are applied in array order, each receiving the previous one's output. By default, [`StyleSheet`](/docs/api.md#stylesheet) instances use `[this.parseStyles, this.renderStyles]`: `parseStyles` runs first (transforms the object), then `renderStyles` (converts it to the CSS string).
 
-**Note:** The order matters! Renderers are composed, so they execute in reverse order. With `[renderStyles, parseStyles]`, `parseStyles` executes first (transforms the object), then `renderStyles` (converts to CSS string).
+`renderers` may also be given as a function that returns the array, resolved when the instance is created.
+
+## Subclassing & dynamic values
+
+The `prefix`, `attributes` and `renderers` options also accept a **function** that returns the value, so you can compute it at runtime instead of passing a static value. The timing differs: `prefix` and `renderers` are resolved once, when the instance is created, while `attributes` is resolved lazily every time the styles are rendered — handy for per-request values such as a [CSP nonce](#content-security-policy-csp).
+
+For subclasses, the `preinitialize` method runs at the very start of the constructor — before the options are applied and before the class names are generated. Override it to run setup logic or define `prefix`, `attributes` or `renderers` (matching options still take precedence).
+
+See [Content Security Policy (CSP)](#content-security-policy-csp) for a real-world example that combines `preinitialize` with a function-valued `attributes`.
 
 ## Themes
 
@@ -537,6 +545,44 @@ app.get('*', (req, res) => {
 ```
 
 When the app is hydrated on the client, the styles are preserved and will not be recreated.
+
+## Content Security Policy (CSP)
+
+If your site uses a strict [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) with a per-request nonce (`style-src 'nonce-…'`), add that nonce to the generated `<style>` tags through the [`attributes`](/docs/api.md#new-stylesheetstyles-options) option/property. `StyleSheet.toString()` then emits `<style nonce="…" data-fun-uid="…">`.
+
+### Set it on the prototype per request
+
+Instances fall back to `StyleSheet.prototype.attributes`, which is read fresh on every render, so set the nonce there before rendering:
+
+```javascript
+app.get('*', (req, res) => {
+    StyleSheet.prototype.attributes = { nonce : res.locals.cspNonce };
+
+    const html = renderToString(<App />);
+    const styles = StyleSheet.toString(); // <style nonce="…" data-fun-uid="…">…</style>
+    // …embed `styles` in the <head> as in the SSR example above.
+});
+```
+
+Simple and effective for synchronous SSR: the styles are rendered on the server and reused on the client during hydration without being recreated, so the client needs no nonce handling. (For streaming/async SSR, resolve the nonce per request from context — e.g. [`AsyncLocalStorage`](https://nodejs.org/api/async_context.html) — via the function form, since the prototype is shared across concurrent requests.)
+
+### Scoped alternative: a subclass with `preinitialize`
+
+To avoid mutating the global prototype, scope it to your own subclass and `css` helper. `preinitialize` runs once per instance, so use the function form to read the nonce lazily at render time:
+
+```javascript
+import { StyleSheet } from 'cssfun';
+
+class CSPStyleSheet extends StyleSheet {
+    preinitialize() {
+        this.attributes = () => ({ nonce : getRequestNonce() });
+    }
+}
+
+const css = (styles, options) => new CSPStyleSheet(styles, options).attach();
+```
+
+Pass `CSPStyleSheet` to [`createTheme`](#themes) via [`options.createStyleSheet`](/docs/api.md#createtheme) so theme styles carry the nonce too.
 
 ## TypeScript
 

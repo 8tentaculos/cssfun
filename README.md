@@ -1,7 +1,7 @@
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.1.0-alpha.1/docs/logo-dark.svg">
-        <img alt="CSSFUN" src="https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.1.0-alpha.1/docs/logo.svg">
+        <source media="(prefers-color-scheme: dark)" srcset="https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.1.0-alpha.2/docs/logo-dark.svg">
+        <img alt="CSSFUN" src="https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.1.0-alpha.2/docs/logo.svg">
     </picture>
 </p>
 

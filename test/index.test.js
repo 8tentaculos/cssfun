@@ -102,6 +102,83 @@ describe('cssfun', () => {
             expect(instance.el.outerHTML).to.be.equal(`<style data-test-uid="${instance.uid}">.${instance.prefix[0]}-${instance.uid}-1{color:red;}</style>`);
         });
 
+        it('must run preinitialize at the start of the constructor', () => {
+            let received;
+            class PreSheet extends StyleSheet {
+                preinitialize(styles, options) {
+                    received = { styles, options };
+                    this.prefix = 'pre';
+                }
+            }
+            const styles = { root : { color : 'red' } };
+            const options = { attributes : { id : 'x' } };
+            const instance = new PreSheet(styles, options).attach();
+            // Receives the constructor arguments.
+            expect(received.styles).to.be.equal(styles);
+            expect(received.options).to.be.equal(options);
+            // Properties defined in preinitialize are used.
+            expect(instance.prefix).to.be.equal('pre');
+            expect(instance.el.getAttribute('data-pre-uid')).to.be.equal(instance.uid);
+        });
+
+        it('must let options take precedence over preinitialize', () => {
+            class PreSheet extends StyleSheet {
+                preinitialize() {
+                    this.prefix = 'pre';
+                }
+            }
+            const instance = new PreSheet({ root : { color : 'red' } }, { prefix : 'opt' });
+            expect(instance.prefix).to.be.equal('opt');
+        });
+
+        it('must accept a function as prefix', () => {
+            const instance = css({ root : { color : 'red' } }, { prefix : () => 'fnpre' });
+            expect(instance.prefix).to.be.equal('fnpre');
+            expect(instance.el.getAttribute('data-fnpre-uid')).to.be.equal(instance.uid);
+        });
+
+        it('must accept a function as attributes', () => {
+            const instance = css({ root : { color : 'red' } }, { attributes : () => ({ id : 'fnid' }) });
+            expect(instance.el.id).to.be.equal('fnid');
+            expect(instance.toString()).to.include('id="fnid"');
+        });
+
+        it('must evaluate the attributes function lazily on each render', () => {
+            let id = 'first';
+            const instance = css({ root : { color : 'red' } }, { attributes : () => ({ id }) });
+            expect(instance.toString()).to.include('id="first"');
+            id = 'second';
+            expect(instance.toString()).to.include('id="second"');
+        });
+
+        it('must apply renderers in order, each receiving the previous output', () => {
+            const calls = [];
+            const instance = new StyleSheet({ root : { color : 'red' } }, {
+                renderers : [
+                    (styles) => { calls.push('first'); return styles; },
+                    () => { calls.push('second'); return 'done'; }
+                ]
+            });
+            expect(instance.render()).to.be.equal('done');
+            expect(calls).to.deep.equal(['first', 'second']);
+        });
+
+        it('must accept a function returning the renderers array', () => {
+            const instance = new StyleSheet({ root : { color : 'red' } }, {
+                renderers : () => ['parseStyles', 'renderStyles']
+            });
+            expect(instance.render()).to.be.equal(`.${instance.prefix[0]}-${instance.uid}-1{color:red;}`);
+        });
+
+        it('must call renderers with the instance as context', () => {
+            let context;
+            const instance = new StyleSheet({ root : {} }, {
+                renderers : [function () { context = this; return ''; }]
+            });
+            instance.render();
+            expect(context).to.be.equal(instance);
+        });
+
         it('must use class references', () => {
             const instance = css({
                 root : {},

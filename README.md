@@ -518,10 +518,8 @@ const app = express();
 app.get('*', (req, res) => {
     // Render the app
     const html = renderToString(<App />);
-
     // Get generated styles as string
     const styles = StyleSheet.toString();
-    
     // Get theme root class
     const cls = theme.classes.root;
 
@@ -619,9 +617,9 @@ Style rules use [`csstype`](https://github.com/frenic/csstype) under the hood, s
 css({
     card : {
         color : 'red',
-        backgroundColor : null,    // ok — filtered at runtime
-        margin : undefined,        // ok
-        padding : 10,              // numbers accepted for length props
+        backgroundColor : null, // ok — filtered at runtime
+        margin : undefined,     // ok
+        padding : 10,           // numbers accepted for length props
     },
     root : {
         color : 'black',

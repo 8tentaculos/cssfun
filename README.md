@@ -584,7 +584,7 @@ Pass `CSPStyleSheet` to [`createTheme`](#themes) via [`options.createStyleSheet`
 
 ## TypeScript
 
-**CSSFUN** ships with TypeScript declarations out of the box — no `@types/cssfun` needed. The types are bundled in the package and resolved automatically via the `types` field in `package.json`.
+**CSSFUN** ships with TypeScript declarations out of the box. The types are bundled in the package and resolved automatically.
 
 > Requires **TypeScript 4.1+** (the `classes` inference relies on key remapping and template literal types).
 

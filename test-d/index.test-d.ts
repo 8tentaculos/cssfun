@@ -30,6 +30,21 @@ const mixed = css({
 expectType<{ readonly root: string; readonly button: string }>(mixed.classes);
 
 /*
+ * css(): keys that don't match /^\w+$/ are excluded from `classes`,
+ * matching the runtime (no class name is generated for them)
+ */
+const special = css({
+    root : { color : 'red' },
+    my_class2 : { color : 'blue' },
+    'my-card' : { color : 'green' },
+    '& span' : { fontSize : 14 },
+    '.foo' : { color : 'black' },
+    '$root:hover' : { color : 'white' },
+    'a b' : { margin : 0 },
+});
+expectType<{ readonly root: string; readonly my_class2: string }>(special.classes);
+
+/*
  * css(): real-world style patterns
  */
 css({

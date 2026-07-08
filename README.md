@@ -605,9 +605,7 @@ sheet.classes.button; // string
 sheet.classes.typo;   // ❌ Property 'typo' does not exist
 ```
 
-At-rule keys (`@global`, `@keyframes …`, `@media …`, `@supports …`) and class reference keys (`$name`) are filtered out of `classes` automatically — they don't produce class names at runtime, so they don't appear in the type either.
-
-Only top-level keys that are valid class-name identifiers (letters, digits and underscores — i.e. matching `/^\w+$/`) get a generated class at runtime. The type can't fully express that pattern, so keys with dashes, spaces or commas (e.g. `'my-card'`) appear in `classes` as `string` but resolve to `undefined` at runtime. Stick to simple identifiers for top-level class keys.
+Only top-level keys that are valid class-name identifiers (letters, digits and underscores — i.e. matching `/^\w+$/`) get a generated class at runtime, and the type mirrors that: at-rule keys (`@global`, `@keyframes …`, `@media …`, `@supports …`), class reference keys (`$name`) and keys containing selector syntax (dashes, spaces, `&`, `:`, etc.) are filtered out of `classes` automatically — they don't produce class names at runtime, so they don't appear in the type either.
 
 ### CSS property autocomplete
 

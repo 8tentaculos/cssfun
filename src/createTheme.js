@@ -76,8 +76,7 @@ const getDiff = (left, right) => {
  * @param {Function} [options.createStyleSheet] - A function used to create a new StyleSheet instance. 
  * By default, it uses the `css` function.
  * 
- * @param {Object} [options.styleSheetOptions] - Options to pass when creating the StyleSheet instance. 
- * Default is `system`.
+ * @param {Object} [options.styleSheetOptions] - Options to pass when creating the StyleSheet instance.
  * 
  * @returns {StyleSheet} The theme StyleSheet instance. Use `classes.root` to get the theme class name. 
  * Apply this class to the element you want to theme. The CSS variables will be available for all 

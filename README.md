@@ -661,7 +661,7 @@ For those working with LLMs, there is an [AI Agents reference guide](/docs/AGENT
 
 ## Examples
 
-The `examples` folder contains various sample projects demonstrating how to use **CSSFUN** in 
+The `example` folder contains various sample projects demonstrating how to use **CSSFUN** in 
 different environments and frameworks. Each example is a standalone project that you can run locally 
 to see **CSSFUN** in action.
 

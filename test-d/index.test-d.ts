@@ -1,6 +1,6 @@
 import { expectType, expectError, expectAssignable } from 'tsd';
 import { css, StyleSheet, createTheme } from '../types/index';
-import type { CSSValue, CSSProperties, StyleRule, Styles, StyleSheetOptions, ThemeVars, ThemeDefinition, CreateThemeOptions } from '../types/index';
+import type { CSSValue, CSSProperties, StyleRule, Styles, StyleSheetOptions, RendererFn, Resolvable, ThemeVars, ThemeDefinition, CreateThemeOptions } from '../types/index';
 
 /*
  * css(): generic classes inference
@@ -183,6 +183,8 @@ const value : CSSValue = 'blue';
 const props : CSSProperties = { color : 'blue', backgroundColor : null, padding : 10 };
 const opts : StyleSheetOptions = { prefix : 'test' };
 const themeVars : ThemeVars = { colorPrimary : 'black', palette : { common : { black : '#000' } } };
+const renderer : RendererFn = function(styles) { return this.renderStyles(styles); };
+const resolvablePrefix : Resolvable<string> = () => 'app';
 const themeDef : ThemeDefinition = { light : { color : 'white' }, dark : { color : 'black' } };
 const themeOpts : CreateThemeOptions = { colorScheme : 'dark' };
 

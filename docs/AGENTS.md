@@ -110,6 +110,8 @@ import type {
     StyleRule,
     Styles,
     StyleSheetOptions,
+    RendererFn,
+    Resolvable,
     ThemeVars,
     ThemeDefinition,
     CreateThemeOptions

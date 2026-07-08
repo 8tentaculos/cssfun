@@ -26,10 +26,10 @@ export interface StyleRule extends CSSProperties {
 export type Styles = Record<string, StyleRule>;
 
 /** A renderer function: receives the current value and returns the next, called with the StyleSheet as `this`. */
-type RendererFn = (this: StyleSheet<any>, styles: any) => any;
+export type RendererFn = (this: StyleSheet<any>, styles: any) => any;
 
 /** A value provided directly or as a function returning it (called with the StyleSheet as `this`). */
-type Resolvable<T> = T | ((this: StyleSheet<any>) => T);
+export type Resolvable<T> = T | ((this: StyleSheet<any>) => T);
 
 /**
  * Characters that can't appear in a top-level class key. At runtime only keys

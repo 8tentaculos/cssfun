@@ -643,6 +643,8 @@ import type {
     StyleRule,
     Styles,
     StyleSheetOptions,
+    RendererFn,
+    Resolvable,
     ThemeDefinition,
     ThemeVars,
     CreateThemeOptions

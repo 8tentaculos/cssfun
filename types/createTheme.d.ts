@@ -1,9 +1,12 @@
 import StyleSheet from './StyleSheet';
 import type { StyleRule, Styles, StyleSheetOptions } from './StyleSheet';
 
-/** A recursive theme variables object. Nested keys are joined with `-` to form CSS variable names. */
+/**
+ * A recursive theme variables object. Nested keys are joined with `-` to form CSS
+ * variable names. `null`/`undefined` values are accepted and filtered at runtime.
+ */
 export interface ThemeVars {
-    [key: string]: string | number | ThemeVars;
+    [key: string]: string | number | ThemeVars | null | undefined;
 }
 
 /** Theme definition object mapping color schemes to theme variables. */

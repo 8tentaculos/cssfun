@@ -183,6 +183,8 @@ const value : CSSValue = 'blue';
 const props : CSSProperties = { color : 'blue', backgroundColor : null, padding : 10 };
 const opts : StyleSheetOptions = { prefix : 'test' };
 const themeVars : ThemeVars = { colorPrimary : 'black', palette : { common : { black : '#000' } } };
+// null/undefined theme values are valid (filtered at runtime)
+const themeVarsNullable : ThemeVars = { colorPrimary : null, colorSecondary : undefined };
 const renderer : RendererFn = function(styles) { return this.renderStyles(styles); };
 const resolvablePrefix : Resolvable<string> = () => 'app';
 const themeDef : ThemeDefinition = { light : { color : 'white' }, dark : { color : 'black' } };

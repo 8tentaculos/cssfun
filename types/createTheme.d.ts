@@ -1,5 +1,5 @@
-import StyleSheet from './StyleSheet';
-import type { StyleRule, Styles, StyleSheetOptions } from './StyleSheet';
+import StyleSheet from './StyleSheet.js';
+import type { StyleRule, Styles, StyleSheetOptions } from './StyleSheet.js';
 
 /**
  * A recursive theme variables object. Nested keys are joined with `-` to form CSS

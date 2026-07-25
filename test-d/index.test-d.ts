@@ -1,6 +1,6 @@
 import { expectType, expectError, expectAssignable } from 'tsd';
 import { css, StyleSheet, createTheme } from '../types/index';
-import type { CSSValue, CSSProperties, StyleRule, Styles, StyleSheetOptions, ThemeVars, ThemeDefinition, CreateThemeOptions } from '../types/index';
+import type { CSSValue, CSSProperties, StyleRule, Styles, StyleSheetOptions, RendererFn, Resolvable, ThemeVars, ThemeDefinition, CreateThemeOptions } from '../types/index.js';
 
 /*
  * css(): generic classes inference
@@ -28,6 +28,21 @@ const mixed = css({
 });
 // only plain class-name keys are exposed; at-rules and $refs are filtered out
 expectType<{ readonly root: string; readonly button: string }>(mixed.classes);
+
+/*
+ * css(): keys that don't match /^\w+$/ are excluded from `classes`,
+ * matching the runtime (no class name is generated for them)
+ */
+const special = css({
+    root : { color : 'red' },
+    my_class2 : { color : 'blue' },
+    'my-card' : { color : 'green' },
+    '& span' : { fontSize : 14 },
+    '.foo' : { color : 'black' },
+    '$root:hover' : { color : 'white' },
+    'a b' : { margin : 0 },
+});
+expectType<{ readonly root: string; readonly my_class2: string }>(special.classes);
 
 /*
  * css(): real-world style patterns
@@ -168,6 +183,10 @@ const value : CSSValue = 'blue';
 const props : CSSProperties = { color : 'blue', backgroundColor : null, padding : 10 };
 const opts : StyleSheetOptions = { prefix : 'test' };
 const themeVars : ThemeVars = { colorPrimary : 'black', palette : { common : { black : '#000' } } };
+// null/undefined theme values are valid (filtered at runtime)
+const themeVarsNullable : ThemeVars = { colorPrimary : null, colorSecondary : undefined };
+const renderer : RendererFn = function(styles) { return this.renderStyles(styles); };
+const resolvablePrefix : Resolvable<string> = () => 'app';
 const themeDef : ThemeDefinition = { light : { color : 'white' }, dark : { color : 'black' } };
 const themeOpts : CreateThemeOptions = { colorScheme : 'dark' };
 

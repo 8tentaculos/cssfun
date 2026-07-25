@@ -258,7 +258,7 @@ its descendants.
 | [options.colorScheme] | <code>String</code> | Specifies the color scheme(s) to use. Possible values are:  `light` (uses the `light` theme only), `dark` (uses the `dark` theme only), `light dark` (default,  supports both `light` and `dark` themes, adapting to system preferences; can override system  preference with `data-color-scheme` set to `light` or `dark`), and `normal` (uses the `normal` theme only). |
 | [options.cssVarsPrefix] | <code>String</code> \| <code>null</code> | Prefix for the generated CSS variables. Defaults to `StyleSheet.prefix`. Pass `null` or `''` to generate variables without a prefix (e.g. `--color` instead of `--fun-color`). |
 | [options.createStyleSheet] | <code>function</code> | A function used to create a new StyleSheet instance.  By default, it uses the `css` function. |
-| [options.styleSheetOptions] | <code>Object</code> | Options to pass when creating the StyleSheet instance.  Default is `system`. |
+| [options.styleSheetOptions] | <code>Object</code> | Options to pass when creating the StyleSheet instance. |
 
 **Example**  
 ```js

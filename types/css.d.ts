@@ -1,5 +1,5 @@
-import StyleSheet from './StyleSheet';
-import type { Styles, StyleSheetOptions } from './StyleSheet';
+import StyleSheet from './StyleSheet.js';
+import type { Styles, StyleSheetOptions } from './StyleSheet.js';
 
 /**
  * Creates and attaches a new StyleSheet instance to the DOM.

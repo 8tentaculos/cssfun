@@ -26,10 +26,19 @@ export interface StyleRule extends CSSProperties {
 export type Styles = Record<string, StyleRule>;
 
 /** A renderer function: receives the current value and returns the next, called with the StyleSheet as `this`. */
-type RendererFn = (this: StyleSheet<any>, styles: any) => any;
+export type RendererFn = (this: StyleSheet<any>, styles: any) => any;
 
 /** A value provided directly or as a function returning it (called with the StyleSheet as `this`). */
-type Resolvable<T> = T | ((this: StyleSheet<any>) => T);
+export type Resolvable<T> = T | ((this: StyleSheet<any>) => T);
+
+/**
+ * Characters that can't appear in a top-level class key. At runtime only keys
+ * matching `/^\w+$/` produce a class name; keys containing any selector
+ * syntax (dashes, spaces, combinators, at-rules, references, etc.) don't.
+ */
+type InvalidClassChar =
+    | '-' | ' ' | '.' | ',' | ':' | '&' | '>' | '+' | '~'
+    | '*' | '[' | ']' | '(' | ')' | '#' | '@' | '$' | '%' | '"' | "'" | '=' | '|' | '^';
 
 /** Options for the StyleSheet constructor. Accepts custom keys for subclasses and custom renderers. */
 export interface StyleSheetOptions {
@@ -82,12 +91,13 @@ declare class StyleSheet<S extends Styles = Styles> {
     /**
      * Object mapping each top-level selector key (those matching `/^\w+$/`) to its
      * generated unique class name string.
-     * At-rule keys (`@global`, `@keyframes …`, `@media …`, `@supports …`)
-     * and class reference keys (`$name`) are excluded — they don't produce
-     * class names at runtime.
+     * Keys containing selector syntax — at-rules (`@global`, `@keyframes …`,
+     * `@media …`, `@supports …`), class references (`$name`) and keys with
+     * dashes, spaces or other special characters — are excluded, matching
+     * the runtime behavior: they don't produce class names.
      */
     readonly classes: {
-        readonly [K in keyof S as K extends `@${string}` | `$${string}` ? never : K]: string;
+        readonly [K in keyof S as K extends `${string}${InvalidClassChar}${string}` ? never : K & string]: string;
     };
     /** The original styles object provided to the instance. */
     styles: S;

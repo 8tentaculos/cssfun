@@ -1,7 +1,7 @@
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.1.0-alpha.2/docs/logo-dark.svg">
-        <img alt="CSSFUN" src="https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.1.0-alpha.2/docs/logo.svg">
+        <source media="(prefers-color-scheme: dark)" srcset="https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.1.0-alpha.4/docs/logo-dark.svg">
+        <img alt="CSSFUN" src="https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.1.0-alpha.4/docs/logo.svg">
     </picture>
 </p>
 
@@ -605,9 +605,7 @@ sheet.classes.button; // string
 sheet.classes.typo;   // ❌ Property 'typo' does not exist
 ```
 
-At-rule keys (`@global`, `@keyframes …`, `@media …`, `@supports …`) and class reference keys (`$name`) are filtered out of `classes` automatically — they don't produce class names at runtime, so they don't appear in the type either.
-
-Only top-level keys that are valid class-name identifiers (letters, digits and underscores — i.e. matching `/^\w+$/`) get a generated class at runtime. The type can't fully express that pattern, so keys with dashes, spaces or commas (e.g. `'my-card'`) appear in `classes` as `string` but resolve to `undefined` at runtime. Stick to simple identifiers for top-level class keys.
+Only top-level keys that are valid class-name identifiers (letters, digits and underscores — i.e. matching `/^\w+$/`) get a generated class at runtime, and the type mirrors that: at-rule keys (`@global`, `@keyframes …`, `@media …`, `@supports …`), class reference keys (`$name`) and keys containing selector syntax (dashes, spaces, `&`, `:`, etc.) are filtered out of `classes` automatically — they don't produce class names at runtime, so they don't appear in the type either.
 
 ### CSS property autocomplete
 
@@ -645,6 +643,8 @@ import type {
     StyleRule,
     Styles,
     StyleSheetOptions,
+    RendererFn,
+    Resolvable,
     ThemeDefinition,
     ThemeVars,
     CreateThemeOptions
@@ -661,7 +661,7 @@ For those working with LLMs, there is an [AI Agents reference guide](/docs/AGENT
 
 ## Examples
 
-The `examples` folder contains various sample projects demonstrating how to use **CSSFUN** in 
+The `example` folder contains various sample projects demonstrating how to use **CSSFUN** in 
 different environments and frameworks. Each example is a standalone project that you can run locally 
 to see **CSSFUN** in action.
 

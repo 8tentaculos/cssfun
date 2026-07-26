@@ -103,8 +103,8 @@ See [Class Name Generation](#class-name-generation) for how the names are built.
 
 ```javascript
 const sheet = css({
-    button: { color: 'red' },
-    link: { color: 'blue' }
+    button : { color : 'red' },
+    link : { color : 'blue' }
 });
 
 sheet.classes;        // { button: "fun-9qkk9s-button", link: "fun-9qkk9s-link" }
@@ -114,7 +114,7 @@ sheet.classes.button; // "fun-9qkk9s-button"
 Destructure `classes` to use the generated names as `className`:
 
 ```javascript
-const { classes } = css({ button: { color: 'red' } });
+const { classes } = css({ button : { color : 'red' } });
 
 const Button = () => <button className={classes.button}>Click me</button>;
 ```

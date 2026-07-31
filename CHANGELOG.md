@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- At-rule statements: an at-rule key holding a plain value is rendered as `@rule prelude;`, with the prelude emitted as it is written.
+
+    ```javascript
+    css({
+        '@import' : 'url("reset.css") layer(base)', // → @import url("reset.css") layer(base);
+        '@layer' : 'base, components'               // → @layer base, components;
+    });
+    ```
+
+    Object keys are unique, so a stylesheet holds one statement per at-rule name.
+
+- Class names are now generated inside at-rule blocks as well as at the top level, so a class can be declared directly inside a `@layer` (or `@media`, …) instead of being declared empty at the top level. The same name used in several places shares a single class.
+
+    ```javascript
+    const { classes } = css({
+        '@layer base' : { button : { color : 'black' } },
+        '@layer theme' : { button : { color : 'blue' } }
+    });
+
+    classes.button; // the same class in both layers
+    ```
+
+### Fixed
+
+- Fixed `&` with no parent selector rendering the literal string `undefined` (e.g. `undefined:hover`). The missing parent is now treated as an empty string (`&:hover` → `:hover`).
+- Fixed keys holding a plain value generating a class name that matched no rule.
+
 ## [0.1.0] - 2026-07-25
 
 ### Added

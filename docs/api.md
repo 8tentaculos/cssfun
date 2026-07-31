@@ -30,7 +30,7 @@ generates <code>--fun-colors-primary : blue</code>.</p>
 
 | Name | Type | Description |
 | --- | --- | --- |
-| classes | <code>Object</code> | Object mapping each top-level selector key (those matching `/^\w+$/`) to its generated unique class name string. |
+| classes | <code>Object</code> | Map of class name selectors to their generated unique class name. |
 | styles | <code>Object</code> | The original styles object provided to the instance. |
 | uid | <code>string</code> | Unique identifier for the StyleSheet instance, generated using `this.generateUid`. |
 | prefix | <code>string</code> | Prefix for generating unique identifiers. Resolved to a string when the instance is created (may be supplied as a function via options or a subclass). |
@@ -69,7 +69,7 @@ rendered as a string for server-side rendering.
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| styles | <code>Object</code> |  | The styles object. This is an object where keys represent  CSS selectors and values are style objects. The styles object is processed through  the renderers to generate the final CSS string. It is stored in the instance as `this.styles`. |
+| styles | <code>Object</code> |  | The styles object. This is an object where keys represent  CSS selectors and values are style objects. An at-rule key may also hold a statement  prelude string, rendered as `@rule prelude;`. The styles object is processed through  the renderers to generate the final CSS string. It is stored in the instance as `this.styles`. |
 | [options] | <code>Object</code> | <code>{}</code> | Configuration options. The following options are assigned to the instance (`this`): `prefix`, `generateUid`, `generateClassName`, `shouldAttachToDOM`, `attributes`, `renderers`. |
 | [options.prefix] | <code>string</code> \| <code>function</code> | <code>&quot;&#x27;fun&#x27;&quot;</code> | Prefix for generating unique identifiers and data attributes. May be a function returning the prefix, evaluated when the instance is created. |
 | [options.generateUid] | <code>function</code> |  | Custom function to generate the unique identifier. |
@@ -299,11 +299,11 @@ Creates and attaches a new StyleSheet instance to the DOM.
 
 **Kind**: global function  
 **Returns**: [<code>StyleSheet</code>](#StyleSheet) - The created and attached StyleSheet instance. Its `classes` property maps
-each top-level selector to its generated class name.  
+class name selectors to their generated unique class name.  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| styles | <code>Object</code> | An object containing CSS rules. Keys represent selectors, and values represent style objects. |
+| styles | <code>Object</code> | An object containing CSS rules. Keys represent selectors, and values represent style objects. An at-rule key may also hold a statement prelude string, rendered as `@rule prelude;`. |
 | [options] | <code>Object</code> | Optional configuration for the StyleSheet instance. Includes options like `prefix`, `renderers`, and more. |
 
 **Example**  
@@ -320,4 +320,24 @@ const { classes } = css({
 
 // Use the generated `link` class in a component.
 const Link = ({ label, href }) => <a className={classes.link} href={href}>{label}</a>;
+```
+**Example**  
+```js
+// Declare the layer order and define the classes inside layer blocks.
+const { classes } = css({
+    '@layer' : 'base, theme',
+    '@layer base' : {
+        button : {
+            color : 'black'
+        }
+    },
+    '@layer theme' : {
+        button : {
+            color : 'blue'
+        }
+    }
+});
+
+// Both blocks share the same generated `button` class.
+const Button = ({ label }) => <button className={classes.button}>{label}</button>;
 ```

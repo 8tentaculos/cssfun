@@ -301,6 +301,136 @@ describe('cssfun', () => {
             expect(style.outerHTML).to.be.equal(`<style data-fun-uid="${instance.uid}">@media (min-width: 768px){.${instance.prefix[0]}-${instance.uid}-1{color:black;}.${instance.prefix[0]}-${instance.uid}-1 a{color:green;}a{color:red;}h1{color:blue;}}</style>`);
         });
 
+        it('must render at-rule statements', () => {
+            const instance = new StyleSheet({
+                '@import' : 'url("reset.css") layer(base) supports(display: grid)',
+                '@layer' : 'base, components, utilities',
+                root : {
+                    color : 'red'
+                }
+            });
+            expect(instance.render()).to.be.equal(`@import url("reset.css") layer(base) supports(display: grid);@layer base, components, utilities;.${instance.prefix[0]}-${instance.uid}-1{color:red;}`);
+        });
+
+        it('must generate class names inside at-rule blocks', () => {
+            const instance = css({
+                '@layer base' : {
+                    button : {
+                        color : 'red',
+                        '&:hover' : {
+                            color : 'blue'
+                        }
+                    }
+                }
+            });
+            const cls = instance.classes.button;
+            expect(cls).to.exist;
+            expect(instance.el.textContent).to.be.equal(`@layer base{.${cls}{color:red;}.${cls}:hover{color:blue;}}`);
+        });
+
+        it('must share a class name between at-rule blocks', () => {
+            const instance = css({
+                '@layer base' : {
+                    button : {
+                        color : 'red'
+                    }
+                },
+                '@layer theme' : {
+                    button : {
+                        color : 'green'
+                    }
+                }
+            });
+            const cls = instance.classes.button;
+            expect(Object.keys(instance.classes)).to.deep.equal(['button']);
+            expect(instance.el.textContent).to.be.equal(`@layer base{.${cls}{color:red;}}@layer theme{.${cls}{color:green;}}`);
+        });
+
+        it('must generate class names inside nested at-rule blocks', () => {
+            const instance = css({
+                '@layer base' : {
+                    '@media (min-width: 768px)' : {
+                        '@supports (color: red)' : {
+                            button : {
+                                color : 'red'
+                            }
+                        }
+                    }
+                }
+            });
+            const cls = instance.classes.button;
+            expect(instance.el.textContent).to.be.equal(`@layer base{@media (min-width: 768px){@supports (color: red){.${cls}{color:red;}}}}`);
+        });
+
+        it('must not generate class names inside at-rule blocks that hold no style rules', () => {
+            const instance = css({
+                '@keyframes wave' : {
+                    from : {
+                        opacity : 0
+                    },
+                    to : {
+                        opacity : 1
+                    }
+                },
+                '@property --my-color' : {
+                    syntax : '"<color>"',
+                    inherits : false,
+                    initialValue : 'red'
+                },
+                '@page' : {
+                    margin : '1cm'
+                },
+                '@layer base' : {
+                    '@global' : {
+                        body : {
+                            margin : 0
+                        }
+                    }
+                },
+                root : {
+                    animation : 'wave 1s'
+                }
+            });
+            expect(Object.keys(instance.classes)).to.deep.equal(['root']);
+            expect(instance.el.textContent).to.be.equal(
+                '@keyframes wave{from{opacity:0;}to{opacity:1;}}' +
+                '@property --my-color{syntax:"<color>";inherits:false;initial-value:red;}' +
+                '@page{margin:1cm;}' +
+                '@layer base{body{margin:0;}}' +
+                `.${instance.classes.root}{animation:wave 1s;}`
+            );
+        });
+
+        it('must not generate a class name for a key holding a plain value', () => {
+            const instance = new StyleSheet({
+                '@media (min-width: 768px)' : {
+                    color : 'red'
+                },
+                foo : 'bar',
+                root : {
+                    color : 'blue'
+                }
+            });
+            expect(Object.keys(instance.classes)).to.deep.equal(['root']);
+        });
+
+        it('must expand & inside a class declared in an at-rule block', () => {
+            const instance = css({
+                button : {
+                    color : 'red'
+                },
+                '@media (min-width: 768px)' : {
+                    button : {
+                        '&:hover' : {
+                            color : 'blue'
+                        }
+                    }
+                }
+            });
+            const cls = instance.classes.button;
+            expect(instance.el.textContent).to.be.equal(`.${cls}{color:red;}@media (min-width: 768px){.${cls}:hover{color:blue;}}`);
+        });
+
         it('must render css variables', () => {
             const instance = css({
                 root : {

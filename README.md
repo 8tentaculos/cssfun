@@ -76,7 +76,7 @@ const { css } = CSSFUN;
 
 ### Create your styles
 
-`css()` injects the styles and returns a `StyleSheet` instance. Its `classes` property holds the generated class names, one per top-level selector:
+`css()` injects the styles and returns a `StyleSheet` instance. Its `classes` property maps class name selectors to their generated unique class name:
 
 ```javascript
 const { classes } = css({
@@ -99,7 +99,7 @@ See [Class Name Generation](#class-name-generation) for how the names are built.
 
 ## Class Name Generation
 
-`css(styles)` returns a [`StyleSheet`](/docs/api.md#stylesheet) instance. Its `classes` property is an object that maps each top-level selector in your styles to a unique, scoped class name:
+`css(styles)` returns a [`StyleSheet`](/docs/api.md#stylesheet) instance. Its `classes` property maps class name selectors to their generated unique class name:
 
 ```javascript
 const sheet = css({
@@ -123,7 +123,7 @@ Generation happens once, when the instance is created — never during rendering
 
 ### Which selectors get a class
 
-Only top-level keys that are plain identifiers (matching `/^\w+$/` — letters, digits and underscores) get a generated class. At-rules (`@global`, `@media …`, `@keyframes …`), `$` references and keys with dashes, spaces or commas are left untouched and don't appear in `classes`.
+Keys matching `/^\w+$/` (letters, digits, underscore) at the top level and inside [at-rule blocks](#at-rules) get a generated class. The same name used in several places shares a single class.
 
 ### Stable across environments
 
@@ -362,6 +362,78 @@ css({
         }
     </style>
     ```
+
+#### At-rules
+
+- **Blocks** can declare classes directly — same rule as the top level, so a `@layer` needs no empty top-level
+  declaration. The same name used in several blocks shares one class:
+
+    ```javascript
+    const { classes } = css({
+        '@layer base' : {
+            button : {
+                color : 'black',
+                '&:hover' : {
+                    color : 'blue'
+                }
+            }
+        },
+        '@layer theme' : {
+            button : {
+                color : 'red'
+            }
+        }
+    });
+
+    classes.button; // "fun-11ez4g7-button" — the same class in both layers
+    ```
+
+    ##### Renders to:
+    ```html
+    <style data-fun-uid="11ez4g7">
+        @layer base {
+            .fun-11ez4g7-button {
+                color: black;
+            }
+            .fun-11ez4g7-button:hover {
+                color: blue;
+            }
+        }
+        @layer theme {
+            .fun-11ez4g7-button {
+                color: red;
+            }
+        }
+    </style>
+    ```
+
+- **Statements** (at-rules without a block) are written as the at-rule name with its prelude as the value. The prelude is
+  emitted as it is written:
+
+    ```javascript
+    css({
+        '@import' : 'url("reset.css") layer(base)',
+        '@layer'  : 'base, components, utilities',
+        button    : {
+            color : 'red'
+        }
+    }).toString();
+    ```
+
+    ##### Renders to:
+    ```html
+    <style data-fun-uid="l17gmc">
+        @import url("reset.css") layer(base);
+        @layer base, components, utilities;
+        .fun-l17gmc-button {
+            color: red;
+        }
+    </style>
+    ```
+
+    Statements are rendered in the order the keys are written, so put `@import` first. Since object keys are unique,
+    a stylesheet holds one statement per at-rule name; `@import` takes a single URL, so use another `css()` call for
+    a second import.
 
 **Example flow:**
 ```
@@ -605,7 +677,21 @@ sheet.classes.button; // string
 sheet.classes.typo;   // ❌ Property 'typo' does not exist
 ```
 
-Only top-level keys that are valid class-name identifiers (letters, digits and underscores — i.e. matching `/^\w+$/`) get a generated class at runtime, and the type mirrors that: at-rule keys (`@global`, `@keyframes …`, `@media …`, `@supports …`), class reference keys (`$name`) and keys containing selector syntax (dashes, spaces, `&`, `:`, etc.) are filtered out of `classes` automatically — they don't produce class names at runtime, so they don't appear in the type either.
+The type mirrors the runtime: keys matching `/^\w+$/` at the top level and inside [at-rule blocks](#at-rules).
+
+```ts
+const sheet = css({
+    '@layer base' : { button : { color : 'red' } },
+    '@layer theme' : { button : { color : 'blue' } },
+    '@layer' : 'base, theme'
+});
+
+sheet.classes.button; // string — one class shared by both layers
+```
+
+> **Note**: inside a block, a class named after a CSS property (`content`, `page`, `grid`, `flex`, …) doesn't type-check,
+> since the block's value type declares those keys as CSS properties. Declare that class at the top level and reference
+> it from the block with `$name`.
 
 ### CSS property autocomplete
 

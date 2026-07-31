@@ -22,8 +22,12 @@ export interface StyleRule extends CSSProperties {
     [selector: string]: StyleRule | CSSValue;
 }
 
-/** Top-level styles object mapping class names and selectors to style rules. */
-export type Styles = Record<string, StyleRule>;
+/**
+ * Top-level styles object mapping class names and selectors to style rules.
+ * An at-rule key may also hold a statement prelude, rendered as
+ * `@rule prelude;` (e.g. `'@layer' : 'base, utilities'`).
+ */
+export type Styles = Record<string, StyleRule | string>;
 
 /** A renderer function: receives the current value and returns the next, called with the StyleSheet as `this`. */
 export type RendererFn = (this: StyleSheet<any>, styles: any) => any;
@@ -32,13 +36,32 @@ export type RendererFn = (this: StyleSheet<any>, styles: any) => any;
 export type Resolvable<T> = T | ((this: StyleSheet<any>) => T);
 
 /**
- * Characters that can't appear in a top-level class key. At runtime only keys
- * matching `/^\w+$/` produce a class name; keys containing any selector
- * syntax (dashes, spaces, combinators, at-rules, references, etc.) don't.
+ * Characters that can't appear in a class key. At runtime only keys matching
+ * `/^\w+$/` produce a class name.
  */
 type InvalidClassChar =
     | '-' | ' ' | '.' | ',' | ':' | '&' | '>' | '+' | '~'
     | '*' | '[' | ']' | '(' | ')' | '#' | '@' | '$' | '%' | '"' | "'" | '=' | '|' | '^';
+
+/** At-rules whose block nests style rules, and may therefore declare class names. */
+type AtBlockPrefix = '@media' | '@supports' | '@layer' | '@container' | '@scope' | '@starting-style';
+
+/** Own keys that produce a class name: plain identifiers whose value is a rule object. */
+type OwnClassKeys<S> = keyof {
+    [K in keyof S as K extends `${string}${InvalidClassChar}${string}` ? never
+        : S[K] extends CSSValue ? never
+        : K & string]: unknown;
+};
+
+/** Keys that produce a class name inside at-rule blocks that nest style rules. */
+type NestedClassKeys<S> = {
+    [K in keyof S]: K extends `${AtBlockPrefix}${string}`
+        ? (S[K] extends CSSValue ? never : ClassKeys<S[K]>)
+        : never;
+}[keyof S];
+
+/** Every key that produces a class name, collected recursively through at-rule blocks. */
+type ClassKeys<S> = OwnClassKeys<S> | NestedClassKeys<S>;
 
 /** Options for the StyleSheet constructor. Accepts custom keys for subclasses and custom renderers. */
 export interface StyleSheetOptions {
@@ -88,16 +111,9 @@ declare class StyleSheet<S extends Styles = Styles> {
      */
     preinitialize(styles: S, options?: StyleSheetOptions): void;
 
-    /**
-     * Object mapping each top-level selector key (those matching `/^\w+$/`) to its
-     * generated unique class name string.
-     * Keys containing selector syntax — at-rules (`@global`, `@keyframes …`,
-     * `@media …`, `@supports …`), class references (`$name`) and keys with
-     * dashes, spaces or other special characters — are excluded, matching
-     * the runtime behavior: they don't produce class names.
-     */
+    /** Map of class name selectors to their generated unique class name. */
     readonly classes: {
-        readonly [K in keyof S as K extends `${string}${InvalidClassChar}${string}` ? never : K & string]: string;
+        readonly [K in Extract<ClassKeys<S>, string>]: string;
     };
     /** The original styles object provided to the instance. */
     styles: S;
@@ -164,6 +180,10 @@ declare class StyleSheet<S extends Styles = Styles> {
 
     /** Regular expression to match class names. */
     static classRegex: RegExp;
+    /** Regular expression to match at-rules. */
+    static atRuleRegex: RegExp;
+    /** Regular expression to match at-rules whose block may declare class names. */
+    static atBlockRegex: RegExp;
     /** Regular expression to match global styles. */
     static globalRegex: RegExp;
     /** Regular expression to match global styles with a prefix. */

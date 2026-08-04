@@ -312,6 +312,25 @@ describe('cssfun', () => {
             expect(instance.render()).to.be.equal(`@import url("reset.css") layer(base) supports(display: grid);@layer base, components, utilities;.${instance.prefix[0]}-${instance.uid}-1{color:red;}`);
         });
 
+        it('must render an array value as repeated statements', () => {
+            const instance = new StyleSheet({
+                '@import' : ['url("reset.css")', 'url("theme.css") layer(base)'],
+                root : {
+                    color : 'red'
+                }
+            });
+            expect(instance.render()).to.be.equal(`@import url("reset.css");@import url("theme.css") layer(base);.${instance.prefix[0]}-${instance.uid}-1{color:red;}`);
+        });
+
+        it('must render an array value as fallback declarations', () => {
+            const instance = new StyleSheet({
+                root : {
+                    color : ['#eee', 'var(--bg)']
+                }
+            });
+            expect(instance.render()).to.be.equal(`.${instance.prefix[0]}-${instance.uid}-1{color:#eee;color:var(--bg);}`);
+        });
+
         it('must generate class names inside at-rule blocks', () => {
             const instance = css({
                 '@layer base' : {

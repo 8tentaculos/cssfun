@@ -431,9 +431,24 @@ css({
     </style>
     ```
 
-    Statements are rendered in the order the keys are written, so put `@import` first. Since object keys are unique,
-    a stylesheet holds one statement per at-rule name; `@import` takes a single URL, so use another `css()` call for
-    a second import.
+    Object keys are unique, but an array value emits one statement per element, so a name can repeat — for example, several `@import` rules:
+
+    ```javascript
+    css({
+        '@import' : ['url("reset.css")', 'url("theme.css") layer(base)']
+    }).toString();
+    ```
+
+    ##### Renders to:
+    ```html
+    <style data-fun-uid="l17gmc">
+        @import url("reset.css");
+        @import url("theme.css") layer(base);
+    </style>
+    ```
+
+    The same array form applies to properties, providing CSS fallback values (`color : ['#eee', 'var(--bg)']` renders
+    `color: #eee;` followed by `color: var(--bg);`).
 
 **Example flow:**
 ```

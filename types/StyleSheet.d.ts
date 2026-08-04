@@ -3,14 +3,19 @@ import type { Properties } from 'csstype';
 /** A CSS property value. */
 export type CSSValue = string | number | null | undefined;
 
+/** csstype's value union for property `K`, with `string & {}` for arbitrary strings. */
+type PropValue<K extends keyof Properties<(string & {}) | number, string & {}>> =
+    Properties<(string & {}) | number, string & {}>[K];
+
 /**
  * CSS properties with full value autocomplete. Uses csstype's original value
  * unions (which include `string & {}` for arbitrary strings) plus `null`
- * (filtered at runtime). Numbers accepted for length properties.
+ * (filtered at runtime). Numbers accepted for length properties. An array value
+ * emits one declaration per element, providing CSS fallback values.
  */
 export type CSSProperties = {
     [K in keyof Properties<(string & {}) | number, string & {}>]?:
-        Properties<(string & {}) | number, string & {}>[K] | null;
+        PropValue<K> | null | PropValue<K>[];
 };
 
 /**
@@ -19,15 +24,17 @@ export type CSSProperties = {
  * and class references (`$className`).
  */
 export interface StyleRule extends CSSProperties {
-    [selector: string]: StyleRule | CSSValue;
+    [selector: string]: StyleRule | CSSValue | CSSValue[];
 }
 
 /**
  * Top-level styles object mapping class names and selectors to style rules.
  * An at-rule key may also hold a statement prelude, rendered as
- * `@rule prelude;` (e.g. `'@layer' : 'base, utilities'`).
+ * `@rule prelude;` (e.g. `'@layer' : 'base, utilities'`). An array of preludes
+ * emits one statement per element, so a name can repeat (e.g. several
+ * `'@import'` rules).
  */
-export type Styles = Record<string, StyleRule | string>;
+export type Styles = Record<string, StyleRule | string | string[]>;
 
 /** A renderer function: receives the current value and returns the next, called with the StyleSheet as `this`. */
 export type RendererFn = (this: StyleSheet<any>, styles: any) => any;

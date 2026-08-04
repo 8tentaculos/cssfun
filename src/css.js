@@ -6,7 +6,8 @@ import StyleSheet from './StyleSheet.js';
  * @module
  * @function
  * @param {Object} styles - An object containing CSS rules. Keys represent selectors, and values represent style objects.
- * An at-rule key may also hold a statement prelude string, rendered as `@rule prelude;`.
+ * An at-rule key may also hold a statement prelude string, rendered as `@rule prelude;`; an array value emits one
+ * statement per element, so a name can repeat (e.g. several `@import` rules) and properties can carry fallback values.
  * @param {Object} [options] - Optional configuration for the StyleSheet instance. Includes options like `prefix`, `renderers`, and more.
  * @returns {StyleSheet} The created and attached StyleSheet instance. Its `classes` property maps
  * class name selectors to their generated unique class name.

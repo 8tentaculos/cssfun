@@ -69,7 +69,7 @@ rendered as a string for server-side rendering.
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| styles | <code>Object</code> |  | The styles object. This is an object where keys represent  CSS selectors and values are style objects. An at-rule key may also hold a statement  prelude string, rendered as `@rule prelude;`. The styles object is processed through  the renderers to generate the final CSS string. It is stored in the instance as `this.styles`. |
+| styles | <code>Object</code> |  | The styles object. This is an object where keys represent  CSS selectors and values are style objects. An at-rule key may also hold a statement prelude string, rendered as `@rule prelude;`; an array value emits one statement per element, so a name can repeat (e.g. several `@import` rules) and properties can carry fallback values. The styles object is processed through the renderers to generate the final CSS string. It is stored in the instance as `this.styles`. |
 | [options] | <code>Object</code> | <code>{}</code> | Configuration options. The following options are assigned to the instance (`this`): `prefix`, `generateUid`, `generateClassName`, `shouldAttachToDOM`, `attributes`, `renderers`. |
 | [options.prefix] | <code>string</code> \| <code>function</code> | <code>&quot;&#x27;fun&#x27;&quot;</code> | Prefix for generating unique identifiers and data attributes. May be a function returning the prefix, evaluated when the instance is created. |
 | [options.generateUid] | <code>function</code> |  | Custom function to generate the unique identifier. |
@@ -303,7 +303,7 @@ class name selectors to their generated unique class name.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| styles | <code>Object</code> | An object containing CSS rules. Keys represent selectors, and values represent style objects. An at-rule key may also hold a statement prelude string, rendered as `@rule prelude;`. |
+| styles | <code>Object</code> | An object containing CSS rules. Keys represent selectors, and values represent style objects. An at-rule key may also hold a statement prelude string, rendered as `@rule prelude;`; an array value emits one statement per element, so a name can repeat (e.g. several `@import` rules) and properties can carry fallback values. |
 | [options] | <code>Object</code> | Optional configuration for the StyleSheet instance. Includes options like `prefix`, `renderers`, and more. |
 
 **Example**  

@@ -18,7 +18,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     });
     ```
 
-    Object keys are unique, so a stylesheet holds one statement per at-rule name.
+    Object keys are unique, but an array value emits one statement per element, so a name can repeat — several `@import` rules, for instance. The same array form provides CSS fallback values for a property.
+
+    ```javascript
+    css({
+        '@import' : ['url("reset.css")', 'url("theme.css") layer(base)'], // two @import rules
+        root : {
+            color : ['#eee', 'var(--bg)'] // color:#eee; color:var(--bg);
+        }
+    });
+    ```
 
 - Class names are now generated inside at-rule blocks as well as at the top level, so a class can be declared directly inside a `@layer` (or `@media`, …) instead of being declared empty at the top level. The same name used in several places shares a single class.
 

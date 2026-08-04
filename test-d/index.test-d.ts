@@ -212,6 +212,8 @@ expectError(createTheme({}, { colorScheme : 'invalid' }));
 const styles : Styles = { root : { color : 'red' } };
 // at-rule statements are valid top-level entries
 const stylesWithStatements : Styles = { '@layer' : 'base, utilities', root : { color : 'red' } };
+// an array value repeats a statement (multiple `@import` rules) or declaration (fallback values)
+const stylesWithArrays : Styles = { '@import' : ['url("a.css")', 'url("b.css")'], root : { color : ['#eee', 'var(--bg)'] } };
 const rule : StyleRule = { color : 'blue', '&:hover' : { color : 'red' } };
 const value : CSSValue = 'blue';
 const props : CSSProperties = { color : 'blue', backgroundColor : null, padding : 10 };

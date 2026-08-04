@@ -33,8 +33,10 @@ const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'should
  * @module
  * @class
  * @param {Object} styles - The styles object. This is an object where keys represent 
- * CSS selectors and values are style objects. An at-rule key may also hold a statement 
- * prelude string, rendered as `@rule prelude;`. The styles object is processed through 
+ * CSS selectors and values are style objects. An at-rule key may also hold a statement
+ * prelude string, rendered as `@rule prelude;`; an array value emits one statement per
+ * element, so a name can repeat (e.g. several `@import` rules) and properties can carry
+ * fallback values. The styles object is processed through
  * the renderers to generate the final CSS string. It is stored in the instance as `this.styles`.
  * @param {Object} [options={}] - Configuration options. The following options are assigned to the instance (`this`):
  * `prefix`, `generateUid`, `generateClassName`, `shouldAttachToDOM`, `attributes`, `renderers`.
@@ -201,8 +203,13 @@ class StyleSheet {
             } else if (typeof value !== 'undefined' && value !== null) {
                 // At-rule keys are separated by a space, other keys are separated by a colon.
                 const separator = key.match(StyleSheet.atRuleRegex) ? ' ' : `:${whitespace}`;
-                // Add the at-rule statement or the style to the accumulator.
-                acc.push(`${indent}${key}${separator}${value};${nl}`);
+                // An array value emits one statement/declaration per element, allowing
+                // repeated keys such as multiple `@import` rules or CSS fallback values.
+                (Array.isArray(value) ? value : [value]).forEach(v => {
+                    if (typeof v !== 'undefined' && v !== null) {
+                        acc.push(`${indent}${key}${separator}${v};${nl}`);
+                    }
+                });
             }
 
             return acc;

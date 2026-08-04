@@ -53,15 +53,28 @@ type OwnClassKeys<S> = keyof {
         : K & string]: unknown;
 };
 
-/** Keys that produce a class name inside at-rule blocks that nest style rules. */
-type NestedClassKeys<S> = {
+/**
+ * Every key that produces a class name: an object's own class keys, plus the class
+ * keys declared inside at-rule blocks that nest style rules (`@media`, `@layer`, …),
+ * gathered recursively through those blocks.
+ *
+ * The descent is unrolled into fixed levels (`ClassKeys` → `ClassKeys1` → `ClassKeys2`)
+ * rather than written as a single self-referential type. The bounded depth (three
+ * levels of at-rule nesting) keeps type-checking cheap and stops the compiler's
+ * recursion budget from blowing up on large stylesheets.
+ */
+type ClassKeys<S> = OwnClassKeys<S> | {
     [K in keyof S]: K extends `${AtBlockPrefix}${string}`
-        ? (S[K] extends CSSValue ? never : ClassKeys<S[K]>)
-        : never;
+        ? (S[K] extends CSSValue ? never : ClassKeys1<S[K]>) : never;
 }[keyof S];
-
-/** Every key that produces a class name, collected recursively through at-rule blocks. */
-type ClassKeys<S> = OwnClassKeys<S> | NestedClassKeys<S>;
+type ClassKeys1<S> = OwnClassKeys<S> | {
+    [K in keyof S]: K extends `${AtBlockPrefix}${string}`
+        ? (S[K] extends CSSValue ? never : ClassKeys2<S[K]>) : never;
+}[keyof S];
+type ClassKeys2<S> = OwnClassKeys<S> | {
+    [K in keyof S]: K extends `${AtBlockPrefix}${string}`
+        ? (S[K] extends CSSValue ? never : OwnClassKeys<S[K]>) : never;
+}[keyof S];
 
 /** Options for the StyleSheet constructor. Accepts custom keys for subclasses and custom renderers. */
 export interface StyleSheetOptions {

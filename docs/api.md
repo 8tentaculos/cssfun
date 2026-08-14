@@ -148,6 +148,10 @@ It will return a string ready to be added to the style element.
 ### styleSheet.toString() ⇒ <code>string</code>
 Render the StyleSheet as a style element string.
 Used for server-side rendering.
+The result is markup, so it is escaped to stay a single well formed `<style>` element:
+attribute values are HTML escaped, attribute names that are not legal are dropped, and
+a `</style` sequence in the CSS is escaped as `\3c /style`. The DOM API used by `attach`
+applies the equivalent rules on its own.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
 **Returns**: <code>string</code> - The instance as a string.  

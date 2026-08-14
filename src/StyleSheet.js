@@ -22,6 +22,39 @@ const getResult = (expression, context) =>
     typeof expression !== 'function' ? expression :
         expression.call(context);
 
+/**
+ * Match a name that is legal for an HTML attribute. Whitespace, quotes, `>`, `/` and `=`
+ * end the name and start another attribute when it is interpolated into markup. Control
+ * characters are excluded to match `setAttribute`, which rejects them.
+ * @private
+ */
+// eslint-disable-next-line no-control-regex
+const validAttributeNameRegex = /^[^\s"'>/=\u0000-\u001F\u007F-\u009F]+$/;
+
+/**
+ * Escape a value so it can be interpolated inside a double quoted HTML attribute.
+ * Escapes what the HTML serializer escapes in an attribute value, so the result matches
+ * what the DOM produces for the same value: the quote, which would end the value, and
+ * `&`, so the original text survives parsing.
+ * @param {*} value Value to be escaped.
+ * @return {string} The escaped value.
+ * @private
+ */
+const escapeAttributeValue = value => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/\u00A0/g, '&nbsp;');
+
+/**
+ * Escape the `<` of any `</style` sequence as the CSS escape `\3c `, so CSS text cannot
+ * close the `<style>` element it is serialized into. A `<style>` element holds raw text,
+ * which only that sequence terminates, so every other `<` is left as it is.
+ * @param {*} css CSS text to be escaped.
+ * @return {string} The escaped CSS text.
+ * @private
+ */
+const escapeStyleText = css => String(css).replace(/<(?=\/style([\s/>]|$))/gi, '\\3c ');
+
 const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'shouldAttachToDOM', 'attributes', 'renderers'];
 
 /**
@@ -299,13 +332,19 @@ class StyleSheet {
     /**
      * Render the StyleSheet as a style element string.
      * Used for server-side rendering.
+     * The result is markup, so it is escaped to stay a single well formed `<style>` element:
+     * attribute values are HTML escaped, attribute names that are not legal are dropped, and
+     * a `</style` sequence in the CSS is escaped as `\3c /style`. The DOM API used by `attach`
+     * applies the equivalent rules on its own.
      * @returns {string} The instance as a string.
      */
     toString() {
         const attributes = this.getAttributes();
-        const attributesHtml = Object.keys(attributes).map(key => ` ${key}="${attributes[key]}"`).join('');
+        const attributesHtml = Object.keys(attributes)
+            .filter(key => validAttributeNameRegex.test(key))
+            .map(key => ` ${key}="${escapeAttributeValue(attributes[key])}"`).join('');
         const nl = (__DEV__ && StyleSheet.debug) ? '\n' : '';
-        return `<style${attributesHtml}>${nl}${this.render()}</style>${nl}`;
+        return `<style${attributesHtml}>${nl}${escapeStyleText(this.render())}</style>${nl}`;
     }
 
     /**

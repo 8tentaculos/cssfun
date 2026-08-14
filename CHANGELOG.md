@@ -44,6 +44,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed `&` with no parent selector rendering the literal string `undefined` (e.g. `undefined:hover`). The missing parent is now treated as an empty string (`&:hover` → `:hover`).
 - Fixed keys holding a plain value generating a class name that matched no rule.
+- Fixed `toString()` emitting attribute names that are not legal HTML, which `setAttribute` already rejected on the DOM path.
+
+### Security
+
+- `StyleSheet.prototype.toString()` and `StyleSheet.toString()` now escape their output so it stays a single well formed `<style>` element: a `</style` sequence in the CSS is escaped as `\3c /style`, and attribute values are HTML escaped. Style rules built from data could otherwise inject markup into the server-rendered `<head>`.
+
+    This only ever affected server-side rendering. The DOM path used by `attach()` is unchanged and was never affected, since it sets `textContent` and uses `setAttribute`.
 
 ## [0.1.0] - 2026-07-25
 

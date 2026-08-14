@@ -29,7 +29,7 @@ Write modular **CSS** within your **JavaScript** code with built-in **themes** a
   and styling in the same file for easier management.
 
 - **Framework-Agnostic and Lightweight** 🌐  
-  **CSSFUN** is compatible with any environment. At just **1.8KB**, it adds minimal overhead to your projects.
+  **CSSFUN** is compatible with any environment and adds minimal overhead to your projects.
 
 - **No Build Tools Required** 🛠️  
   **CSSFUN** can be used directly in the browser, eliminating the need for complex build tools or configurations.

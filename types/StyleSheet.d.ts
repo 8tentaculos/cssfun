@@ -53,10 +53,17 @@ type InvalidClassChar =
 /** At-rules whose block nests style rules, and may therefore declare class names. */
 type AtBlockPrefix = '@media' | '@supports' | '@layer' | '@container' | '@scope' | '@starting-style';
 
+/**
+ * Values that hold no nested rules: a declaration value, or an array of them
+ * (fallback declarations and repeated at-rule statements). A key holding one of
+ * these declares no class name and is not descended into.
+ */
+type FlatValue = CSSValue | readonly CSSValue[];
+
 /** Own keys that produce a class name: plain identifiers whose value is a rule object. */
 type OwnClassKeys<S> = keyof {
     [K in keyof S as K extends `${string}${InvalidClassChar}${string}` ? never
-        : S[K] extends CSSValue ? never
+        : S[K] extends FlatValue ? never
         : K & string]: unknown;
 };
 
@@ -65,22 +72,28 @@ type OwnClassKeys<S> = keyof {
  * keys declared inside at-rule blocks that nest style rules (`@media`, `@layer`, …),
  * gathered recursively through those blocks.
  *
- * The descent is unrolled into fixed levels (`ClassKeys` → `ClassKeys1` → `ClassKeys2`)
- * rather than written as a single self-referential type. The bounded depth (three
- * levels of at-rule nesting) keeps type-checking cheap and stops the compiler's
- * recursion budget from blowing up on large stylesheets.
+ * The descent is unrolled into fixed levels (`ClassKeys` → `ClassKeys1` → `ClassKeys2`
+ * → `ClassKeys3`) rather than written as a single self-referential type. A
+ * self-referential version destabilizes the TypeScript language server; the bounded
+ * depth (four levels of at-rule nesting, which covers `@layer > @media > @supports >
+ * @container`) keeps type-checking cheap and stops the compiler's recursion budget
+ * from blowing up on large stylesheets.
  */
 type ClassKeys<S> = OwnClassKeys<S> | {
     [K in keyof S]: K extends `${AtBlockPrefix}${string}`
-        ? (S[K] extends CSSValue ? never : ClassKeys1<S[K]>) : never;
+        ? (S[K] extends FlatValue ? never : ClassKeys1<S[K]>) : never;
 }[keyof S];
 type ClassKeys1<S> = OwnClassKeys<S> | {
     [K in keyof S]: K extends `${AtBlockPrefix}${string}`
-        ? (S[K] extends CSSValue ? never : ClassKeys2<S[K]>) : never;
+        ? (S[K] extends FlatValue ? never : ClassKeys2<S[K]>) : never;
 }[keyof S];
 type ClassKeys2<S> = OwnClassKeys<S> | {
     [K in keyof S]: K extends `${AtBlockPrefix}${string}`
-        ? (S[K] extends CSSValue ? never : OwnClassKeys<S[K]>) : never;
+        ? (S[K] extends FlatValue ? never : ClassKeys3<S[K]>) : never;
+}[keyof S];
+type ClassKeys3<S> = OwnClassKeys<S> | {
+    [K in keyof S]: K extends `${AtBlockPrefix}${string}`
+        ? (S[K] extends FlatValue ? never : OwnClassKeys<S[K]>) : never;
 }[keyof S];
 
 /** Options for the StyleSheet constructor. Accepts custom keys for subclasses and custom renderers. */

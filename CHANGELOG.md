@@ -40,6 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     classes.button; // the same class in both layers
     ```
 
+- The TypeScript types follow both additions: `Styles` accepts a statement prelude, or an array of them, as an at-rule value, and the inferred `classes` type includes the class names declared inside at-rule blocks.
+
 ### Fixed
 
 - Fixed `&` with no parent selector rendering the literal string `undefined` (e.g. `undefined:hover`). The missing parent is now treated as an empty string (`&:hover` → `:hover`).

@@ -95,7 +95,7 @@ sheet.classes.button; // string
 sheet.classes.typo;   // ❌ Property 'typo' does not exist
 ```
 
-- `classes` is typed from keys matching `/^\w+$/` at the top level and inside at-rule blocks
+- `classes` is typed from keys matching `/^\w+$/` at the top level and inside the [at-rule blocks that nest style rules](#at-rules)
 - Inside a block, a class named after a CSS property (`content`, `page`, `grid`, `flex`, …) doesn't type-check — declare it at the top level and reference it with `$name`
 
 ### CSS property autocomplete
@@ -289,7 +289,7 @@ css({
 
 ### At-rules
 
-At-rule blocks can declare classes directly (same rule as the top level). At-rules without a block are written as the at-rule name with its prelude as the value; the prelude is emitted as written.
+At-rule blocks that nest style rules can declare classes directly (same rule as the top level): `@media`, `@supports`, `@layer`, `@container`, `@scope` and `@starting-style`. Other blocks (`@keyframes`, `@property`, `@font-face`, `@page`, …) hold steps or descriptors rather than style rules, so their keys never become classes. At-rules without a block are written as the at-rule name with its prelude as the value; the prelude is emitted as written.
 
 ```js
 // ✅ Classes inside layer blocks — no empty top-level declaration needed
@@ -312,6 +312,20 @@ css({
     '@charset' : '"utf-8"'                        // → @charset "utf-8";
 });
 
+// ✅ An array value emits one statement per element, so a name can repeat
+css({
+    '@import' : ['url("reset.css")', 'url("theme.css") layer(base)']
+});
+// → @import url("reset.css");
+//   @import url("theme.css") layer(base);
+
+// ✅ The same array form on a property provides CSS fallback values
+css({
+    root : {
+        color : ['#eee', 'var(--bg)']  // → color: #eee; color: var(--bg);
+    }
+});
+
 // ✅ Overriding a class in a media query
 css({
     button : { color : 'black' },
@@ -323,7 +337,7 @@ css({
 
 **Key Points:**
 - Statements are rendered in the order the keys are written, so put `@import` first
-- Object keys are unique, so a stylesheet holds one statement per at-rule name; `@import` takes a single URL, so use another `css()` call for a second import
+- Object keys are unique, so each at-rule name appears once; use an array value when the same at-rule has to be emitted several times
 
 ## 🎨 Themes
 

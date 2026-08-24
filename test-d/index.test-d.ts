@@ -52,6 +52,29 @@ expectType<{
 }>(layered.classes);
 
 /*
+ * css(): classes are gathered through four levels of nested at-rule blocks,
+ * which covers `@layer > @media > @supports > @container`
+ */
+const deep = css({
+    '@layer components' : {
+        '@media (min-width: 768px)' : {
+            '@supports (color: red)' : {
+                '@container (min-width: 400px)' : { deepest : { color : 'red' } },
+                third : {},
+            },
+            second : {},
+        },
+        first : {},
+    },
+});
+expectType<{
+    readonly deepest: string;
+    readonly third: string;
+    readonly second: string;
+    readonly first: string;
+}>(deep.classes);
+
+/*
  * css(): keys holding a plain value never produce a class, at any level
  */
 const plainValues = css({
@@ -60,6 +83,19 @@ const plainValues = css({
     root : { color : 'blue' },
 });
 expectType<{ readonly root: string }>(plainValues.classes);
+
+/*
+ * css(): array values never declare a class, at any level. An array holds
+ * repeated statements or fallback declarations, never nested rules.
+ */
+const arrays = css({
+    '@layer' : ['base', 'utilities'],
+    '@import' : ['url("a.css")', 'url("b.css")'],
+    '@media (min-width: 768px)' : ['unused'],
+    statement : ['a', 'b'],
+    root : { color : ['#eee', 'var(--bg)'] },
+});
+expectType<{ readonly root: string }>(arrays.classes);
 
 /*
  * css(): keys that don't match /^\w+$/ are excluded from `classes`,

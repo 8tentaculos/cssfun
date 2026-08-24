@@ -53,10 +53,17 @@ type InvalidClassChar =
 /** At-rules whose block nests style rules, and may therefore declare class names. */
 type AtBlockPrefix = '@media' | '@supports' | '@layer' | '@container' | '@scope' | '@starting-style';
 
+/**
+ * Values that hold no nested rules: a declaration value, or an array of them
+ * (fallback declarations and repeated at-rule statements). A key holding one of
+ * these declares no class name and is not descended into.
+ */
+type FlatValue = CSSValue | readonly CSSValue[];
+
 /** Own keys that produce a class name: plain identifiers whose value is a rule object. */
 type OwnClassKeys<S> = keyof {
     [K in keyof S as K extends `${string}${InvalidClassChar}${string}` ? never
-        : S[K] extends CSSValue ? never
+        : S[K] extends FlatValue ? never
         : K & string]: unknown;
 };
 
@@ -72,15 +79,15 @@ type OwnClassKeys<S> = keyof {
  */
 type ClassKeys<S> = OwnClassKeys<S> | {
     [K in keyof S]: K extends `${AtBlockPrefix}${string}`
-        ? (S[K] extends CSSValue ? never : ClassKeys1<S[K]>) : never;
+        ? (S[K] extends FlatValue ? never : ClassKeys1<S[K]>) : never;
 }[keyof S];
 type ClassKeys1<S> = OwnClassKeys<S> | {
     [K in keyof S]: K extends `${AtBlockPrefix}${string}`
-        ? (S[K] extends CSSValue ? never : ClassKeys2<S[K]>) : never;
+        ? (S[K] extends FlatValue ? never : ClassKeys2<S[K]>) : never;
 }[keyof S];
 type ClassKeys2<S> = OwnClassKeys<S> | {
     [K in keyof S]: K extends `${AtBlockPrefix}${string}`
-        ? (S[K] extends CSSValue ? never : OwnClassKeys<S[K]>) : never;
+        ? (S[K] extends FlatValue ? never : OwnClassKeys<S[K]>) : never;
 }[keyof S];
 
 /** Options for the StyleSheet constructor. Accepts custom keys for subclasses and custom renderers. */

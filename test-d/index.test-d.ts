@@ -62,6 +62,19 @@ const plainValues = css({
 expectType<{ readonly root: string }>(plainValues.classes);
 
 /*
+ * css(): array values never declare a class, at any level. An array holds
+ * repeated statements or fallback declarations, never nested rules.
+ */
+const arrays = css({
+    '@layer' : ['base', 'utilities'],
+    '@import' : ['url("a.css")', 'url("b.css")'],
+    '@media (min-width: 768px)' : ['unused'],
+    statement : ['a', 'b'],
+    root : { color : ['#eee', 'var(--bg)'] },
+});
+expectType<{ readonly root: string }>(arrays.classes);
+
+/*
  * css(): keys that don't match /^\w+$/ are excluded from `classes`,
  * matching the runtime (no class name is generated for them)
  */

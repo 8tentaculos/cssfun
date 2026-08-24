@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- At-rule statements: an at-rule key holding a plain value is rendered as `@rule prelude;`, with the prelude emitted as it is written.
+
+    ```javascript
+    css({
+        '@import' : 'url("reset.css") layer(base)', // → @import url("reset.css") layer(base);
+        '@layer' : 'base, components'               // → @layer base, components;
+    });
+    ```
+
+    Object keys are unique, but an array value emits one statement per element, so a name can repeat — several `@import` rules, for instance. The same array form provides CSS fallback values for a property.
+
+    ```javascript
+    css({
+        '@import' : ['url("reset.css")', 'url("theme.css") layer(base)'], // two @import rules
+        root : {
+            color : ['#eee', 'var(--bg)'] // color:#eee; color:var(--bg);
+        }
+    });
+    ```
+
+- Class names are now generated inside at-rule blocks as well as at the top level, so a class can be declared directly inside a `@layer` (or `@media`, …) instead of being declared empty at the top level. The same name used in several places shares a single class.
+
+    ```javascript
+    const { classes } = css({
+        '@layer base' : { button : { color : 'black' } },
+        '@layer theme' : { button : { color : 'blue' } }
+    });
+
+    classes.button; // the same class in both layers
+    ```
+
+### Fixed
+
+- Fixed `&` with no parent selector rendering the literal string `undefined` (e.g. `undefined:hover`). The missing parent is now treated as an empty string (`&:hover` → `:hover`).
+- Fixed keys holding a plain value generating a class name that matched no rule.
+- Fixed `toString()` emitting attribute names that are not legal HTML, which `setAttribute` already rejected on the DOM path.
+
+### Security
+
+- `StyleSheet.prototype.toString()` and `StyleSheet.toString()` now escape their output so it stays a single well formed `<style>` element: a `</style` sequence in the CSS is escaped as `\3c /style`, and attribute values are HTML escaped. Style rules built from data could otherwise inject markup into the server-rendered `<head>`.
+
+    This only ever affected server-side rendering. The DOM path used by `attach()` is unchanged and was never affected, since it sets `textContent` and uses `setAttribute`.
+
 ## [0.1.0] - 2026-07-25
 
 ### Added

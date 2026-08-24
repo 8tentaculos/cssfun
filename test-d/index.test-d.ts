@@ -30,6 +30,38 @@ const mixed = css({
 expectType<{ readonly root: string; readonly button: string }>(mixed.classes);
 
 /*
+ * css(): classes declared inside at-rule blocks are included, and the same
+ * name used in several blocks shares one class
+ */
+const layered = css({
+    '@layer base' : { button : { color : 'red' }, card : {} },
+    '@layer theme' : { button : { color : 'blue' } },
+    '@media (min-width: 768px)' : { panel : {} },
+    '@supports (color: red)' : { '@container (min-width: 400px)' : { nested : {} } },
+    '@keyframes wave' : { from : { opacity : 0 } },
+    '@global' : { body : { margin : 0 } },
+    '@layer' : 'base, theme',
+    root : {},
+});
+expectType<{
+    readonly button: string;
+    readonly card: string;
+    readonly panel: string;
+    readonly nested: string;
+    readonly root: string;
+}>(layered.classes);
+
+/*
+ * css(): keys holding a plain value never produce a class, at any level
+ */
+const plainValues = css({
+    '@media (min-width: 768px)' : { color : 'red' },
+    '@layer' : 'base',
+    root : { color : 'blue' },
+});
+expectType<{ readonly root: string }>(plainValues.classes);
+
+/*
  * css(): keys that don't match /^\w+$/ are excluded from `classes`,
  * matching the runtime (no class name is generated for them)
  */
@@ -178,6 +210,10 @@ expectError(createTheme({}, { colorScheme : 'invalid' }));
  * type exports are usable
  */
 const styles : Styles = { root : { color : 'red' } };
+// at-rule statements are valid top-level entries
+const stylesWithStatements : Styles = { '@layer' : 'base, utilities', root : { color : 'red' } };
+// an array value repeats a statement (multiple `@import` rules) or declaration (fallback values)
+const stylesWithArrays : Styles = { '@import' : ['url("a.css")', 'url("b.css")'], root : { color : ['#eee', 'var(--bg)'] } };
 const rule : StyleRule = { color : 'blue', '&:hover' : { color : 'red' } };
 const value : CSSValue = 'blue';
 const props : CSSProperties = { color : 'blue', backgroundColor : null, padding : 10 };

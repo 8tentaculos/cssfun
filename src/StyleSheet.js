@@ -22,6 +22,39 @@ const getResult = (expression, context) =>
     typeof expression !== 'function' ? expression :
         expression.call(context);
 
+/**
+ * Match a name that is legal for an HTML attribute. Whitespace, quotes, `>`, `/` and `=`
+ * end the name and start another attribute when it is interpolated into markup. Control
+ * characters are excluded to match `setAttribute`, which rejects them.
+ * @private
+ */
+// eslint-disable-next-line no-control-regex
+const validAttributeNameRegex = /^[^\s"'>/=\u0000-\u001F\u007F-\u009F]+$/;
+
+/**
+ * Escape a value so it can be interpolated inside a double quoted HTML attribute.
+ * Escapes what the HTML serializer escapes in an attribute value, so the result matches
+ * what the DOM produces for the same value: the quote, which would end the value, and
+ * `&`, so the original text survives parsing.
+ * @param {*} value Value to be escaped.
+ * @return {string} The escaped value.
+ * @private
+ */
+const escapeAttributeValue = value => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/\u00A0/g, '&nbsp;');
+
+/**
+ * Escape the `<` of any `</style` sequence as the CSS escape `\3c `, so CSS text cannot
+ * close the `<style>` element it is serialized into. A `<style>` element holds raw text,
+ * which only that sequence terminates, so every other `<` is left as it is.
+ * @param {*} css CSS text to be escaped.
+ * @return {string} The escaped CSS text.
+ * @private
+ */
+const escapeStyleText = css => String(css).replace(/<(?=\/style([\s/>]|$))/gi, '\\3c ');
+
 const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'shouldAttachToDOM', 'attributes', 'renderers'];
 
 /**
@@ -33,7 +66,10 @@ const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'should
  * @module
  * @class
  * @param {Object} styles - The styles object. This is an object where keys represent 
- * CSS selectors and values are style objects. The styles object is processed through 
+ * CSS selectors and values are style objects. An at-rule key may also hold a statement
+ * prelude string, rendered as `@rule prelude;`; an array value emits one statement per
+ * element, so a name can repeat (e.g. several `@import` rules) and properties can carry
+ * fallback values. The styles object is processed through
  * the renderers to generate the final CSS string. It is stored in the instance as `this.styles`.
  * @param {Object} [options={}] - Configuration options. The following options are assigned to the instance (`this`):
  * `prefix`, `generateUid`, `generateClassName`, `shouldAttachToDOM`, `attributes`, `renderers`.
@@ -67,8 +103,7 @@ const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'should
  *     return <h1 className={classes.root}>Hello World</h1>;
  * }
  * 
- * @property {Object} classes - Object mapping each top-level selector key (those matching `/^\w+$/`)
- * to its generated unique class name string.
+ * @property {Object} classes - Map of class name selectors to their generated unique class name.
  * @property {Object} styles - The original styles object provided to the instance.
  * @property {string} uid - Unique identifier for the StyleSheet instance, generated using `this.generateUid`.
  * @property {string} prefix - Prefix for generating unique identifiers. Resolved to a string when the instance
@@ -98,13 +133,21 @@ class StyleSheet {
         this.prefix = this.prefix ? getResult(this.prefix, this) : StyleSheet.prefix;
         // Generate the `StyleSheet` unique identifier.
         this.uid = this.generateUid();
-        // Generate class names. Only generate class names for top-level selectors.
+        // Generate class names, descending into at-rule blocks that nest style rules.
         let counter = 0;
-        Object.keys(styles).forEach(selector => {
-            if (selector.match(StyleSheet.classRegex)) {
-                this.classes[selector] = this.generateClassName(selector, ++counter);
-            }
-        });
+        const generateClasses = styles => {
+            Object.keys(styles).forEach(selector => {
+                if (selector in this.classes || !isObject(styles[selector])) return;
+                if (selector.match(StyleSheet.classRegex)) {
+                    // Generate a class name for the selector.
+                    this.classes[selector] = this.generateClassName(selector, ++counter);
+                } else if (selector.match(StyleSheet.atBlockRegex)) {
+                    // Descend into at-rule blocks that nest style rules.
+                    generateClasses(styles[selector]);
+                }
+            });
+        };
+        generateClasses(styles);
     }
 
     /**
@@ -191,8 +234,15 @@ class StyleSheet {
                     acc.push(`${indent}${key}${whitespace}{${nl}${renderedStyles}${indent}}${nl}`);
                 }
             } else if (typeof value !== 'undefined' && value !== null) {
-                // Add the style to the accumulator.
-                acc.push(`${indent}${key}:${whitespace}${value};${nl}`);
+                // At-rule keys are separated by a space, other keys are separated by a colon.
+                const separator = key.match(StyleSheet.atRuleRegex) ? ' ' : `:${whitespace}`;
+                // An array value emits one statement/declaration per element, allowing
+                // repeated keys such as multiple `@import` rules or CSS fallback values.
+                (Array.isArray(value) ? value : [value]).forEach(v => {
+                    if (typeof v !== 'undefined' && v !== null) {
+                        acc.push(`${indent}${key}${separator}${v};${nl}`);
+                    }
+                });
             }
 
             return acc;
@@ -225,9 +275,10 @@ class StyleSheet {
                 return `${parentSelector ? `${parentSelector} ` : ''}${key.replace(StyleSheet.globalPrefixRegex, '')}`;
             }
             // Nested, references and replace class names with created ones.
+            // Missing parent becomes '' so `&:hover` renders as `:hover`, not `undefined:hover`.
             return fromClasses(key)
                 .replace(StyleSheet.referenceRegex, (_match, ref) => fromClasses(ref))
-                .replace(StyleSheet.nestedRegex, parentSelector);
+                .replace(StyleSheet.nestedRegex, parentSelector || '');
         };
 
         const result = Object.keys(styles).reduce((acc, key) => {
@@ -281,13 +332,19 @@ class StyleSheet {
     /**
      * Render the StyleSheet as a style element string.
      * Used for server-side rendering.
+     * The result is markup, so it is escaped to stay a single well formed `<style>` element:
+     * attribute values are HTML escaped, attribute names that are not legal are dropped, and
+     * a `</style` sequence in the CSS is escaped as `\3c /style`. The DOM API used by `attach`
+     * applies the equivalent rules on its own.
      * @returns {string} The instance as a string.
      */
     toString() {
         const attributes = this.getAttributes();
-        const attributesHtml = Object.keys(attributes).map(key => ` ${key}="${attributes[key]}"`).join('');
+        const attributesHtml = Object.keys(attributes)
+            .filter(key => validAttributeNameRegex.test(key))
+            .map(key => ` ${key}="${escapeAttributeValue(attributes[key])}"`).join('');
         const nl = (__DEV__ && StyleSheet.debug) ? '\n' : '';
-        return `<style${attributesHtml}>${nl}${this.render()}</style>${nl}`;
+        return `<style${attributesHtml}>${nl}${escapeStyleText(this.render())}</style>${nl}`;
     }
 
     /**
@@ -391,6 +448,22 @@ class StyleSheet {
  * @private
  */
 StyleSheet.classRegex = /^\w+$/;
+
+/**
+ * Regular expression to match at-rules.
+ * @static
+ * @private
+ */
+StyleSheet.atRuleRegex = /^@/;
+
+/**
+ * At-rules whose block nests style rules (and may therefore declare classes).
+ * Other at-blocks (`@property`, `@page`, `@font-face`, `@keyframes`, …) are skipped
+ * so their descriptor keys are not treated as class names.
+ * @static
+ * @private
+ */
+StyleSheet.atBlockRegex = /^@(media|supports|layer|container|scope|starting-style)\b/;
 
 /**
  * Regular expression to match global styles.

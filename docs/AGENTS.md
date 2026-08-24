@@ -2,13 +2,13 @@
 
 This document provides a comprehensive reference for AI agents working with the CSSFUN library. It covers the core API patterns, style syntax, theme management, and best practices.
 
-For detailed API documentation, see: [API Documentation](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.1.0/docs/api.md)
+For detailed API documentation, see: [API Documentation](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0-alpha.1/docs/api.md)
 
 ## 🔧 Core API
 
 ### Creating Styles
 
-The `css()` function creates and attaches a new StyleSheet instance to the DOM. It returns a StyleSheet instance with a `classes` object mapping original class names to generated unique class names.
+The `css()` function creates and attaches a new StyleSheet instance to the DOM. It returns a StyleSheet instance with a `classes` object mapping class name selectors to their generated unique class name.
 
 ```js
 import { css } from 'cssfun';
@@ -36,13 +36,13 @@ const Button = () => <button className={classes.button}>Click me</button>;
 
 **Class Name Generation:**
 - **When**: Generated at StyleSheet instance creation (when `css()` is called)
-- **Which**: Only top-level selectors matching valid class name patterns (alphanumeric, no special chars)
+- **Which**: Keys matching `/^\w+$/` at the top level and inside at-rule blocks. The same name used in several places shares one class
 - **Format (Development)**: `{prefix}-{uid}-{className}` → `.fun-9qkk9s-button`
 - **Format (Production)**: `{prefix[0]}-{uid}-{index}` → `.f-9qkk9s-1` (optimized for smaller bundle)
 - **Access**: Via `classes` object: `classes.button` returns the generated class name
 
 **Related API:**
-- [`css(styles, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.1.0/docs/api.md#css) - Creates and attaches a StyleSheet
+- [`css(styles, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0-alpha.1/docs/api.md#css) - Creates and attaches a StyleSheet
 
 ### Style Object Structure
 
@@ -95,7 +95,8 @@ sheet.classes.button; // string
 sheet.classes.typo;   // ❌ Property 'typo' does not exist
 ```
 
-- Only top-level keys matching `/^\w+$/` (letters, digits, underscore) produce a class at runtime, and the type mirrors that: at-rule keys (`@global`, `@keyframes …`, `@media …`, `@supports …`), `$ref` keys and keys containing selector syntax (dashes, spaces, `&`, `:`, etc.) are filtered out of `classes` automatically — they don't produce class names at runtime, so they don't appear in the type either. Use simple identifiers for top-level class keys.
+- `classes` is typed from keys matching `/^\w+$/` at the top level and inside at-rule blocks
+- Inside a block, a class named after a CSS property (`content`, `page`, `grid`, `flex`, …) doesn't type-check — declare it at the top level and reference it with `$name`
 
 ### CSS property autocomplete
 
@@ -286,6 +287,44 @@ css({
 // Renders to (prod): .f-9qkk9s-1 a { color: blue; }
 ```
 
+### At-rules
+
+At-rule blocks can declare classes directly (same rule as the top level). At-rules without a block are written as the at-rule name with its prelude as the value; the prelude is emitted as written.
+
+```js
+// ✅ Classes inside layer blocks — no empty top-level declaration needed
+const { classes } = css({
+    '@layer' : 'base, theme',       // → @layer base, theme;
+    '@layer base' : {
+        button : {
+            color : 'black',
+            '&:hover' : { color : 'blue' }
+        }
+    },
+    '@layer theme' : {
+        button : { color : 'red' }  // same generated class
+    }
+});
+
+// ✅ Statements: key is the at-rule name, value is the prelude
+css({
+    '@import' : 'url("reset.css") layer(base)',  // → @import url("reset.css") layer(base);
+    '@charset' : '"utf-8"'                        // → @charset "utf-8";
+});
+
+// ✅ Overriding a class in a media query
+css({
+    button : { color : 'black' },
+    '@media (min-width: 768px)' : {
+        button : { color : 'blue' }   // same class; `$button` also works
+    }
+});
+```
+
+**Key Points:**
+- Statements are rendered in the order the keys are written, so put `@import` first
+- Object keys are unique, so a stylesheet holds one statement per at-rule name; `@import` takes a single URL, so use another `css()` call for a second import
+
 ## 🎨 Themes
 
 Themes provide CSS variables for consistent styling across your application. They support multiple color schemes (`light`, `dark`, `light dark`, `normal`) and automatically adapt to system preferences.
@@ -416,7 +455,7 @@ const theme = createTheme({
 ```
 
 **Related API:**
-- [`createTheme(themes, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.1.0/docs/api.md#createtheme) - Creates a theme StyleSheet
+- [`createTheme(themes, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0-alpha.1/docs/api.md#createtheme) - Creates a theme StyleSheet
 
 ## 🚀 Server-Side Rendering (SSR)
 
@@ -480,8 +519,8 @@ const css = StyleSheet.toCSS();
 ```
 
 **Related API:**
-- [`StyleSheet.toString()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.1.0/docs/api.md#stylesheet_tostring) - Static method to render all instances as HTML
-- [`StyleSheet.toCSS()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.1.0/docs/api.md#stylesheet_tocss) - Static method to render all instances as CSS
+- [`StyleSheet.toString()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0-alpha.1/docs/api.md#stylesheet_tostring) - Static method to render all instances as HTML
+- [`StyleSheet.toCSS()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0-alpha.1/docs/api.md#stylesheet_tocss) - Static method to render all instances as CSS
 
 ## 🛠️ Advanced Usage
 
@@ -552,7 +591,7 @@ const { classes } = css({
 ```
 
 **Related API:**
-- [`StyleSheet`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.1.0/docs/api.md#stylesheet) - StyleSheet class documentation
+- [`StyleSheet`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0-alpha.1/docs/api.md#stylesheet) - StyleSheet class documentation
 
 ## ⚠️ CSSFUN Best Practices
 
@@ -644,6 +683,6 @@ const Button = ({ children, disabled, onClick }) => (
 
 ## Additional Resources
 
-- **Full API Documentation**: [api.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.1.0/docs/api.md)
+- **Full API Documentation**: [api.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0-alpha.1/docs/api.md)
 - **GitHub Repository**: [8tentaculos/cssfun](https://github.com/8tentaculos/cssfun)
 - **Examples**: Check the `example/` folder in the repository

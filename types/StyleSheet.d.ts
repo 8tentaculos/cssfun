@@ -72,10 +72,12 @@ type OwnClassKeys<S> = keyof {
  * keys declared inside at-rule blocks that nest style rules (`@media`, `@layer`, …),
  * gathered recursively through those blocks.
  *
- * The descent is unrolled into fixed levels (`ClassKeys` → `ClassKeys1` → `ClassKeys2`)
- * rather than written as a single self-referential type. The bounded depth (three
- * levels of at-rule nesting) keeps type-checking cheap and stops the compiler's
- * recursion budget from blowing up on large stylesheets.
+ * The descent is unrolled into fixed levels (`ClassKeys` → `ClassKeys1` → `ClassKeys2`
+ * → `ClassKeys3`) rather than written as a single self-referential type. A
+ * self-referential version destabilizes the TypeScript language server; the bounded
+ * depth (four levels of at-rule nesting, which covers `@layer > @media > @supports >
+ * @container`) keeps type-checking cheap and stops the compiler's recursion budget
+ * from blowing up on large stylesheets.
  */
 type ClassKeys<S> = OwnClassKeys<S> | {
     [K in keyof S]: K extends `${AtBlockPrefix}${string}`
@@ -86,6 +88,10 @@ type ClassKeys1<S> = OwnClassKeys<S> | {
         ? (S[K] extends FlatValue ? never : ClassKeys2<S[K]>) : never;
 }[keyof S];
 type ClassKeys2<S> = OwnClassKeys<S> | {
+    [K in keyof S]: K extends `${AtBlockPrefix}${string}`
+        ? (S[K] extends FlatValue ? never : ClassKeys3<S[K]>) : never;
+}[keyof S];
+type ClassKeys3<S> = OwnClassKeys<S> | {
     [K in keyof S]: K extends `${AtBlockPrefix}${string}`
         ? (S[K] extends FlatValue ? never : OwnClassKeys<S[K]>) : never;
 }[keyof S];

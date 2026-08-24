@@ -52,6 +52,29 @@ expectType<{
 }>(layered.classes);
 
 /*
+ * css(): classes are gathered through four levels of nested at-rule blocks,
+ * which covers `@layer > @media > @supports > @container`
+ */
+const deep = css({
+    '@layer components' : {
+        '@media (min-width: 768px)' : {
+            '@supports (color: red)' : {
+                '@container (min-width: 400px)' : { deepest : { color : 'red' } },
+                third : {},
+            },
+            second : {},
+        },
+        first : {},
+    },
+});
+expectType<{
+    readonly deepest: string;
+    readonly third: string;
+    readonly second: string;
+    readonly first: string;
+}>(deep.classes);
+
+/*
  * css(): keys holding a plain value never produce a class, at any level
  */
 const plainValues = css({

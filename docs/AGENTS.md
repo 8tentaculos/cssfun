@@ -2,7 +2,7 @@
 
 This document provides a comprehensive reference for AI agents working with the CSSFUN library. It covers the core API patterns, style syntax, theme management, and best practices.
 
-For detailed API documentation, see: [API Documentation](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0-alpha.1/docs/api.md)
+For detailed API documentation, see: [API Documentation](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0/docs/api.md)
 
 ## 🔧 Core API
 
@@ -42,7 +42,7 @@ const Button = () => <button className={classes.button}>Click me</button>;
 - **Access**: Via `classes` object: `classes.button` returns the generated class name
 
 **Related API:**
-- [`css(styles, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0-alpha.1/docs/api.md#css) - Creates and attaches a StyleSheet
+- [`css(styles, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0/docs/api.md#css) - Creates and attaches a StyleSheet
 
 ### Style Object Structure
 
@@ -469,7 +469,7 @@ const theme = createTheme({
 ```
 
 **Related API:**
-- [`createTheme(themes, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0-alpha.1/docs/api.md#createtheme) - Creates a theme StyleSheet
+- [`createTheme(themes, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0/docs/api.md#createtheme) - Creates a theme StyleSheet
 
 ## 🚀 Server-Side Rendering (SSR)
 
@@ -533,8 +533,8 @@ const css = StyleSheet.toCSS();
 ```
 
 **Related API:**
-- [`StyleSheet.toString()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0-alpha.1/docs/api.md#stylesheet_tostring) - Static method to render all instances as HTML
-- [`StyleSheet.toCSS()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0-alpha.1/docs/api.md#stylesheet_tocss) - Static method to render all instances as CSS
+- [`StyleSheet.toString()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0/docs/api.md#stylesheet_tostring) - Static method to render all instances as HTML
+- [`StyleSheet.toCSS()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0/docs/api.md#stylesheet_tocss) - Static method to render all instances as CSS
 
 ## 🛠️ Advanced Usage
 
@@ -605,7 +605,7 @@ const { classes } = css({
 ```
 
 **Related API:**
-- [`StyleSheet`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0-alpha.1/docs/api.md#stylesheet) - StyleSheet class documentation
+- [`StyleSheet`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0/docs/api.md#stylesheet) - StyleSheet class documentation
 
 ## ⚠️ CSSFUN Best Practices
 
@@ -697,6 +697,6 @@ const Button = ({ children, disabled, onClick }) => (
 
 ## Additional Resources
 
-- **Full API Documentation**: [api.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0-alpha.1/docs/api.md)
+- **Full API Documentation**: [api.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.2.0/docs/api.md)
 - **GitHub Repository**: [8tentaculos/cssfun](https://github.com/8tentaculos/cssfun)
 - **Examples**: Check the `example/` folder in the repository

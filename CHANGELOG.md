@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **TypeScript: a function assigned on the instance sees the subclass.** `Resolvable<T>` pinned `this` to `StyleSheet<any>`, so ``this.attributes = function () { return { nonce : this.appNonce }; }`` in a subclass failed with TS2339 even though the runtime calls it with that subclass. The alias no longer carries `this` on the instance, where TypeScript infers it from the assignment target; the options side keeps it in a second alias, since an option has nothing to infer it from.
+
+### Added
+
+- **TypeScript: `ResolvableOption<T>`**, exported from the package. Names the options-side form that takes either a value or a function returning it, called with the StyleSheet as `this`. `Resolvable<T>` keeps naming the same pair on the instance, without `this`.
+
 ## [0.2.0] - 2026-08-24
 
 ### Added

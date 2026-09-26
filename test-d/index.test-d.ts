@@ -300,6 +300,47 @@ class PreinitStyleSheet extends StyleSheet {
 }
 new PreinitStyleSheet({ root : {} });
 
+// `prefix` and `renderers` are resolved when the instance is created, so they read as the
+// resolved value; the unresolved forms are carried by the options
+expectType<string>(new PreinitStyleSheet({ root : {} }).prefix);
+expectType<RendererFn[]>(new PreinitStyleSheet({ root : {} }).renderers);
+css({ root : {} }, { prefix : () => 'app', renderers : ['parseStyles', 'renderStyles'] });
+css({ root : {} }, { renderers : () => ['parseStyles', (styles : any) => String(styles)] });
+
+// On the instance the alias carries no `this`, so TypeScript infers it from the assignment
+// target: a `function` assigned in a subclass sees the subclass
+class ScopedFromSubclass extends StyleSheet {
+    appNonce = 'abc';
+    preinitialize() : void {
+        this.attributes = function() { return { nonce : this.appNonce }; };
+    }
+}
+ScopedFromSubclass.prototype.attributes = function() { return { 'data-uid' : this.uid }; };
+
+// On the options side the alias carries `this` explicitly, since there is nothing to infer
+// it from — the function form sees the StyleSheet
+css({ root : {} }, { prefix : function() { return this.uid; } });
+
+/*
+ * subclassing: the scoped form of the CSP recipe — `attributes` is read on every render,
+ * so the function form resolves the nonce lazily
+ */
+declare const getRequestNonce : () => string;
+class CSPStyleSheet extends StyleSheet {
+    preinitialize() : void {
+        this.attributes = () => ({ nonce : getRequestNonce() });
+    }
+}
+new CSPStyleSheet({ root : {} });
+
+// either form on the prototype
+CSPStyleSheet.prototype.attributes = () => ({ nonce : getRequestNonce() });
+CSPStyleSheet.prototype.attributes = { nonce : 'abc' };
+
+// as in the options
+css({ root : {} }, { attributes : { nonce : 'abc' }, prefix : 'app' });
+css({ root : {} }, { attributes : () => ({ nonce : getRequestNonce() }), prefix : () => 'app' });
+
 /*
  * createTheme: custom createStyleSheet may return a StyleSheet subclass
  */

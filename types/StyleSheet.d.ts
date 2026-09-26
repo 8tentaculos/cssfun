@@ -39,8 +39,19 @@ export type Styles = Record<string, StyleRule | string | string[]>;
 /** A renderer function: receives the current value and returns the next, called with the StyleSheet as `this`. */
 export type RendererFn = (this: StyleSheet<any>, styles: any) => any;
 
-/** A value provided directly or as a function returning it (called with the StyleSheet as `this`). */
-export type Resolvable<T> = T | ((this: StyleSheet<any>) => T);
+/**
+ * A value provided directly, or as a function returning it. Used on the instance, where
+ * TypeScript infers `this` from the assignment target — so a function assigned in a
+ * subclass sees the subclass.
+ */
+export type Resolvable<T> = T | (() => T);
+
+/**
+ * A `Resolvable` on the options side, where the function form is called with the StyleSheet
+ * as `this`. It carries `this` explicitly because an option has no assignment target for
+ * TypeScript to infer it from.
+ */
+export type ResolvableOption<T> = T | ((this: StyleSheet<any>) => T);
 
 /**
  * Characters that can't appear in a class key. At runtime only keys matching
@@ -102,7 +113,7 @@ export interface StyleSheetOptions {
      * Prefix for generating unique identifiers and data attributes. Default: `'fun'`.
      * May be a function returning the prefix, evaluated when the instance is created.
      */
-    prefix?: Resolvable<string>;
+    prefix?: ResolvableOption<string>;
     /** Custom function to generate the unique identifier. */
     generateUid?: (this: StyleSheet<any>) => string;
     /** Custom function to generate unique class names. */
@@ -113,13 +124,13 @@ export interface StyleSheetOptions {
      * Attributes to be added to the `<style>` element.
      * May be a function returning the attributes object, evaluated lazily by `getAttributes`.
      */
-    attributes?: Resolvable<Record<string, string>>;
+    attributes?: ResolvableOption<Record<string, string>>;
     /**
      * Renderer functions or method names (or a function returning such an array).
      * Default: `['parseStyles', 'renderStyles']`. Resolved when the instance is created
      * and applied in order, each renderer receiving the previous one's output.
      */
-    renderers?: Resolvable<Array<string | RendererFn>>;
+    renderers?: ResolvableOption<Array<string | RendererFn>>;
     /** Any additional custom options, e.g. for subclasses or custom renderers. */
     [key: string]: unknown;
 }
@@ -152,17 +163,23 @@ declare class StyleSheet<S extends Styles = Styles> {
     styles: S;
     /** Unique identifier for the StyleSheet instance. */
     uid: string;
-    /** Prefix for generating unique identifiers. Resolved to a string when the instance is created. */
+    /**
+     * Prefix for generating unique identifiers. Resolved when the instance is created, so the
+     * member reads as the string. To provide it lazily, pass the function form as the `prefix`
+     * option, which is where the declaration carries it.
+     */
     prefix: string;
     /**
-     * Attributes to be added to the `<style>` element. Optional — may be `undefined`
-     * (only set when passed as an option or assigned manually), an object, or a function
-     * returning the attributes object (resolved lazily by `getAttributes`).
+     * Attributes to be added to the `<style>` element. Optional — may be `undefined` (only
+     * set when passed as an option or assigned manually). An object, or a function returning
+     * one, called bound to the instance; resolved lazily by `getAttributes`, so it is read
+     * fresh on every render.
      */
     attributes?: Resolvable<Record<string, string>>;
     /**
-     * Renderer functions used to process the styles object. Method-name strings passed
-     * via options are resolved to methods when the instance is created.
+     * Renderer functions used to process the styles object. Method-name strings and the
+     * function form are resolved when the instance is created, so the member reads as the
+     * functions. To provide either lazily, pass them as the `renderers` option.
      */
     renderers: RendererFn[];
     /** Reference to the `<style>` element in the DOM. Set after `attach()`, `null` after `destroy()`. */

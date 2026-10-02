@@ -33,9 +33,9 @@ generates <code>--fun-colors-primary : blue</code>.</p>
 | classes | <code>Object</code> | Map of class name selectors to their generated unique class name. |
 | styles | <code>Object</code> | The original styles object provided to the instance. |
 | uid | <code>string</code> | Unique identifier for the StyleSheet instance, generated using `this.generateUid`. |
-| prefix | <code>string</code> | Prefix for generating unique identifiers. Resolved to a string when the instance is created (may be supplied as a function via options or a subclass). |
-| [attributes] | <code>Object</code> \| <code>function</code> | Optional attributes to be added to the `<style>` element. May be `undefined`, an object, or a function returning the attributes object (evaluated lazily by `getAttributes`). |
-| renderers | <code>Array</code> | Array of renderer functions used to process the styles object. Method-name strings passed via options are resolved to methods when the instance is created. |
+| prefix | <code>string</code> | Prefix for generating unique identifiers and data attributes. Taken from the options, from the subclass, or from the static `prefix` of the instance's class. |
+| [attributes] | <code>Object</code> \| <code>function</code> | Optional attributes to be added to the `<style>` element. May be `undefined`, an object, or a function returning one, resolved by `getDecoratedAttributes` every time the attributes are read. |
+| renderers | <code>Array</code> \| <code>function</code> | Renderer functions or method names used to process the styles object, or a function returning them. Resolved by `render` on every call. |
 | el | <code>HTMLElement</code> | Reference to the `<style>` element in the DOM. Created when the instance is attached to the DOM. |
 
 
@@ -71,11 +71,11 @@ rendered as a string for server-side rendering.
 | --- | --- | --- | --- |
 | styles | <code>Object</code> |  | The styles object. This is an object where keys represent  CSS selectors and values are style objects. An at-rule key may also hold a statement prelude string, rendered as `@rule prelude;`; an array value emits one statement per element, so a name can repeat (e.g. several `@import` rules) and properties can carry fallback values. The styles object is processed through the renderers to generate the final CSS string. It is stored in the instance as `this.styles`. |
 | [options] | <code>Object</code> | <code>{}</code> | Configuration options. The following options are assigned to the instance (`this`): `prefix`, `generateUid`, `generateClassName`, `shouldAttachToDOM`, `attributes`, `renderers`. |
-| [options.prefix] | <code>string</code> \| <code>function</code> | <code>&quot;&#x27;fun&#x27;&quot;</code> | Prefix for generating unique identifiers and data attributes. May be a function returning the prefix, evaluated when the instance is created. |
+| [options.prefix] | <code>string</code> |  | Prefix for generating unique identifiers and data attributes. Defaults to the static `prefix` of the instance's class. |
 | [options.generateUid] | <code>function</code> |  | Custom function to generate the unique identifier. |
 | [options.generateClassName] | <code>function</code> |  | Custom function to generate unique class names. |
-| [options.attributes] | <code>Object</code> \| <code>function</code> |  | Attributes to be added to the `<style>` element. May be a function returning the attributes object, evaluated lazily by `getAttributes`. |
-| [options.renderers] | <code>Array</code> \| <code>function</code> | <code>[&#x27;parseStyles&#x27;, &#x27;renderStyles&#x27;]</code> | Array of renderer functions or method names (or a function returning such an array). Resolved when the instance is created and applied in order by `render`, each renderer receiving the previous one's output. Renderers are called with the instance as `this`. |
+| [options.attributes] | <code>Object</code> \| <code>function</code> |  | Attributes to be added to the `<style>` element. May be a function returning the attributes object, resolved every time the attributes are read. |
+| [options.renderers] | <code>Array</code> \| <code>function</code> | <code>[&#x27;parseStyles&#x27;, &#x27;renderStyles&#x27;]</code> | Array of renderer functions or method names, or a function returning such an array. Resolved by `render` on every call and applied in order, each renderer receiving the previous one's output. Renderers are called with the instance as `this`. |
 | [options.shouldAttachToDOM] | <code>function</code> |  | Custom function to determine whether the StyleSheet should be added to the DOM. |
 
 **Example**  
@@ -100,11 +100,11 @@ function Header() {
 ```
 <a name="stylesheet__preinitialize" id="stylesheet__preinitialize" class="anchor"></a>
 ### styleSheet.preinitialize(styles, [options]) ⇒ <code>void</code>
-Hook run at the very start of the constructor, before `styles` and `options`
-are applied and before `renderers`, `prefix`, `uid` and `classes` are computed.
-Does nothing by default. Override it in a subclass to run setup logic or define
-instance properties such as `prefix`, `attributes` or `renderers`. Values set
-here are still overridden by the matching `options`.
+Hook run at the very start of the constructor, before `styles` and `options` are applied
+and before `prefix`, `uid` and `classes` are computed. Does nothing by default. Override it
+in a subclass to define instance properties, which is the only place `options` can be read
+before the class names are generated. Values set here are still overridden by the matching
+options.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
 
@@ -138,8 +138,10 @@ May be overridden by `options.generateClassName` or by extending the class.
 <a name="stylesheet__render" id="stylesheet__render" class="anchor"></a>
 ### styleSheet.render() ⇒ <code>string</code>
 Apply the renderers to the styles object.
-Renderers are applied in order, starting from `this.styles`, with each renderer
-receiving the previous one's output and called with the instance as `this`.
+`this.renderers` is resolved on every call, so the function form is evaluated and
+method-name strings are looked up on the instance at render time. Renderers are applied
+in order, starting from `this.styles`, with each renderer receiving the previous one's
+output and called with the instance as `this`.
 It will return a string ready to be added to the style element.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
@@ -187,7 +189,7 @@ from the DOM, if it's present.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| prefix | <code>string</code> | The class prefix. Used to generate unique class names. |
+| prefix | <code>string</code> | The class prefix. Used to generate unique class names and data attributes. An instance falls back to the static of its own class, so a subclass may declare its own; `options.prefix` overrides it per instance. |
 
 <a name="stylesheet_indent" id="stylesheet_indent" class="anchor"></a>
 ### StyleSheet.indent

@@ -113,6 +113,7 @@ import type {
     StyleSheetOptions,
     RendererFn,
     Resolvable,
+    ResolvableOption,
     ThemeVars,
     ThemeDefinition,
     CreateThemeOptions
@@ -134,7 +135,7 @@ const opts : StyleSheetOptions = {
 // createTheme is typed too; classes.root is always available.
 const themeOpts : CreateThemeOptions = { colorScheme : 'dark' };
 
-// Subclassing: renderStyles / parseStyles / getAttributes are exposed for custom renderers.
+// Subclassing: renderStyles / parseStyles are exposed for custom renderers.
 class MySheet extends StyleSheet {
     renderStyles(styles : any, level? : number) {
         return super.renderStyles(styles, level);

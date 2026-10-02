@@ -181,10 +181,57 @@ describe('cssfun', () => {
             expect(instance.prefix).to.be.equal('opt');
         });
 
-        it('must accept a function as prefix', () => {
-            const instance = css({ root : { color : 'red' } }, { prefix : () => 'fnpre' });
-            expect(instance.prefix).to.be.equal('fnpre');
-            expect(instance.el.getAttribute('data-fnpre-uid')).to.be.equal(instance.uid);
+        it('must fall back to the static prefix of its own class', () => {
+            class StaticSheet extends StyleSheet {}
+            StaticSheet.prefix = 'statpre';
+            const instance = new StaticSheet({ root : { color : 'red' } }).attach();
+            expect(instance.prefix).to.be.equal('statpre');
+            expect(instance.el.getAttribute('data-statpre-uid')).to.be.equal(instance.uid);
+        });
+
+        it('must accept a prefix declared as a getter', () => {
+            class GetterSheet extends StyleSheet {
+                get prefix() { return 'getpre'; }
+            }
+            const instance = new GetterSheet({ root : { color : 'red' } }).attach();
+            expect(instance.prefix).to.be.equal('getpre');
+            expect(instance.el.getAttribute('data-getpre-uid')).to.be.equal(instance.uid);
+        });
+
+        it('must let options override a prefix declared as a getter', () => {
+            class GetterSheet extends StyleSheet {
+                get prefix() { return 'getpre'; }
+            }
+            const instance = new GetterSheet({ root : { color : 'red' } }, { prefix : 'opt' }).attach();
+            expect(instance.prefix).to.be.equal('opt');
+            expect(instance.el.getAttribute('data-opt-uid')).to.be.equal(instance.uid);
+        });
+
+        it('must accept attributes declared as a getter', () => {
+            class GetterSheet extends StyleSheet {
+                get attributes() { return { id : 'getid' }; }
+            }
+            const instance = new GetterSheet({ root : { color : 'red' } }).attach();
+            expect(instance.el.id).to.be.equal('getid');
+        });
+
+        it('must let options override attributes declared as a getter', () => {
+            class GetterSheet extends StyleSheet {
+                get attributes() { return { id : 'from-getter' }; }
+            }
+            const instance = new GetterSheet(
+                { root : { color : 'red' } },
+                { attributes : { id : 'from-option' } }
+            ).attach();
+            expect(instance.el.id).to.be.equal('from-option');
+        });
+
+        it('must accept attributes declared as a method', () => {
+            class MethodSheet extends StyleSheet {
+                attributes() { return { id : 'methodid' }; }
+            }
+            const instance = new MethodSheet({ root : { color : 'red' } }).attach();
+            expect(instance.el.id).to.be.equal('methodid');
         });
 
         it('must accept a function as attributes', () => {

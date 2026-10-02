@@ -138,7 +138,7 @@ The format depends on the build:
 | Development | `{prefix}-{uid}-{name}` | `fun-9qkk9s-button` |
 | Production | `{prefix[0]}-{uid}-{index}` | `f-9qkk9s-1` |
 
-In production, the original name is replaced by a 1-based index to keep the output small. The default `prefix` is `fun`.
+In production, the original name is replaced by a 1-based index to keep the output small. The default `prefix` is `fun`, held as a static on the class: set `StyleSheet.prefix` to change it globally, declare it on a subclass to scope it, or pass [`options.prefix`](/docs/api.md#new-stylesheetstyles-options) for a single stylesheet.
 
 > **Note**: Examples in this documentation use the development format for readability.
 > You can override generation via [`options.generateClassName`](/docs/api.md#new-stylesheetstyles-options) or by [extending `StyleSheet`](/docs/api.md#stylesheet__generateclassname).
@@ -465,19 +465,47 @@ Output CSS string
 
 You can customize the renderers via [`options.renderers`](/docs/api.md#new-stylesheetstyles-options) (or by setting `renderers` on a [`StyleSheet`](/docs/api.md#stylesheet) subclass).
 
-Elements in the `renderers` array can be either functions or strings that reference methods of the [`StyleSheet`](/docs/api.md#stylesheet) instance. Method-name strings are resolved to methods when the instance is created, and every renderer is called with the instance as `this`.
+Elements in the `renderers` array can be either functions or strings that reference methods of the [`StyleSheet`](/docs/api.md#stylesheet) instance. Method-name strings are looked up on the instance when the styles are rendered. Every renderer is called with the instance as `this`.
 
 Renderers are applied in array order, each receiving the previous one's output. By default, [`StyleSheet`](/docs/api.md#stylesheet) instances use `[this.parseStyles, this.renderStyles]`: `parseStyles` runs first (transforms the object), then `renderStyles` (converts it to the CSS string).
 
-`renderers` may also be given as a function that returns the array, resolved when the instance is created.
+`renderers` may also be given as a function that returns the array, resolved by `render` on every call.
 
 ## Subclassing & dynamic values
 
-The `prefix`, `attributes` and `renderers` options also accept a **function** that returns the value, so you can compute it at runtime instead of passing a static value. The timing differs: `prefix` and `renderers` are resolved once, when the instance is created, while `attributes` is resolved lazily every time the styles are rendered — handy for per-request values such as a [CSP nonce](#content-security-policy-csp).
+Declare `prefix`, `attributes` and `renderers` as **getters** on a subclass. A getter lives on the prototype, so it is in place before the constructor runs, and TypeScript accepts it.
 
-For subclasses, the `preinitialize` method runs at the very start of the constructor — before the options are applied and before the class names are generated. Override it to run setup logic or define `prefix`, `attributes` or `renderers` (matching options still take precedence).
+```javascript
+class ScopedStyleSheet extends StyleSheet {
+    static prefix = 'app';
 
-See [Content Security Policy (CSP)](#content-security-policy-csp) for a real-world example that combines `preinitialize` with a function-valued `attributes`.
+    get attributes() {
+        return { 'data-scope' : 'app' };
+    }
+}
+```
+
+`prefix` is a plain string. Its default lives in the static `prefix` of the class; `options.prefix` overrides it per instance. For a prefix that depends on runtime state, the getter is read while the instance is created:
+
+```javascript
+class TenantStyleSheet extends StyleSheet {
+    get prefix() {
+        return resolveTenant();
+    }
+}
+```
+
+`attributes` and `renderers` are also accepted as a value or as a **function** returning the value, both as options and as members. Both are resolved every time they are read — `attributes` on each render, `renderers` on each `render()` call.
+
+In plain JavaScript a method is equivalent to the function form — `attributes() { return { … }; }` — because a function-valued member is called when it is resolved. TypeScript rejects a method that overrides a declared property, so a subclass written in TypeScript uses a getter.
+
+Matching options still take precedence over a getter (or over a value set in `preinitialize`): they are defined as own properties on the instance, which shadows the accessor.
+
+The constructor reads `prefix` to generate the `uid` and the class names, so an instance class field does not work for it — fields are assigned after `super()` returns. A field on `attributes` or `renderers` also replaces a matching option rather than being overridden by it. Use a getter when the option should be able to override.
+
+For subclasses, the `preinitialize` method runs at the very start of the constructor — before the options are applied and before the class names are generated. It is the only place where `options` can be read that early, so use it to derive instance properties from custom options.
+
+See [Content Security Policy (CSP)](#content-security-policy-csp) for a real-world example.
 
 ## Themes
 
@@ -651,16 +679,16 @@ app.get('*', (req, res) => {
 
 Simple and effective for synchronous SSR: the styles are rendered on the server and reused on the client during hydration without being recreated, so the client needs no nonce handling. (For streaming/async SSR, resolve the nonce per request from context — e.g. [`AsyncLocalStorage`](https://nodejs.org/api/async_context.html) — via the function form, since the prototype is shared across concurrent requests.)
 
-### Scoped alternative: a subclass with `preinitialize`
+### Scoped alternative: a subclass
 
-To avoid mutating the global prototype, scope it to your own subclass and `css` helper. `preinitialize` runs once per instance, so use the function form to read the nonce lazily at render time:
+To avoid mutating the global prototype, scope it to your own subclass and `css` helper. Declare `attributes` as a getter, so the nonce is read at render time rather than when the instance is created:
 
 ```javascript
 import { StyleSheet } from 'cssfun';
 
 class CSPStyleSheet extends StyleSheet {
-    preinitialize() {
-        this.attributes = () => ({ nonce : getRequestNonce() });
+    get attributes() {
+        return { nonce : getRequestNonce() };
     }
 }
 
@@ -746,6 +774,7 @@ import type {
     StyleSheetOptions,
     RendererFn,
     Resolvable,
+    ResolvableOption,
     ThemeDefinition,
     ThemeVars,
     CreateThemeOptions

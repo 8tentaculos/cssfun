@@ -7,11 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking: `prefix` no longer accepts a function.** Neither `options.prefix` nor a `prefix` member set by a subclass is called to resolve it any more: pass the resolved string. For a prefix that depends on runtime state, declare a getter on the subclass, or set `this.prefix` in `preinitialize`.
+
+- `renderers` is resolved by `render` on every call, instead of once when the instance is created. The member keeps the form it was given — an array, method names, or a function returning them — rather than being replaced by the resolved functions, and changing it after the instance is created now takes effect.
+
+- `getAttributes`, a private helper, was renamed to `getDecoratedAttributes`. The name now says it decorates `attributes` with the `data-<prefix>-uid` entry, rather than reading the `attributes` member. The TypeScript declaration, which previously exposed it, now marks it `private` as well.
+
 ### Fixed
 
 - **TypeScript: a function assigned on the instance sees the subclass.** `Resolvable<T>` pinned `this` to `StyleSheet<any>`, so ``this.attributes = function () { return { nonce : this.appNonce }; }`` in a subclass failed with TS2339 even though the runtime calls it with that subclass. The alias no longer carries `this` on the instance, where TypeScript infers it from the assignment target; the options side keeps it in a second alias, since an option has nothing to infer it from.
 
 ### Added
+
+- **A subclass can declare its own `prefix` as a static.** An instance falls back to the static `prefix` of its own class, rather than always to `StyleSheet.prefix`, which remains the global default. `options.prefix` still overrides it per instance.
+
+    ```javascript
+    class ScopedStyleSheet extends StyleSheet {
+        static prefix = 'app';
+    }
+    ```
+
+    The constructor reads `prefix` to generate the `uid` and the class names, so it cannot be an instance class field in a subclass — those are assigned after `super()` returns.
+
+- **`prefix`, `attributes` and `renderers` can be getters on a subclass.** They are only defaulted when missing, so the getter is read rather than overwritten. A matching option is defined as an own data property, which shadows the getter instead of assigning through it — an assignment would throw if the getter has no setter.
+
+- **TypeScript: `prefix`, `attributes` and `renderers` are declared on an interface merged with the class**, so a subclass can provide any of them as a getter — TypeScript rejects an accessor that overrides a member declared in a base class body. `renderers` now reads as `Resolvable<Array<string | RendererFn>>`, matching the form the member keeps at runtime, and `attributes` stays optional. In TypeScript the subclass form is a getter; a method overriding a declared property is a type error, though that form works in plain JavaScript.
 
 - **TypeScript: `ResolvableOption<T>`**, exported from the package. Names the options-side form that takes either a value or a function returning it, called with the StyleSheet as `this`. `Resolvable<T>` keeps naming the same pair on the instance, without `this`.
 

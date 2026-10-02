@@ -23,6 +23,19 @@ const getResult = (expression, context) =>
         expression.call(context);
 
 /**
+ * Define `key` on `target` as an own data property. Unlike an assignment, it does not go
+ * through an accessor declared on the prototype, so it shadows a getter with no setter
+ * instead of throwing.
+ * @param {Object} target Object to define the property on.
+ * @param {string} key Property name.
+ * @param {*} value Property value.
+ * @private
+ */
+const defineOwn = (target, key, value) => Object.defineProperty(target, key, {
+    value, writable : true, enumerable : true, configurable : true
+});
+
+/**
  * Match a name that is legal for an HTML attribute. Whitespace, quotes, `>`, `/` and `=`
  * end the name and start another attribute when it is interpolated into markup. Control
  * characters are excluded to match `setAttribute`, which rejects them.
@@ -73,15 +86,15 @@ const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'should
  * the renderers to generate the final CSS string. It is stored in the instance as `this.styles`.
  * @param {Object} [options={}] - Configuration options. The following options are assigned to the instance (`this`):
  * `prefix`, `generateUid`, `generateClassName`, `shouldAttachToDOM`, `attributes`, `renderers`.
- * @param {string|Function} [options.prefix='fun'] - Prefix for generating unique identifiers and data attributes.
- * May be a function returning the prefix, evaluated when the instance is created.
+ * @param {string} [options.prefix] - Prefix for generating unique identifiers and data attributes.
+ * Defaults to the static `prefix` of the instance's class.
  * @param {Function} [options.generateUid] - Custom function to generate the unique identifier.
  * @param {Function} [options.generateClassName] - Custom function to generate unique class names.
  * @param {Object|Function} [options.attributes] - Attributes to be added to the `<style>` element.
- * May be a function returning the attributes object, evaluated lazily by `getAttributes`.
+ * May be a function returning the attributes object, resolved every time the attributes are read.
  * @param {Array|Function} [options.renderers=['parseStyles', 'renderStyles']] - Array of renderer functions or
- * method names (or a function returning such an array). Resolved when the instance is created and applied in order
- * by `render`, each renderer receiving the previous one's output. Renderers are called with the instance as `this`.
+ * method names, or a function returning such an array. Resolved by `render` on every call and applied in order,
+ * each renderer receiving the previous one's output. Renderers are called with the instance as `this`.
  * @param {Function} [options.shouldAttachToDOM] - Custom function to determine whether the StyleSheet should be added to the DOM.
  * 
  * @example
@@ -106,12 +119,13 @@ const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'should
  * @property {Object} classes - Map of class name selectors to their generated unique class name.
  * @property {Object} styles - The original styles object provided to the instance.
  * @property {string} uid - Unique identifier for the StyleSheet instance, generated using `this.generateUid`.
- * @property {string} prefix - Prefix for generating unique identifiers. Resolved to a string when the instance
- * is created (may be supplied as a function via options or a subclass).
+ * @property {string} prefix - Prefix for generating unique identifiers and data attributes. Taken from the
+ * options, from the subclass, or from the static `prefix` of the instance's class.
  * @property {Object|Function} [attributes] - Optional attributes to be added to the `<style>` element. May be
- * `undefined`, an object, or a function returning the attributes object (evaluated lazily by `getAttributes`).
- * @property {Array} renderers - Array of renderer functions used to process the styles object. Method-name
- * strings passed via options are resolved to methods when the instance is created.
+ * `undefined`, an object, or a function returning one, resolved by `getDecoratedAttributes` every time the
+ * attributes are read.
+ * @property {Array|Function} renderers - Renderer functions or method names used to process the styles object,
+ * or a function returning them. Resolved by `render` on every call.
  * @property {HTMLElement} el - Reference to the `<style>` element in the DOM. Created when the instance is attached to the DOM.
  */
 class StyleSheet {
@@ -121,16 +135,15 @@ class StyleSheet {
         this.styles = styles;
         // Original class names object.
         this.classes = {};
-        // Set options on the instance.
+        // Set options on the instance as own properties, so an option overrides a getter
+        // declared by a subclass instead of being assigned through it.
         styleSheetOptions.forEach(key => {
-            if (key in options) this[key] = options[key];
+            if (key in options) defineOwn(this, key, options[key]);
         });
-        // Set default renderers.
-        this.renderers = this.renderers ?
-            getResult(this.renderers, this).map(r => typeof r === 'string' ? this[r] : r) :
-            [this.parseStyles, this.renderStyles];
-        // Set default prefix.
-        this.prefix = this.prefix ? getResult(this.prefix, this) : StyleSheet.prefix;
+        // Default the members the options and the subclass left out. Only defined when
+        // missing, so a getter declared by a subclass is read rather than shadowed.
+        if (!this.prefix) defineOwn(this, 'prefix', this.constructor.prefix);
+        if (!this.renderers) defineOwn(this, 'renderers', [this.parseStyles, this.renderStyles]);
         // Generate the `StyleSheet` unique identifier.
         this.uid = this.generateUid();
         // Generate class names, descending into at-rule blocks that nest style rules.
@@ -151,11 +164,11 @@ class StyleSheet {
     }
 
     /**
-     * Hook run at the very start of the constructor, before `styles` and `options`
-     * are applied and before `renderers`, `prefix`, `uid` and `classes` are computed.
-     * Does nothing by default. Override it in a subclass to run setup logic or define
-     * instance properties such as `prefix`, `attributes` or `renderers`. Values set
-     * here are still overridden by the matching `options`.
+     * Hook run at the very start of the constructor, before `styles` and `options` are applied
+     * and before `prefix`, `uid` and `classes` are computed. Does nothing by default. Override it
+     * in a subclass to define instance properties, which is the only place `options` can be read
+     * before the class names are generated. Values set here are still overridden by the matching
+     * options.
      * @param {Object} styles - The styles object passed to the constructor.
      * @param {Object} [options] - The options object passed to the constructor (may be `undefined`).
      * @returns {void}
@@ -198,13 +211,20 @@ class StyleSheet {
 
     /**
      * Apply the renderers to the styles object.
-     * Renderers are applied in order, starting from `this.styles`, with each renderer
-     * receiving the previous one's output and called with the instance as `this`.
+     * `this.renderers` is resolved on every call, so the function form is evaluated and
+     * method-name strings are looked up on the instance at render time. Renderers are applied
+     * in order, starting from `this.styles`, with each renderer receiving the previous one's
+     * output and called with the instance as `this`.
      * It will return a string ready to be added to the style element.
      * @returns {string} The styles object as a string.
      */
     render() {
-        return this.renderers.reduce((acc, r) => r.call(this, acc), this.styles);
+        return getResult(this.renderers, this).reduce(
+            (acc, renderer) => (
+                typeof renderer === 'string' ? this[renderer] : renderer
+            ).call(this, acc),
+            this.styles
+        );
     }
 
     /**
@@ -317,13 +337,14 @@ class StyleSheet {
 
     /**
      * Get the attributes object used to set the attributes on the style element.
-     * Starts from `this.attributes`, which is optional and may be `undefined`, an
-     * object, or a function returning the attributes object (resolved via `getResult`).
+     * Starts from `this.attributes`, which is optional and may be `undefined`, an object, or a
+     * function returning one, resolved on every call so per-request values such as a CSP nonce
+     * are read fresh.
      * The `data-<prefix>-uid` attribute is always added.
      * @returns {Object} The attributes object.
      * @private
      */
-    getAttributes() {
+    getDecoratedAttributes() {
         const attributes = Object.assign({}, getResult(this.attributes, this));
         attributes[`data-${this.prefix}-uid`] = this.uid;
         return attributes;
@@ -339,7 +360,7 @@ class StyleSheet {
      * @returns {string} The instance as a string.
      */
     toString() {
-        const attributes = this.getAttributes();
+        const attributes = this.getDecoratedAttributes();
         const attributesHtml = Object.keys(attributes)
             .filter(key => validAttributeNameRegex.test(key))
             .map(key => ` ${key}="${escapeAttributeValue(attributes[key])}"`).join('');
@@ -374,7 +395,7 @@ class StyleSheet {
             // Create the style element.
             this.el = document.createElement('style');
 
-            const attributes = this.getAttributes();
+            const attributes = this.getDecoratedAttributes();
             // Set the attributes on the style element.
             Object.keys(attributes).forEach(key => {
                 this.el.setAttribute(key, attributes[key]);
@@ -495,7 +516,9 @@ StyleSheet.nestedRegex = /&/g;
 
 /**
  * @static
- * @property {string} prefix - The class prefix. Used to generate unique class names.
+ * @property {string} prefix - The class prefix. Used to generate unique class names and data
+ * attributes. An instance falls back to the static of its own class, so a subclass may declare
+ * its own; `options.prefix` overrides it per instance.
  * @default fun
  */
 StyleSheet.prefix = 'fun';

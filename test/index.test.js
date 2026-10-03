@@ -67,6 +67,30 @@ describe('cssfun', () => {
             expect(StyleSheet.registry.length).to.be.equal(0);
         });
 
+        it('must share the registry with a subclass that does not declare one', () => {
+            class SubStyleSheet extends StyleSheet {}
+            const instance = new SubStyleSheet({ root : { color : 'red' } }).attach();
+            expect(StyleSheet.registry).to.include(instance);
+            expect(SubStyleSheet.toString()).to.be.equal(StyleSheet.toString());
+        });
+
+        it('must use the registry declared by a subclass', () => {
+            class SubStyleSheet extends StyleSheet {}
+            SubStyleSheet.registry = [];
+            const base = css({ root : { color : 'red' } });
+            const sub = new SubStyleSheet({ root : { color : 'blue' } }).attach();
+            expect(StyleSheet.registry).to.deep.equal([base]);
+            expect(SubStyleSheet.registry).to.deep.equal([sub]);
+            expect(StyleSheet.toCSS()).to.be.equal(base.render());
+            expect(SubStyleSheet.toCSS()).to.be.equal(sub.render());
+            StyleSheet.destroy();
+            expect(SubStyleSheet.registry).to.deep.equal([sub]);
+            expect(sub.el.parentNode).to.be.equal(document.head);
+            SubStyleSheet.destroy();
+            expect(SubStyleSheet.registry.length).to.be.equal(0);
+            expect(sub.el).to.be.null;
+        });
+
         it('must be rendered as element', () => {
             const instance = css({ root : { color : 'red' } });
             const style = instance.el;

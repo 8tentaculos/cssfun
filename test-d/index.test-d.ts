@@ -201,6 +201,15 @@ expectType<StyleSheet<any>[]>(StyleSheet.registry);
 expectType<string>(StyleSheet.toCSS());
 expectType<string>(StyleSheet.toString());
 
+// a subclass may declare its own registry; the static methods read it through `this`
+class RegistryStyleSheet extends StyleSheet {
+    static registry: StyleSheet<any>[] = [];
+}
+expectType<string>(RegistryStyleSheet.toCSS());
+RegistryStyleSheet.destroy();
+const { toCSS : detachedToCSS } = StyleSheet;
+expectError(detachedToCSS());
+
 // static setters
 StyleSheet.prefix = 'myapp';
 StyleSheet.debug = false;

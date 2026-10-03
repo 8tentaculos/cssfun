@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `getAttributes`, a private helper, was renamed to `getDecoratedAttributes`. The name now says it decorates `attributes` with the `data-<prefix>-uid` entry, rather than reading the `attributes` member. The TypeScript declaration, which previously exposed it, now marks it `private` as well.
 
+- `attach` and `destroy` use the `registry` of the instance's class, and the static `toString`, `toCSS` and `destroy` the registry of the class they are called on (`this.registry`), instead of always `StyleSheet.registry`. A subclass that does not declare its own registry still shares the global one, so nothing changes for it. The static methods now need their class as `this`: a detached call such as `const { toCSS } = StyleSheet; toCSS()` throws.
+
 ### Fixed
 
 - **TypeScript: a function assigned on the instance sees the subclass.** `Resolvable<T>` pinned `this` to `StyleSheet<any>`, so ``this.attributes = function () { return { nonce : this.appNonce }; }`` in a subclass failed with TS2339 even though the runtime calls it with that subclass. The alias no longer carries `this` on the instance, where TypeScript infers it from the assignment target; the options side keeps it in a second alias, since an option has nothing to infer it from.
@@ -30,6 +32,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ```
 
     The constructor reads `prefix` to generate the `uid` and the class names, so it cannot be an instance class field in a subclass — those are assigned after `super()` returns.
+
+- **A subclass can declare its own `registry`.** Its instances are then collected apart from `StyleSheet.registry`, and its static `toString`, `toCSS` and `destroy` cover only them.
+
+    ```javascript
+    class WidgetStyleSheet extends StyleSheet {
+        static registry = [];
+    }
+    ```
 
 - **`prefix`, `attributes` and `renderers` can be getters on a subclass.** They are only defaulted when missing, so the getter is read rather than overwritten. A matching option is defined as an own data property, which shadows the getter instead of assigning through it — an assignment would throw if the getter has no setter.
 

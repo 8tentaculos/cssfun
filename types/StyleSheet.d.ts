@@ -107,6 +107,9 @@ type ClassKeys3<S> = OwnClassKeys<S> | {
         ? (S[K] extends FlatValue ? never : OwnClassKeys<S[K]>) : never;
 }[keyof S];
 
+/** The `this` of the static registry methods: the class whose registry they read. */
+type RegistryOwner = { registry: StyleSheet<any>[] };
+
 /** Options for the StyleSheet constructor. Accepts custom keys for subclasses and custom renderers. */
 export interface StyleSheetOptions {
     /**
@@ -201,9 +204,9 @@ declare class StyleSheet<S extends Styles = Styles> {
      * May be overridden by `options.shouldAttachToDOM`.
      */
     shouldAttachToDOM(): boolean;
-    /** Add the instance to the registry and attach it to the DOM if in a browser. */
+    /** Add the instance to the registry of its class and attach it to the DOM if in a browser. */
     attach(): this;
-    /** Destroy the instance and remove it from the registry and from the DOM. */
+    /** Destroy the instance and remove it from the registry of its class and from the DOM. */
     destroy(): this;
 
     /**
@@ -214,7 +217,11 @@ declare class StyleSheet<S extends Styles = Styles> {
     static prefix: string;
     /** The indent string. Used to format text when debug is enabled. Default: `'    '`. */
     static indent: string;
-    /** The registry array. StyleSheet instances will be added to this array. */
+    /**
+     * The registry array. `attach` adds an instance to the registry of its own class, and the
+     * static `toString`, `toCSS` and `destroy` read the registry of the class they are called
+     * on. A subclass shares this array unless it declares its own.
+     */
     static registry: StyleSheet<any>[];
     /** If true, the styles will be formatted with indentation and new lines. */
     static debug: boolean;
@@ -234,12 +241,21 @@ declare class StyleSheet<S extends Styles = Styles> {
     /** Regular expression to match nested styles. */
     static nestedRegex: RegExp;
 
-    /** Render all instances in the registry as a string, including the style tags. */
-    static toString(): string;
-    /** Render all instances in the registry as CSS string. */
-    static toCSS(): string;
-    /** Destroy all instances in the registry and remove them from the DOM. */
-    static destroy(): void;
+    /**
+     * Render all instances in the registry as a string, including the style tags.
+     * Reads the registry of the class it is called on, so it must not be detached from it.
+     */
+    static toString(this: RegistryOwner): string;
+    /**
+     * Render all instances in the registry as CSS string.
+     * Reads the registry of the class it is called on, so it must not be detached from it.
+     */
+    static toCSS(this: RegistryOwner): string;
+    /**
+     * Destroy all instances in the registry and remove them from the DOM.
+     * Reads the registry of the class it is called on, so it must not be detached from it.
+     */
+    static destroy(this: RegistryOwner): void;
 }
 
 /**

@@ -505,6 +505,18 @@ The constructor reads `prefix` to generate the `uid` and the class names, so an 
 
 For subclasses, the `preinitialize` method runs at the very start of the constructor — before the options are applied and before the class names are generated. It is the only place where `options` can be read that early, so use it to derive instance properties from custom options.
 
+Instances are added to the `registry` of their own class, and the static `toString`, `toCSS` and `destroy` read the registry of the class they are called on. A subclass shares `StyleSheet.registry` by default; declare its own to keep its stylesheets apart, for example to render them separately on the server:
+
+```javascript
+class WidgetStyleSheet extends StyleSheet {
+    static prefix = 'widget';
+    static registry = [];
+}
+
+WidgetStyleSheet.toString(); // only the widget stylesheets
+StyleSheet.toString();       // everything else
+```
+
 See [Content Security Policy (CSP)](#content-security-policy-csp) for a real-world example.
 
 ## Themes

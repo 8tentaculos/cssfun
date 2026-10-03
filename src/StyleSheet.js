@@ -381,14 +381,15 @@ class StyleSheet {
     }
 
     /**
-     * Add the instance to the registry and if we are in the browser, 
+     * Add the instance to the registry of its class and if we are in the browser,
      * attach it to the DOM.
      * @returns {StyleSheet} The instance.
      */
     attach() {
+        const { registry } = this.constructor;
         // Add the instance to the registry if it's not already there.
-        if (!StyleSheet.registry.some(({ uid }) => uid === this.uid)) {
-            StyleSheet.registry.push(this);
+        if (!registry.some(({ uid }) => uid === this.uid)) {
+            registry.push(this);
         }
         // If we're in the browser and the style element doesn't exist, create it.
         if (this.shouldAttachToDOM()) {
@@ -410,15 +411,16 @@ class StyleSheet {
     }
 
     /**
-     * Destroy the instance and remove it from the registry and 
+     * Destroy the instance and remove it from the registry of its class and
      * from the DOM, if it's present.
      * @returns {StyleSheet} The instance.
      */
     destroy() {
-        const index = StyleSheet.registry.indexOf(this);
+        const { registry } = this.constructor;
+        const index = registry.indexOf(this);
         // Remove the instance from the registry.
         if (index > -1) {
-            StyleSheet.registry.splice(index, 1);
+            registry.splice(index, 1);
         }
 
         if (this.el) {
@@ -435,31 +437,34 @@ class StyleSheet {
 
     /**
      * Render all instances in the registry as a string, including the style tags.
+     * Reads the registry of the class it is called on, so it must not be detached from it.
      * Can be used to insert style tags in an HTML template for server-side rendering.
      * @returns {string} All instances in the registry as a string.
      * @static
      */
     static toString() {
-        return StyleSheet.registry.join('');
+        return this.registry.join('');
     }
 
     /**
      * Render all instances in the registry as CSS string.
+     * Reads the registry of the class it is called on, so it must not be detached from it.
      * Can be used to generate an external CSS file.
      * @returns {string} All instances in the registry rendered as CSS string.
      * @static
      */
     static toCSS() {
-        return StyleSheet.registry.map(instance => instance.render()).join('');
+        return this.registry.map(instance => instance.render()).join('');
     }
 
     /**
-     * Destroy all instances in the registry and remove them from 
+     * Destroy all instances in the registry and remove them from
      * it and from the DOM.
+     * Reads the registry of the class it is called on, so it must not be detached from it.
      * @static
      */
     static destroy() {
-        StyleSheet.registry.slice().forEach(instance => instance.destroy());
+        this.registry.slice().forEach(instance => instance.destroy());
     }
 }
 
@@ -532,8 +537,9 @@ StyleSheet.indent = '    ';
 
 /**
  * @static
- * @property {Array} registry - The registry array. StyleSheet instances 
- * will be added to this array.
+ * @property {Array} registry - The registry array. `attach` adds an instance to the registry
+ * of its own class, and the static `toString`, `toCSS` and `destroy` read the registry of the
+ * class they are called on. A subclass shares this array unless it declares its own.
  */
 StyleSheet.registry = [];
 

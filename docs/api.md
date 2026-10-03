@@ -169,14 +169,14 @@ May be overridden by `options.shouldAttachToDOM`.
 **Returns**: <code>boolean</code> - True if the StyleSheet should be added to the DOM, false otherwise.  
 <a name="stylesheet__attach" id="stylesheet__attach" class="anchor"></a>
 ### styleSheet.attach() ⇒ [<code>StyleSheet</code>](#StyleSheet)
-Add the instance to the registry and if we are in the browser, 
+Add the instance to the registry of its class and if we are in the browser,
 attach it to the DOM.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
 **Returns**: [<code>StyleSheet</code>](#StyleSheet) - The instance.  
 <a name="stylesheet__destroy" id="stylesheet__destroy" class="anchor"></a>
 ### styleSheet.destroy() ⇒ [<code>StyleSheet</code>](#StyleSheet)
-Destroy the instance and remove it from the registry and 
+Destroy the instance and remove it from the registry of its class and
 from the DOM, if it's present.
 
 **Kind**: instance method of [<code>StyleSheet</code>](#StyleSheet)  
@@ -208,7 +208,7 @@ from the DOM, if it's present.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| registry | <code>Array</code> | The registry array. StyleSheet instances  will be added to this array. |
+| registry | <code>Array</code> | The registry array. `attach` adds an instance to the registry of its own class, and the static `toString`, `toCSS` and `destroy` read the registry of the class they are called on. A subclass shares this array unless it declares its own. |
 
 <a name="stylesheet_debug" id="stylesheet_debug" class="anchor"></a>
 ### StyleSheet.debug
@@ -223,6 +223,7 @@ from the DOM, if it's present.
 <a name="stylesheet_tostring" id="stylesheet_tostring" class="anchor"></a>
 ### StyleSheet.toString() ⇒ <code>string</code>
 Render all instances in the registry as a string, including the style tags.
+Reads the registry of the class it is called on, so it must not be detached from it.
 Can be used to insert style tags in an HTML template for server-side rendering.
 
 **Kind**: static method of [<code>StyleSheet</code>](#StyleSheet)  
@@ -230,14 +231,16 @@ Can be used to insert style tags in an HTML template for server-side rendering.
 <a name="stylesheet_tocss" id="stylesheet_tocss" class="anchor"></a>
 ### StyleSheet.toCSS() ⇒ <code>string</code>
 Render all instances in the registry as CSS string.
+Reads the registry of the class it is called on, so it must not be detached from it.
 Can be used to generate an external CSS file.
 
 **Kind**: static method of [<code>StyleSheet</code>](#StyleSheet)  
 **Returns**: <code>string</code> - All instances in the registry rendered as CSS string.  
 <a name="stylesheet_destroy" id="stylesheet_destroy" class="anchor"></a>
 ### StyleSheet.destroy()
-Destroy all instances in the registry and remove them from 
+Destroy all instances in the registry and remove them from
 it and from the DOM.
+Reads the registry of the class it is called on, so it must not be detached from it.
 
 **Kind**: static method of [<code>StyleSheet</code>](#StyleSheet)  
 <a name="createtheme" id="createtheme" class="anchor"></a>

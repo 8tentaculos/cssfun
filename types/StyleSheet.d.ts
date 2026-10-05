@@ -39,8 +39,19 @@ export type Styles = Record<string, StyleRule | string | string[]>;
 /** A renderer function: receives the current value and returns the next, called with the StyleSheet as `this`. */
 export type RendererFn = (this: StyleSheet<any>, styles: any) => any;
 
-/** A value provided directly or as a function returning it (called with the StyleSheet as `this`). */
-export type Resolvable<T> = T | ((this: StyleSheet<any>) => T);
+/**
+ * A value provided directly, or as a function returning it. Used on the instance, where
+ * TypeScript infers `this` from the assignment target — so a function assigned in a
+ * subclass sees the subclass.
+ */
+export type Resolvable<T> = T | (() => T);
+
+/**
+ * A `Resolvable` on the options side, where the function form is called with the StyleSheet
+ * as `this`. It carries `this` explicitly because an option has no assignment target for
+ * TypeScript to infer it from.
+ */
+export type ResolvableOption<T> = T | ((this: StyleSheet<any>) => T);
 
 /**
  * Characters that can't appear in a class key. At runtime only keys matching
@@ -96,13 +107,16 @@ type ClassKeys3<S> = OwnClassKeys<S> | {
         ? (S[K] extends FlatValue ? never : OwnClassKeys<S[K]>) : never;
 }[keyof S];
 
+/** The `this` of the static registry methods: the class whose registry they read. */
+type RegistryOwner = { registry: StyleSheet<any>[] };
+
 /** Options for the StyleSheet constructor. Accepts custom keys for subclasses and custom renderers. */
 export interface StyleSheetOptions {
     /**
-     * Prefix for generating unique identifiers and data attributes. Default: `'fun'`.
-     * May be a function returning the prefix, evaluated when the instance is created.
+     * Prefix for generating unique identifiers and data attributes. Overrides, for this
+     * instance, the static `prefix` of the class it is created from. Default: `'fun'`.
      */
-    prefix?: Resolvable<string>;
+    prefix?: string;
     /** Custom function to generate the unique identifier. */
     generateUid?: (this: StyleSheet<any>) => string;
     /** Custom function to generate unique class names. */
@@ -111,15 +125,16 @@ export interface StyleSheetOptions {
     shouldAttachToDOM?: (this: StyleSheet<any>) => boolean;
     /**
      * Attributes to be added to the `<style>` element.
-     * May be a function returning the attributes object, evaluated lazily by `getAttributes`.
+     * May be a function returning the attributes object, resolved by `getDecoratedAttributes`
+     * every time the attributes are read.
      */
-    attributes?: Resolvable<Record<string, string>>;
+    attributes?: ResolvableOption<Record<string, string>>;
     /**
-     * Renderer functions or method names (or a function returning such an array).
-     * Default: `['parseStyles', 'renderStyles']`. Resolved when the instance is created
-     * and applied in order, each renderer receiving the previous one's output.
+     * Renderer functions or method names, or a function returning such an array.
+     * Default: `['parseStyles', 'renderStyles']`. Resolved by `render` on every call and
+     * applied in order, each renderer receiving the previous one's output.
      */
-    renderers?: Resolvable<Array<string | RendererFn>>;
+    renderers?: ResolvableOption<Array<string | RendererFn>>;
     /** Any additional custom options, e.g. for subclasses or custom renderers. */
     [key: string]: unknown;
 }
@@ -136,11 +151,11 @@ declare class StyleSheet<S extends Styles = Styles> {
     constructor(styles: S, options?: StyleSheetOptions);
 
     /**
-     * Hook run at the very start of the constructor, before `styles`/`options` are
-     * applied and before `renderers`, `prefix`, `uid` and `classes` are computed.
-     * Does nothing by default. Override it in a subclass to run setup logic or define
-     * instance properties such as `prefix`, `attributes` or `renderers`. Values set
-     * here are still overridden by the matching `options`.
+     * Hook run at the very start of the constructor, before `styles`/`options` are applied
+     * and before `prefix`, `uid` and `classes` are computed. Does nothing by default.
+     * Override it in a subclass to define instance properties, which is the only place
+     * `options` can be read before the class names are generated. Values set here are still
+     * overridden by the matching `options`.
      */
     preinitialize(styles: S, options?: StyleSheetOptions): void;
 
@@ -152,19 +167,6 @@ declare class StyleSheet<S extends Styles = Styles> {
     styles: S;
     /** Unique identifier for the StyleSheet instance. */
     uid: string;
-    /** Prefix for generating unique identifiers. Resolved to a string when the instance is created. */
-    prefix: string;
-    /**
-     * Attributes to be added to the `<style>` element. Optional — may be `undefined`
-     * (only set when passed as an option or assigned manually), an object, or a function
-     * returning the attributes object (resolved lazily by `getAttributes`).
-     */
-    attributes?: Resolvable<Record<string, string>>;
-    /**
-     * Renderer functions used to process the styles object. Method-name strings passed
-     * via options are resolved to methods when the instance is created.
-     */
-    renderers: RendererFn[];
     /** Reference to the `<style>` element in the DOM. Set after `attach()`, `null` after `destroy()`. */
     el: HTMLStyleElement | null | undefined;
 
@@ -173,23 +175,28 @@ declare class StyleSheet<S extends Styles = Styles> {
     /** Generate a unique class name. May be overridden by `options.generateClassName`. */
     generateClassName(className: string, index: number): string;
     /**
-     * Apply the renderers to the styles object.
+     * Apply the renderers to the styles object. `renderers` is resolved on every call, so the
+     * function form is evaluated and method-name strings are looked up at render time.
      * Returns a string ready to be added to the style element.
      */
     render(): string;
     /**
-     * Default renderer. Render a (parsed) styles object as a CSS string.
-     * Exposed for subclasses and custom renderers.
+     * Default renderer. Render a parsed styles object as a CSS string. Reached by reference
+     * rather than called directly: listed in `renderers`, overridden by a subclass, or
+     * delegated to from a custom renderer.
      */
     renderStyles(styles: any, level?: number): string;
     /**
-     * Default renderer. Parse and transform the styles object (expand nested styles,
-     * resolve `$` references, convert camelCase keys, etc.) into an object ready for
-     * `renderStyles`. Exposed for subclasses and custom renderers.
+     * Default renderer. Parse and transform the styles object (expand nested styles, resolve
+     * `$` references, convert camelCase keys, etc.) into an object ready for `renderStyles`.
+     * Reached the same way as `renderStyles`.
      */
     parseStyles(styles: any, parent?: any, parentSelector?: string, isGlobal?: boolean): any;
-    /** Build the attributes object applied to the `<style>` element (includes `data-<prefix>-uid`). */
-    getAttributes(): Record<string, string>;
+    /**
+     * Build the attributes object applied to the `<style>` element: resolves `attributes` and
+     * adds the `data-<prefix>-uid` entry. Internal — read or override `attributes` instead.
+     */
+    private getDecoratedAttributes;
     /** Render the StyleSheet as a `<style>` element string. Used for server-side rendering. */
     toString(): string;
     /**
@@ -197,16 +204,24 @@ declare class StyleSheet<S extends Styles = Styles> {
      * May be overridden by `options.shouldAttachToDOM`.
      */
     shouldAttachToDOM(): boolean;
-    /** Add the instance to the registry and attach it to the DOM if in a browser. */
+    /** Add the instance to the registry of its class and attach it to the DOM if in a browser. */
     attach(): this;
-    /** Destroy the instance and remove it from the registry and from the DOM. */
+    /** Destroy the instance and remove it from the registry of its class and from the DOM. */
     destroy(): this;
 
-    /** The class prefix. Used to generate unique class names. Default: `'fun'`. */
+    /**
+     * The class prefix. Used to generate unique class names and data attributes. An instance
+     * falls back to the static of its own class, so a subclass may declare its own; the
+     * `prefix` option overrides it per instance. Default: `'fun'`.
+     */
     static prefix: string;
     /** The indent string. Used to format text when debug is enabled. Default: `'    '`. */
     static indent: string;
-    /** The registry array. StyleSheet instances will be added to this array. */
+    /**
+     * The registry array. `attach` adds an instance to the registry of its own class, and the
+     * static `toString`, `toCSS` and `destroy` read the registry of the class they are called
+     * on. A subclass shares this array unless it declares its own.
+     */
     static registry: StyleSheet<any>[];
     /** If true, the styles will be formatted with indentation and new lines. */
     static debug: boolean;
@@ -226,12 +241,52 @@ declare class StyleSheet<S extends Styles = Styles> {
     /** Regular expression to match nested styles. */
     static nestedRegex: RegExp;
 
-    /** Render all instances in the registry as a string, including the style tags. */
-    static toString(): string;
-    /** Render all instances in the registry as CSS string. */
-    static toCSS(): string;
-    /** Destroy all instances in the registry and remove them from the DOM. */
-    static destroy(): void;
+    /**
+     * Render all instances in the registry as a string, including the style tags.
+     * Reads the registry of the class it is called on, so it must not be detached from it.
+     */
+    static toString(this: RegistryOwner): string;
+    /**
+     * Render all instances in the registry as CSS string.
+     * Reads the registry of the class it is called on, so it must not be detached from it.
+     */
+    static toCSS(this: RegistryOwner): string;
+    /**
+     * Destroy all instances in the registry and remove them from the DOM.
+     * Reads the registry of the class it is called on, so it must not be detached from it.
+     */
+    static destroy(this: RegistryOwner): void;
+}
+
+/**
+ * Members declared apart from the class body so a subclass can provide them as a getter.
+ * TypeScript rejects an accessor or a method that overrides a property declared in a base
+ * class body; a method still works in plain JavaScript, where a function-valued member is
+ * called when the value is resolved.
+ */
+interface StyleSheet<S extends Styles = Styles> {
+    /**
+     * Prefix for generating unique identifiers and data attributes. The constructor reads it
+     * to generate `uid` and `classes`, so a class field assigned in a subclass arrives too
+     * late: declare the static `prefix`, a getter, or set it in `preinitialize`. A matching
+     * option is defined as an own property and shadows a getter.
+     */
+    prefix: string;
+
+    /**
+     * Attributes to be added to the `<style>` element. Optional — only set when passed as an
+     * option or declared by a subclass. In a subclass, declare a getter: it is read every time
+     * the attributes are used, so a per-request value such as a CSP nonce stays fresh. An
+     * object, or a function returning one, is also accepted as an option or on the prototype.
+     */
+    attributes?: Resolvable<Record<string, string>>;
+
+    /**
+     * Renderer functions or method names used to process the styles object, or a function
+     * returning them. Resolved by `render` on every call, so the member keeps the form it was
+     * given. Default: `[parseStyles, renderStyles]`. In a subclass, declare a getter.
+     */
+    renderers: Resolvable<Array<string | RendererFn>>;
 }
 
 export default StyleSheet;

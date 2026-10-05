@@ -159,12 +159,14 @@ css({ root : { color : 'red' } }, {
 // custom option keys allowed (index signature)
 css({ root : {} }, { prefix : 'app', myCustomOption : 'value' });
 
-// prefix/attributes/renderers may be functions, evaluated with the instance as `this`
+// attributes/renderers may be functions, evaluated with the instance as `this`
 css({ root : {} }, {
-    prefix : () => 'app',
     attributes : () => ({ id : 'my-styles' }),
     renderers : () => ['parseStyles', (styles : any) => String(styles)],
 });
+// `prefix` is a plain string: it is read while the instance is created, so the function
+// form would buy no laziness
+expectError(css({ root : {} }, { prefix : () => 'app' }));
 // renderers may also be a plain array of functions and method-name strings
 css({ root : {} }, { renderers : ['parseStyles', (styles : any) => String(styles)] });
 
@@ -184,9 +186,8 @@ expectAssignable<HTMLStyleElement | null | undefined>(instance.el);
 expectType<typeof instance>(instance.attach());
 expectType<typeof instance>(instance.destroy());
 
-// renderer/internal methods exposed for subclasses
+// the default renderers are reachable, so a custom renderer can delegate to them
 expectType<string>(instance.renderStyles({ color : 'red' }));
-expectType<Record<string, string>>(instance.getAttributes());
 instance.parseStyles({ root : { color : 'red' } });
 expectAssignable<string>(instance.classes.root);
 
@@ -199,6 +200,15 @@ expectType<boolean>(StyleSheet.debug);
 expectType<StyleSheet<any>[]>(StyleSheet.registry);
 expectType<string>(StyleSheet.toCSS());
 expectType<string>(StyleSheet.toString());
+
+// a subclass may declare its own registry; the static methods read it through `this`
+class RegistryStyleSheet extends StyleSheet {
+    static registry: StyleSheet<any>[] = [];
+}
+expectType<string>(RegistryStyleSheet.toCSS());
+RegistryStyleSheet.destroy();
+const { toCSS : detachedToCSS } = StyleSheet;
+expectError(detachedToCSS());
 
 // static setters
 StyleSheet.prefix = 'myapp';
@@ -299,6 +309,71 @@ class PreinitStyleSheet extends StyleSheet {
     }
 }
 new PreinitStyleSheet({ root : {} });
+
+// `prefix` reads as a string; `renderers` keeps the form it was given, since `render`
+// resolves it on every call
+expectType<string>(new PreinitStyleSheet({ root : {} }).prefix);
+expectType<Resolvable<Array<string | RendererFn>>>(new PreinitStyleSheet({ root : {} }).renderers);
+css({ root : {} }, { prefix : 'app', renderers : ['parseStyles', 'renderStyles'] });
+css({ root : {} }, { renderers : () => ['parseStyles', (styles : any) => String(styles)] });
+
+// On the instance the alias carries no `this`, so TypeScript infers it from the assignment
+// target: a `function` assigned in a subclass sees the subclass
+class ScopedFromSubclass extends StyleSheet {
+    appNonce = 'abc';
+    preinitialize() : void {
+        this.attributes = function() { return { nonce : this.appNonce }; };
+    }
+}
+ScopedFromSubclass.prototype.attributes = function() { return { 'data-uid' : this.uid }; };
+
+// On the options side the alias carries `this` explicitly, since there is nothing to infer
+// it from — the function form sees the StyleSheet
+css({ root : {} }, { attributes : function() { return { 'data-uid' : this.uid }; } });
+
+/*
+ * subclassing: `prefix` is read while the instance is created, so it is provided as a static
+ * on the subclass, as a getter, or through `preinitialize` — never as a class field
+ */
+class StaticPrefixStyleSheet extends StyleSheet {
+    static prefix = 'app';
+}
+expectType<string>(new StaticPrefixStyleSheet({ root : {} }).prefix);
+
+declare const resolveTenant : () => string;
+class DynamicPrefixStyleSheet extends StyleSheet {
+    get prefix() { return resolveTenant(); }
+}
+expectType<string>(new DynamicPrefixStyleSheet({ root : {} }).prefix);
+
+/*
+ * subclassing: the TypeScript form is a getter. The merged interface allows it; a method
+ * overriding a declared property is a type error (that form works in plain JavaScript)
+ */
+declare const getRequestNonce : () => string;
+class GetterStyleSheet extends StyleSheet {
+    get prefix() { return resolveTenant(); }
+    get attributes() { return { nonce : getRequestNonce() }; }
+    get renderers() { return ['parseStyles', 'renderStyles']; }
+}
+new GetterStyleSheet({ root : {} });
+
+/*
+ * subclassing: the scoped form of the CSP recipe — `attributes` is a getter, so the nonce
+ * is read on every render
+ */
+class CSPStyleSheet extends StyleSheet {
+    get attributes() { return { nonce : getRequestNonce() }; }
+}
+new CSPStyleSheet({ root : {} });
+
+// either form on the prototype of a subclass that doesn't narrow the member
+CustomStyleSheet.prototype.attributes = () => ({ nonce : getRequestNonce() });
+CustomStyleSheet.prototype.attributes = { nonce : 'abc' };
+
+// as in the options
+css({ root : {} }, { attributes : { nonce : 'abc' }, prefix : 'app' });
+css({ root : {} }, { attributes : () => ({ nonce : getRequestNonce() }), prefix : 'app' });
 
 /*
  * createTheme: custom createStyleSheet may return a StyleSheet subclass

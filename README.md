@@ -13,37 +13,42 @@ Write modular **CSS** within your **JavaScript** code with built-in **themes** a
 
 [![CI](https://github.com/8tentaculos/cssfun/actions/workflows/ci.yml/badge.svg)](https://github.com/8tentaculos/cssfun/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/cssfun.svg)](https://www.npmjs.com/package/cssfun)
-[![npm package minimized gzipped size](https://img.shields.io/bundlejs/size/cssfun)](https://unpkg.com/cssfun/dist/cssfun.min.js)
+[![npm package minimized gzipped size](https://img.shields.io/bundlejs/size/cssfun)](https://unpkg.com/cssfun/dist/cssfun.esm.min.js)
 [![npm downloads](https://img.shields.io/npm/dm/cssfun.svg)](https://www.npmjs.com/package/cssfun)
 [![jsDelivr hits (npm)](https://img.shields.io/jsdelivr/npm/hm/cssfun)](https://www.jsdelivr.com/package/npm/cssfun)
 [![license](https://img.shields.io/npm/l/cssfun.svg)](https://github.com/8tentaculos/cssfun/blob/master/LICENSE)
 
 ## Key Features
 
-- **Near-Zero Runtime** ⚡  
-  Styles are generated when the module is initialized, rather than during component rendering. This eliminates runtime 
-  style generation, improving performance and reducing complexity.
+- **Near-zero runtime**  
+  Styles are generated once, when the module is initialized, rather than during component rendering.
+  Components only read class names, which are plain strings, so rendering carries no styling cost.
 
-- **Component-Scoped Styles** ✨  
-  **CSSFUN** scopes styles to the component, preventing style leakage and promoting modularity. It keeps both logic 
-  and styling in the same file for easier management.
+- **Component-scoped styles**  
+  Styles live in the same file as the component that uses them. Each class gets a unique generated
+  name, so styles never leak between components.
 
-- **Framework-Agnostic and Lightweight** 🌐  
-  **CSSFUN** is compatible with any environment and adds minimal overhead to your projects.
+- **Stable class names**  
+  Class names are hashed from the content of the styles, not from a counter or load order. Identical
+  styles produce identical names on the server and in the browser, across hot reloads and repeated
+  calls, so server-rendered markup always matches the client.
 
-- **No Build Tools Required** 🛠️  
-  **CSSFUN** can be used directly in the browser, eliminating the need for complex build tools or configurations.
+- **Server-side rendering (SSR) support**  
+  [`StyleSheet.toString()`](/docs/ssr.md) renders every stylesheet as `<style>` tags for
+  the server response. In the browser, stylesheets already in the page are not injected again.
 
-- **Server-Side Rendering (SSR) Support** 🚀  
-  **CSSFUN** supports [server-side rendering](#server-side-rendering-ssr) out of the box, optimizing initial load 
-  times without duplicating styles.
+- **Built-in theme management**  
+  [`createTheme`](/docs/themes.md) turns light and dark values into [CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)
+  that follow the user's color scheme, or a fixed one set with `data-color-scheme`. Switching schemes
+  needs no re-render.
 
-- **Built-in Theme Management** 🎨  
-  With built-in [theme support](#themes), **CSSFUN** uses [CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) 
-  to manage light and dark color schemes. Themes update automatically based on user preferences, with no re-renders needed.
+- **Framework-agnostic, no build tools**  
+  `classes` maps your style keys to plain class name strings, usable with any UI library or with the
+  DOM directly. Styles are plain JavaScript objects processed at runtime: no compiler, no bundler
+  plugin, no CSS extraction step.
 
-- **TypeScript Support** 🔷  
-  Ships with type definitions. The `classes` object is fully typed based on your styles, so you get autocomplete
+- **TypeScript support**  
+  Ships with type definitions. The `classes` object is typed from your styles, so you get autocomplete
   for class names and a type error on typos. CSS properties autocomplete via [csstype](https://github.com/frenic/csstype).
 
 ## Getting Started
@@ -58,21 +63,39 @@ $ npm install cssfun
 import { css } from 'cssfun';
 ```
 
-### Using ES modules
+### Using native ES modules
 
-```javascript
-import { css } from 'https://esm.run/cssfun';
-```
-
-### Using `<script>` tag
+No bundler needed: an import map points `cssfun` to the ES module build, so imports read the same as with npm.
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/cssfun"></script>
+<script type="importmap">
+    {
+        "imports": {
+            "cssfun": "https://cdn.jsdelivr.net/npm/cssfun/dist/cssfun.esm.min.js"
+        }
+    }
+</script>
+
+<script type="module">
+    import { css } from 'cssfun';
+</script>
+```
+
+The import map can also point to a copy of the file served from your own site, or to `https://esm.run/cssfun`. During development, use `cssfun.esm.js` for readable class names.
+
+### Using the UMD build
+
+For a classic `<script>` tag, the UMD build exposes the `CSSFUN` global object. It also loads as an AMD module, with RequireJS for example.
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/cssfun/dist/cssfun.umd.min.js"></script>
 ```
 
 ```javascript
 const { css } = CSSFUN;
 ```
+
+The development build is `cssfun.umd.js`.
 
 ### Create your styles
 
@@ -95,711 +118,21 @@ const { classes } = css({
 const Button = () => <button className={classes.button}>Click me</button>;
 ```
 
-See [Class Name Generation](#class-name-generation) for how the names are built.
-
-## Class Name Generation
-
-`css(styles)` returns a [`StyleSheet`](/docs/api.md#stylesheet) instance. Its `classes` property maps class name selectors to their generated unique class name:
-
-```javascript
-const sheet = css({
-    button : { color : 'red' },
-    link : { color : 'blue' }
-});
-
-sheet.classes;        // { button: "fun-9qkk9s-button", link: "fun-9qkk9s-link" }
-sheet.classes.button; // "fun-9qkk9s-button"
-```
-
-Destructure `classes` to use the generated names as `className`:
-
-```javascript
-const { classes } = css({ button : { color : 'red' } });
-
-const Button = () => <button className={classes.button}>Click me</button>;
-```
-
-Generation happens once, when the instance is created — never during rendering — so there is no per-render overhead.
-
-### Which selectors get a class
-
-Keys matching `/^\w+$/` (letters, digits, underscore) at the top level and inside [at-rule blocks](#at-rules) get a generated class. The same name used in several places shares a single class.
-
-### Stable across environments
-
-Each class name embeds a `uid` hashed from the styles' content, so identical styles always produce identical class names — across server and client, hot reloads, and repeated calls. This is what makes [SSR hydration](#server-side-rendering-ssr) seamless.
-
-### Name format
-
-The format depends on the build:
-
-| Build | Format | Example |
-| --- | --- | --- |
-| Development | `{prefix}-{uid}-{name}` | `fun-9qkk9s-button` |
-| Production | `{prefix[0]}-{uid}-{index}` | `f-9qkk9s-1` |
-
-In production, the original name is replaced by a 1-based index to keep the output small. The default `prefix` is `fun`, held as a static on the class: set `StyleSheet.prefix` to change it globally, declare it on a subclass to scope it, or pass [`options.prefix`](/docs/api.md#new-stylesheetstyles-options) for a single stylesheet.
-
-> **Note**: Examples in this documentation use the development format for readability.
-> You can override generation via [`options.generateClassName`](/docs/api.md#new-stylesheetstyles-options) or by [extending `StyleSheet`](/docs/api.md#stylesheet__generateclassname).
-
-## Renderers
-
-Renderers are functions that transform style objects into CSS strings. They are applied in sequence, with each renderer receiving the output of the previous one.
-
-**CSSFUN** uses two built-in renderers by default:
-1. **`parseStyles`**: Transforms the style object (expands nested selectors, replaces class references, converts camelCase to dashed-case, handles global styles)
-2. **`renderStyles`**: Converts the processed object into a CSS string
-
-The final renderer in the chain outputs the CSS string that gets injected into the DOM.
-
-These are the built-in renderer transformations:
-
-#### Camelized keys will be transformed to dashed keys
-
-```javascript
-css({
-    root : {
-        backgroundColor : 'black',
-        fontSize : '16px',
-        paddingTop : '10px'
-    }
-}).toString();
-```
-
-##### Renders to:
-
-```html
-<style data-fun-uid="uwitok">
-    .fun-uwitok-root {
-        background-color: black;
-        font-size: 16px;
-        padding-top: 10px;
-    }
-</style>
-```
-
-#### Nested selectors will be expanded
-
-- **Use `&` to reference the selector of the parent rule**
-
-    ```javascript
-    css({
-        button : {
-            backgroundColor : 'white',
-            '&:hover' : {
-                backgroundColor : 'black'
-            },
-            '& span' : {
-                color : 'blue'
-            }
-        }
-    }).toString();
-    ```
-
-    ##### Renders to:
-    ```html
-    <style data-fun-uid="1pxyvx7">
-        .fun-1pxyvx7-button {
-            background-color: white;
-        }
-        .fun-1pxyvx7-button:hover {
-            background-color: black;
-        }
-        .fun-1pxyvx7-button span {
-            color: blue;
-        }
-    </style>
-    ```
-
-- **Deep nesting**
-
-    ```javascript
-    css({
-        button : {
-            backgroundColor : 'white',
-            '&:active' : {
-                backgroundColor : 'black',
-                '&:hover' : {
-                    backgroundColor : 'blue'
-                }
-            }
-        }
-    }).toString();
-    ```
-
-    ##### Renders to:
-    ```html
-    <style data-fun-uid="169vukw">
-        .fun-169vukw-button {
-            background-color: white;
-        }
-        .fun-169vukw-button:active {
-            background-color: black;
-        }
-        .fun-169vukw-button:active:hover {
-            background-color: blue;
-        }
-    </style>
-    ```
-
-#### Class references will be replaced by the generated class name
-
- - **Use `$` to reference a local class within the same `StyleSheet` instance**
-
-    ```javascript
-    css({
-        button : {
-            backgroundColor : 'white'
-        },
-        '$button:hover' : {
-                backgroundColor : 'black'
-            },
-        '$button span' : {
-            color : 'blue'
-        }
-    }).toString();
-    ```
-
-    ##### Renders to:
-    ```html
-    <style data-fun-uid="2xfpy0">
-        .fun-2xfpy0-button {
-            background-color: white;
-        }
-        .fun-2xfpy0-button:hover {
-            background-color: black;
-        }
-        .fun-2xfpy0-button span {
-            color: blue;
-        }
-    </style>
-    ```
- 
-#### Global selectors will be rendered as global styles
-
-- **Global block**
-
-    ```javascript
-    css({
-        '@global' : {
-            body : {
-                backgroundColor : 'black'
-            }
-        }
-    }).toString();
-    ```
-
-    ##### Renders to:
-
-    ```html
-    <style data-fun-uid="ml03n3">
-        body {
-            background-color: black;
-        }
-    </style>
-    ```
-
-- **Nested global block**
-
-    ```javascript
-    css({
-        root : {
-            '@global' : {
-                a : {
-                    color : 'black'
-                }
-            }
-        }
-    }).toString();
-    ```
-
-    ##### Renders to:
-    ```html
-    <style data-fun-uid="1eia2eq">
-        .fun-1eia2eq-root a {
-            color: black;
-        }
-    </style>
-    ```
-
-- **Global prefix**
-
-    ```javascript
-    css({
-        '@global body' : {
-            backgroundColor : 'black'
-        }
-    }).toString();
-    ```
-
-    ##### Renders to:
-    ```html
-    <style data-fun-uid="1p1av20">
-        body {
-            background-color: black;
-        }
-    </style>
-    ```
-
-- **Nested global prefix**
-
-    ```javascript
-    css({
-        root : {
-            '@global a' : {
-                color : 'black'
-            }
-        }
-    }).toString();
-    ```
-
-    ##### Renders to:
-    ```html
-    <style data-fun-uid="xvd6jj">
-        .fun-xvd6jj-root a {
-            color: black;
-        }
-    </style>
-    ```
-
-#### At-rules
-
-- **Blocks** can declare classes directly — same rule as the top level, so a `@layer` needs no empty top-level
-  declaration. The same name used in several blocks shares one class:
-
-    ```javascript
-    const { classes } = css({
-        '@layer base' : {
-            button : {
-                color : 'black',
-                '&:hover' : {
-                    color : 'blue'
-                }
-            }
-        },
-        '@layer theme' : {
-            button : {
-                color : 'red'
-            }
-        }
-    });
-
-    classes.button; // "fun-11ez4g7-button" — the same class in both layers
-    ```
-
-    ##### Renders to:
-    ```html
-    <style data-fun-uid="11ez4g7">
-        @layer base {
-            .fun-11ez4g7-button {
-                color: black;
-            }
-            .fun-11ez4g7-button:hover {
-                color: blue;
-            }
-        }
-        @layer theme {
-            .fun-11ez4g7-button {
-                color: red;
-            }
-        }
-    </style>
-    ```
-
-- **Statements** (at-rules without a block) are written as the at-rule name with its prelude as the value. The prelude is
-  emitted as it is written:
-
-    ```javascript
-    css({
-        '@import' : 'url("reset.css") layer(base)',
-        '@layer'  : 'base, components, utilities',
-        button    : {
-            color : 'red'
-        }
-    }).toString();
-    ```
-
-    ##### Renders to:
-    ```html
-    <style data-fun-uid="l17gmc">
-        @import url("reset.css") layer(base);
-        @layer base, components, utilities;
-        .fun-l17gmc-button {
-            color: red;
-        }
-    </style>
-    ```
-
-    Object keys are unique, but an array value emits one statement per element, so a name can repeat — for example, several `@import` rules:
-
-    ```javascript
-    css({
-        '@import' : ['url("reset.css")', 'url("theme.css") layer(base)']
-    }).toString();
-    ```
-
-    ##### Renders to:
-    ```html
-    <style data-fun-uid="l17gmc">
-        @import url("reset.css");
-        @import url("theme.css") layer(base);
-    </style>
-    ```
-
-    The same array form applies to properties, providing CSS fallback values (`color : ['#eee', 'var(--bg)']` renders
-    `color: #eee;` followed by `color: var(--bg);`).
-
-**Example flow:**
-```
-Input styles object
-    ↓
-[parseStyles] → Transforms object (expands nested, replaces references, converts camelCase)
-    ↓
-[renderStyles] → Converts object to CSS string
-    ↓
-Output CSS string
-```
-
-### Custom Renderers
-
-You can customize the renderers via [`options.renderers`](/docs/api.md#new-stylesheetstyles-options) (or by setting `renderers` on a [`StyleSheet`](/docs/api.md#stylesheet) subclass).
-
-Elements in the `renderers` array can be either functions or strings that reference methods of the [`StyleSheet`](/docs/api.md#stylesheet) instance. Method-name strings are looked up on the instance when the styles are rendered. Every renderer is called with the instance as `this`.
-
-Renderers are applied in array order, each receiving the previous one's output. By default, [`StyleSheet`](/docs/api.md#stylesheet) instances use `[this.parseStyles, this.renderStyles]`: `parseStyles` runs first (transforms the object), then `renderStyles` (converts it to the CSS string).
-
-`renderers` may also be given as a function that returns the array, resolved by `render` on every call.
-
-## Subclassing & dynamic values
-
-Declare `prefix`, `attributes` and `renderers` as **getters** on a subclass. A getter lives on the prototype, so it is in place before the constructor runs, and TypeScript accepts it.
-
-```javascript
-class ScopedStyleSheet extends StyleSheet {
-    static prefix = 'app';
-
-    get attributes() {
-        return { 'data-scope' : 'app' };
-    }
-}
-```
-
-`prefix` is a plain string. Its default lives in the static `prefix` of the class; `options.prefix` overrides it per instance. For a prefix that depends on runtime state, the getter is read while the instance is created:
-
-```javascript
-class TenantStyleSheet extends StyleSheet {
-    get prefix() {
-        return resolveTenant();
-    }
-}
-```
-
-`attributes` and `renderers` are also accepted as a value or as a **function** returning the value, both as options and as members. Both are resolved every time they are read — `attributes` on each render, `renderers` on each `render()` call.
-
-In plain JavaScript a method is equivalent to the function form — `attributes() { return { … }; }` — because a function-valued member is called when it is resolved. TypeScript rejects a method that overrides a declared property, so a subclass written in TypeScript uses a getter.
-
-Matching options still take precedence over a getter (or over a value set in `preinitialize`): they are defined as own properties on the instance, which shadows the accessor.
-
-The constructor reads `prefix` to generate the `uid` and the class names, so an instance class field does not work for it — fields are assigned after `super()` returns. A field on `attributes` or `renderers` also replaces a matching option rather than being overridden by it. Use a getter when the option should be able to override.
-
-For subclasses, the `preinitialize` method runs at the very start of the constructor — before the options are applied and before the class names are generated. It is the only place where `options` can be read that early, so use it to derive instance properties from custom options.
-
-Instances are added to the `registry` of their own class, and the static `toString`, `toCSS` and `destroy` read the registry of the class they are called on. A subclass shares `StyleSheet.registry` by default; declare its own to keep its stylesheets apart, for example to render them separately on the server:
-
-```javascript
-class WidgetStyleSheet extends StyleSheet {
-    static prefix = 'widget';
-    static registry = [];
-}
-
-WidgetStyleSheet.toString(); // only the widget stylesheets
-StyleSheet.toString();       // everything else
-```
-
-See [Content Security Policy (CSP)](#content-security-policy-csp) for a real-world example.
-
-## Themes
-
-A theme is a [`StyleSheet`](/docs/api.md#stylesheet) that provides access to CSS variables 
-for consistent styling across your application. It supports multiple color schemes, 
-including `light`, `dark`, `light dark` (default, adapts to system preferences), and `normal`. 
-Themes allow your components to automatically adapt to changes in the user's system preferences 
-or use a fixed color scheme.
-
-The [`createTheme`](/docs/api.md#createtheme) function generates a theme StyleSheet instance. 
-It accepts a `themes` object, which defines variables for the specified color schemes, and an 
-`options` object to customize the theme generation.  
-Each key in the `themes` object corresponds to a color scheme (`light`, `dark`, `normal`), 
-and its value is an object of key-value pairs that will be converted into CSS variables.
-
-### Creating a Theme
-
-Define styles for `light` and `dark` color schemes using the `createTheme` function.
-
-```javascript
-const theme = createTheme({
-    light : {
-        colorPrimary : 'black',
-        backgroundLevel1 : 'white'
-    },
-    dark : {
-        colorPrimary : 'white',
-        backgroundLevel1 : 'black'
-    }
-});
-```
-
-### Customizing the Theme
-
-#### Color Scheme
-
-The `options.colorScheme` parameter specifies which color scheme(s) to use. Possible values are:
-
-- `light`: Uses the `light` theme only.
-- `dark`: Uses the `dark` theme only.
-- `light dark` (default): Supports both `light` and `dark` themes, adapting to system preferences. You can override the system preference by setting the `data-color-scheme` attribute to `light` or `dark` on a parent element.
-- `normal`: Uses the `normal` theme only.
-
-#### CSS Variables Prefix
-
-The `options.cssVarsPrefix` parameter allows you to customize the prefix for the generated CSS variables. 
-By default, the prefix is `fun`. For example, a key `colorPrimary` in the theme will generate a CSS variable 
-like `--fun-colorPrimary`.
-
-### Applying the Theme Class
-
-The generated theme includes a `root` class, which exposes all the theme's CSS variables to any element 
-that uses this class and its descendants. You can apply this class to the `body` element to style the 
-entire application, or to the root element of a specific component to apply the theme to just part of your UI.
-
-```javascript
-// Add theme class to the body
-document.body.classList.add(theme.classes.root);
-```
-
-### Using Theme Variables in Styles
-
-The `themes` object is automatically converted into CSS variables. For example:
-
-```javascript
-{ backgroundLevel1 : 'black' }
-```
-
-is converted into the CSS variable `--fun-backgroundLevel1`.  
-
-Nested structures like:
-
-```javascript
-{
-    palette : {
-        common : { 
-            black : '#000'
-        }
-    }
-}
-```
-
-are converted into `--fun-palette-common-black`.  
-
-You can use these variables in your component styles, even before the theme is applied. 
-Your components will automatically update when the theme or system color scheme changes.
-
-```javascript
-const { classes } = css({
-    button : {
-        color : 'var(--fun-colorPrimary)',
-        backgroundColor : 'var(--fun-backgroundLevel1)'
-    },
-});
-
-const Button = ({ label }) => <button className={classes.button}>{label}</button>;
-```
-
-## Server-Side Rendering (SSR)
-
-Easily add your styles to the server-rendered HTML by embedding the StyleSheets as a 
-string within the `<head>` of your page.
-
-```javascript
-import express from 'express';
-import React from 'react';
-import { renderToString } from 'react-dom/server';
-import { StyleSheet, createTheme } from 'cssfun';
-import App from './App.js';
-
-// Create a theme with light and dark modes
-const theme = createTheme({
-    light : {
-        bg : '#fff',
-        color : '#000'
-    },
-    dark : {
-        bg : '#000',
-        color : '#fff'
-    }
-});
-
-const app = express();
-
-app.get('*', (req, res) => {
-    // Render the app
-    const html = renderToString(<App />);
-    // Get generated styles as string
-    const styles = StyleSheet.toString();
-    // Get theme root class
-    const cls = theme.classes.root;
-
-    const template = `
-        <!DOCTYPE html>
-        <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <title>SSR App</title>
-                ${styles}
-            </head>
-            <body class="${cls}">
-                <div id="root">${html}</div>
-                <script src="/bundle.js"></script>
-            </body>
-        </html>
-    `;
-
-    res.send(template);
-});
-```
-
-When the app is hydrated on the client, the styles are preserved and will not be recreated.
-
-## Content Security Policy (CSP)
-
-If your site uses a strict [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) with a per-request nonce (`style-src 'nonce-…'`), add that nonce to the generated `<style>` tags through the [`attributes`](/docs/api.md#new-stylesheetstyles-options) option/property. `StyleSheet.toString()` then emits `<style nonce="…" data-fun-uid="…">`.
-
-### Set it on the prototype per request
-
-Instances fall back to `StyleSheet.prototype.attributes`, which is read fresh on every render, so set the nonce there before rendering:
-
-```javascript
-app.get('*', (req, res) => {
-    StyleSheet.prototype.attributes = { nonce : res.locals.cspNonce };
-
-    const html = renderToString(<App />);
-    const styles = StyleSheet.toString(); // <style nonce="…" data-fun-uid="…">…</style>
-    // …embed `styles` in the <head> as in the SSR example above.
-});
-```
-
-Simple and effective for synchronous SSR: the styles are rendered on the server and reused on the client during hydration without being recreated, so the client needs no nonce handling. (For streaming/async SSR, resolve the nonce per request from context — e.g. [`AsyncLocalStorage`](https://nodejs.org/api/async_context.html) — via the function form, since the prototype is shared across concurrent requests.)
-
-### Scoped alternative: a subclass
-
-To avoid mutating the global prototype, scope it to your own subclass and `css` helper. Declare `attributes` as a getter, so the nonce is read at render time rather than when the instance is created:
-
-```javascript
-import { StyleSheet } from 'cssfun';
-
-class CSPStyleSheet extends StyleSheet {
-    get attributes() {
-        return { nonce : getRequestNonce() };
-    }
-}
-
-const css = (styles, options) => new CSPStyleSheet(styles, options).attach();
-```
-
-Pass `CSPStyleSheet` to [`createTheme`](#themes) via [`options.createStyleSheet`](/docs/api.md#createtheme) so theme styles carry the nonce too.
+See [Class name generation](/docs/styles.md#class-name-generation) for how the names are built.
+
+## Documentation
+
+- [Writing styles](/docs/styles.md) — class name generation and the style syntax: nesting, class references, global styles and at-rules.
+- [Themes](/docs/themes.md) — creating a theme, color schemes and using its CSS variables.
+- [Server-side rendering](/docs/ssr.md) — rendering styles on the server, and Content Security Policy nonces.
+- [Extending](/docs/extending.md) — custom renderers, subclassing `StyleSheet` and separate registries.
+- [TypeScript](/docs/typescript.md) — class name inference, CSS property autocomplete and exported types.
+- [API documentation](/docs/api.md) — every function, class, method and option.
+- [Reference for AI agents](/docs/AGENTS.md) — the API, style syntax, themes and best practices in one compact file, to give your coding agent as context.
 
 ## TypeScript
 
-**CSSFUN** ships with TypeScript declarations out of the box. The types are bundled in the package and resolved automatically.
-
-> Requires **TypeScript 4.1+** (the `classes` inference relies on key remapping and template literal types).
-
-### Class name inference
-
-The `css()` function and `StyleSheet` constructor are generic over the styles object. The generated `classes` map is inferred from the keys you pass in, so typos and missing keys are caught at compile time:
-
-```ts
-import { css } from 'cssfun';
-
-const sheet = css({
-    link : { color : 'blue' },
-    button : { padding : 10 }
-});
-
-sheet.classes.link;   // string
-sheet.classes.button; // string
-sheet.classes.typo;   // ❌ Property 'typo' does not exist
-```
-
-The type mirrors the runtime: keys matching `/^\w+$/` at the top level and inside [at-rule blocks](#at-rules).
-
-```ts
-const sheet = css({
-    '@layer base' : { button : { color : 'red' } },
-    '@layer theme' : { button : { color : 'blue' } },
-    '@layer' : 'base, theme'
-});
-
-sheet.classes.button; // string — one class shared by both layers
-```
-
-> **Note**: inside a block, a class named after a CSS property (`content`, `page`, `grid`, `flex`, …) doesn't type-check,
-> since the block's value type declares those keys as CSS properties. Declare that class at the top level and reference
-> it from the block with `$name`.
-
-### CSS property autocomplete
-
-Style rules use [`csstype`](https://github.com/frenic/csstype) under the hood, so you get autocomplete on standard CSS properties, with `null`/`undefined` accepted (and filtered at runtime). Note that values are intentionally permissive (any `string` is accepted) so that `var(...)`, custom values and arbitrary nested selectors keep working — so this is autocomplete, not strict validation:
-
-```ts
-css({
-    card : {
-        color : 'red',
-        backgroundColor : null, // ok — filtered at runtime
-        margin : undefined,     // ok
-        padding : 10,           // numbers accepted for length props
-    },
-    root : {
-        color : 'black',
-        '&:hover' : { color : 'blue' },
-        '& span' : { fontSize : 14 },
-    },
-    '@global' : { body : { margin : 0 } },
-    '@keyframes wave' : {
-        '0%, 100%' : { transform : 'rotate(10deg)' },
-        '50%'      : { transform : 'rotate(-10deg)' },
-    },
-});
-```
-
-### Exported types
-
-The following types are exported from the package root for use in your own code:
-
-```ts
-import type {
-    CSSValue,
-    CSSProperties,
-    StyleRule,
-    Styles,
-    StyleSheetOptions,
-    RendererFn,
-    Resolvable,
-    ResolvableOption,
-    ThemeDefinition,
-    ThemeVars,
-    CreateThemeOptions
-} from 'cssfun';
-```
-
-## API Documentation
-
-Complete API documentation can be found [here](/docs/api.md).
-
-## Working with LLMs
-
-For those working with LLMs, there is an [AI Agents reference guide](/docs/AGENTS.md) that provides API patterns, style syntax, theme management, and best practices, optimized for LLM context. You can share this guide with AI assistants to help them understand **CSSFUN**'s architecture and styling APIs.
+**CSSFUN** ships with TypeScript declarations out of the box. The types are bundled in the package and resolved automatically. How `classes` is inferred from your styles is in the [TypeScript guide](/docs/typescript.md).
 
 ## Examples
 

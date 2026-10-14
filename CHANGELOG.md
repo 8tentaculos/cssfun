@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking: the UMD bundles were renamed.** `dist/cssfun.js` and `dist/cssfun.min.js` are now `dist/cssfun.umd.js` and `dist/cssfun.umd.min.js`. Script tags and AMD loader paths (RequireJS `paths`) that reference them must be updated.
+
+### Fixed
+
+- **The default CDN file runs in the browser again**: `https://cdn.jsdelivr.net/npm/cssfun` served the CommonJS entry and `https://unpkg.com/cssfun` the ES module entry, neither of which loads in a browser. The `jsdelivr` and `unpkg` fields now point both to `dist/cssfun.umd.min.js`.
+
+### Added
+
+- **ES module bundles**: `dist/cssfun.esm.js` (development) and `dist/cssfun.esm.min.js` (production) are single files that run natively in the browser, for example through an import map.
+
 ## [0.3.0] - 2026-10-05
 
 ### Changed

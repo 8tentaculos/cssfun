@@ -5,7 +5,8 @@ import type { Styles, StyleSheetOptions } from './StyleSheet.js';
  * Creates and attaches a new StyleSheet instance to the DOM.
  *
  * @template S - The styles object type. Used to infer the keys of the `classes` property.
- * @param styles - An object containing CSS rules. Keys represent selectors, values represent style objects.
+ * @param styles - An object containing CSS rules. Keys are class names, selectors or at-rules, and values are
+ *   style objects holding CSS properties and nested rules.
  *   An at-rule key may also hold a statement prelude string, rendered as `@rule prelude;`.
  * @param options - Optional configuration for the StyleSheet instance.
  * @returns The created and attached StyleSheet instance. Its `classes` property maps

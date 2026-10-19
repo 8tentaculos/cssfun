@@ -69,7 +69,7 @@ rendered as a string for server-side rendering.
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| styles | <code>Object</code> |  | The styles object. This is an object where keys represent  CSS selectors and values are style objects. An at-rule key may also hold a statement prelude string, rendered as `@rule prelude;`; an array value emits one statement per element, so a name can repeat (e.g. several `@import` rules) and properties can carry fallback values. The styles object is processed through the renderers to generate the final CSS string. It is stored in the instance as `this.styles`. |
+| styles | <code>Object</code> |  | The styles object. Keys are class names, selectors or at-rules, and values are style objects holding CSS properties and nested rules. An at-rule key may also hold a statement prelude string, rendered as `@rule prelude;`; an array value emits one statement per element, so a name can repeat (e.g. several `@import` rules) and properties can carry fallback values. The styles object is processed through the renderers to generate the final CSS string. It is stored in the instance as `this.styles`. |
 | [options] | <code>Object</code> | <code>{}</code> | Configuration options. The following options are assigned to the instance (`this`): `prefix`, `generateUid`, `generateClassName`, `shouldAttachToDOM`, `attributes`, `renderers`. |
 | [options.prefix] | <code>string</code> |  | Prefix for generating unique identifiers and data attributes. Defaults to the static `prefix` of the instance's class. |
 | [options.generateUid] | <code>function</code> |  | Custom function to generate the unique identifier. |
@@ -161,7 +161,7 @@ applies the equivalent rules on its own.
 ### styleSheet.shouldAttachToDOM() ⇒ <code>boolean</code>
 Check if the StyleSheet should be added to the DOM.
 By default, it returns true if running in a browser environment and no style element
-with the same `data-fun-uid` attribute exists in the DOM.
+with the same `data-<prefix>-uid` attribute exists in the DOM.
 This prevents duplicate style elements and ensures proper behavior for server-side rendering.
 May be overridden by `options.shouldAttachToDOM`.
 
@@ -312,7 +312,7 @@ class name selectors to their generated unique class name.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| styles | <code>Object</code> | An object containing CSS rules. Keys represent selectors, and values represent style objects. An at-rule key may also hold a statement prelude string, rendered as `@rule prelude;`; an array value emits one statement per element, so a name can repeat (e.g. several `@import` rules) and properties can carry fallback values. |
+| styles | <code>Object</code> | An object containing CSS rules. Keys are class names, selectors or at-rules, and values are style objects holding CSS properties and nested rules. An at-rule key may also hold a statement prelude string, rendered as `@rule prelude;`; an array value emits one statement per element, so a name can repeat (e.g. several `@import` rules) and properties can carry fallback values. |
 | [options] | <code>Object</code> | Optional configuration for the StyleSheet instance. Includes options like `prefix`, `renderers`, and more. |
 
 **Example**  

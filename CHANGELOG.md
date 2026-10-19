@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **ES module bundles**: `dist/cssfun.esm.js` (development) and `dist/cssfun.esm.min.js` (production) are single files that run natively in the browser, for example through an import map.
+- **Agent skill**: the reference for AI agents moved from `docs/AGENTS.md` to `skills/cssfun/SKILL.md`, an [Agent Skill](https://agentskills.io) shipped in the package. Install it with `npx skills add 8tentaculos/cssfun` or copy it from `node_modules/cssfun/skills/cssfun`.
 
 ## [0.3.0] - 2026-10-05
 

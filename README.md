@@ -128,7 +128,7 @@ See [Class name generation](/docs/styles.md#class-name-generation) for how the n
 - [Extending](/docs/extending.md) — custom renderers, subclassing `StyleSheet` and separate registries.
 - [TypeScript](/docs/typescript.md) — class name inference, CSS property autocomplete and exported types.
 - [API documentation](/docs/api.md) — every function, class, method and option.
-- [Reference for AI agents](/docs/AGENTS.md) — the API, style syntax, themes and best practices in one compact file, to give your coding agent as context.
+- [Agent skill](/skills/cssfun/SKILL.md) — the API, style syntax, themes and best practices for coding agents. Install it with `npx skills add 8tentaculos/cssfun`, or copy `node_modules/cssfun/skills/cssfun` into your agent's skills folder.
 
 ## TypeScript
 

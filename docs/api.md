@@ -1,27 +1,29 @@
 ## Classes
 
-<dl>
-<dt><a href="#stylesheet">StyleSheet</a></dt>
-<dd></dd>
-</dl>
+* [StyleSheet](#stylesheet)
+    * [new StyleSheet(styles, [options])](#new_stylesheet_new)
+    * _instance_
+        * [.preinitialize(styles, [options])](#stylesheet__preinitialize) ⇒ <code>void</code>
+        * [.generateUid()](#stylesheet__generateuid) ⇒ <code>string</code>
+        * [.generateClassName(className, index)](#stylesheet__generateclassname) ⇒ <code>string</code>
+        * [.render()](#stylesheet__render) ⇒ <code>string</code>
+        * [.toString()](#stylesheet__tostring) ⇒ <code>string</code>
+        * [.shouldAttachToDOM()](#stylesheet__shouldattachtodom) ⇒ <code>boolean</code>
+        * [.attach()](#stylesheet__attach) ⇒ [<code>StyleSheet</code>](#StyleSheet)
+        * [.destroy()](#stylesheet__destroy) ⇒ [<code>StyleSheet</code>](#StyleSheet)
+    * _static_
+        * [.prefix](#stylesheet_prefix)
+        * [.indent](#stylesheet_indent)
+        * [.registry](#stylesheet_registry)
+        * [.debug](#stylesheet_debug)
+        * [.toString()](#stylesheet_tostring) ⇒ <code>string</code>
+        * [.toCSS()](#stylesheet_tocss) ⇒ <code>string</code>
+        * [.destroy()](#stylesheet_destroy)
 
 ## Functions
 
-<dl>
-<dt><a href="#createtheme">createTheme(themes, [options])</a> ⇒ <code><a href="#StyleSheet">StyleSheet</a></code></dt>
-<dd><p>The <code>createTheme</code> function generates a theme StyleSheet instance with CSS variables 
-based on the provided themes and options. It supports multiple color schemes, 
-including <code>light</code>, <code>dark</code>, <code>light dark</code>, and <code>normal</code>. </p>
-<p>The <code>themes</code> object defines the styles for these color schemes. Each key in the object 
-corresponds to a color scheme (<code>light</code>, <code>dark</code>, <code>normal</code>), and its value is an object 
-containing key-value pairs that will be converted into CSS variables. Nested keys are 
-concatenated with <code>-</code> to form the variable name. For example, <code>{ light : { colors : { primary : &#39;blue&#39; } } }</code> 
-generates <code>--fun-colors-primary : blue</code>.</p>
-</dd>
-<dt><a href="#css">css(styles, [options])</a> ⇒ <code><a href="#StyleSheet">StyleSheet</a></code></dt>
-<dd><p>Creates and attaches a new StyleSheet instance to the DOM.</p>
-</dd>
-</dl>
+* [createTheme(themes, [options])](#createtheme) ⇒ [<code>StyleSheet</code>](#StyleSheet)
+* [css(styles, [options])](#css) ⇒ [<code>StyleSheet</code>](#StyleSheet)
 
 <a name="stylesheet" id="stylesheet" class="anchor"></a>
 ## StyleSheet

@@ -48,7 +48,7 @@
         "build": "rollup -c",
         "clean": "node -e \"const fs=require('fs');['lib','dist','es'].forEach(d=>fs.rmSync(d,{recursive:true,force:true}))\"",
         "version": "node scripts/bump-cdn-links.js && node scripts/release-changelog.js",
-        "docs:api": "jsdoc2md --module-index-format none --helper jsdoc2md/helper.cjs --partial jsdoc2md/header.hbs --partial jsdoc2md/sig-link.hbs --partial jsdoc2md/sig-link-html.hbs --partial jsdoc2md/sig-link-parent.hbs --files src/*.js > docs/api.md"
+        "docs:api": "jsdoc2md --global-index-format grouped --module-index-format none --helper jsdoc2md/helper.cjs --partial jsdoc2md/header.hbs --partial jsdoc2md/sig-link.hbs --partial jsdoc2md/sig-link-html.hbs --partial jsdoc2md/sig-link-parent.hbs --files src/*.js > docs/api.md"
     },
     "repository": "github:8tentaculos/cssfun",
     "homepage": "https://cssfun.js.org",

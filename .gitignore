@@ -1,5 +1,7 @@
 node_modules
-dist
-es
-lib
+/lib/
+/es/
+/dist/
+*.log
+*.tgz
 .DS_Store

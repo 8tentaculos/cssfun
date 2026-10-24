@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Breaking: the UMD bundles were renamed.** `dist/cssfun.js` and `dist/cssfun.min.js` are now `dist/cssfun.umd.js` and `dist/cssfun.umd.min.js`. Script tags and AMD loader paths (RequireJS `paths`) that reference them must be updated.
+- **Leaner npm package**: the development bundles in `dist/` no longer ship source maps, and the source maps of `es/` and `lib/` point to `src/` instead of embedding its code.
 
 ### Fixed
 

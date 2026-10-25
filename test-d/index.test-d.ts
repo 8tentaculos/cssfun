@@ -1,5 +1,5 @@
 import { expectType, expectError, expectAssignable } from 'tsd';
-import { css, StyleSheet, createTheme } from '../types/index';
+import { css, StyleSheet, createTheme } from '../types/index.js';
 import type { CSSValue, CSSProperties, StyleRule, Styles, StyleSheetOptions, RendererFn, Resolvable, ThemeVars, ThemeDefinition, CreateThemeOptions } from '../types/index.js';
 
 /*

@@ -3,37 +3,54 @@
     "version": "0.3.0",
     "description": "Near-zero runtime CSS-in-JS library",
     "type": "module",
-    "main": "lib/index.cjs",
-    "module": "es/index.js",
+    "main": "./dist/esm/index.js",
+    "module": "./dist/esm/index.js",
     "types": "types/index.d.ts",
     "jsdelivr": "dist/cssfun.umd.min.js",
     "unpkg": "dist/cssfun.umd.min.js",
     "exports": {
         ".": {
             "types": "./types/index.d.ts",
-            "import": "./es/index.js",
-            "require": "./lib/index.cjs",
-            "default": "./es/index.js"
+            "default": "./dist/esm/index.js"
         },
-        "./*": {
-            "types": "./types/*.d.ts",
-            "import": "./es/*.js",
-            "require": "./lib/*.cjs"
+        "./StyleSheet": {
+            "types": "./types/StyleSheet.d.ts",
+            "default": "./dist/esm/StyleSheet.js"
         },
-        "./*.js": {
-            "types": "./types/*.d.ts",
-            "import": "./es/*.js",
-            "require": "./lib/*.cjs"
-        }
+        "./StyleSheet.js": {
+            "types": "./types/StyleSheet.d.ts",
+            "default": "./dist/esm/StyleSheet.js"
+        },
+        "./css": {
+            "types": "./types/css.d.ts",
+            "default": "./dist/esm/css.js"
+        },
+        "./css.js": {
+            "types": "./types/css.d.ts",
+            "default": "./dist/esm/css.js"
+        },
+        "./createTheme": {
+            "types": "./types/createTheme.d.ts",
+            "default": "./dist/esm/createTheme.js"
+        },
+        "./createTheme.js": {
+            "types": "./types/createTheme.d.ts",
+            "default": "./dist/esm/createTheme.js"
+        },
+        "./package.json": "./package.json"
     },
+    "sideEffects": false,
     "files": [
         "dist",
-        "es",
-        "lib",
         "skills",
         "src",
         "types"
     ],
+    "tsd": {
+        "compilerOptions": {
+            "module": "nodenext"
+        }
+    },
     "directories": {
         "example": "example",
         "test": "test",
@@ -46,7 +63,7 @@
         "posttest": "npm run lint && npm run test:types",
         "lint": "eslint src test",
         "build": "rollup -c",
-        "clean": "node -e \"const fs=require('fs');['lib','dist','es'].forEach(d=>fs.rmSync(d,{recursive:true,force:true}))\"",
+        "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
         "version": "node scripts/bump-cdn-links.js && node scripts/release-changelog.js",
         "docs:api": "jsdoc2md --global-index-format grouped --module-index-format none --helper jsdoc2md/helper.cjs --partial jsdoc2md/header.hbs --partial jsdoc2md/sig-link.hbs --partial jsdoc2md/sig-link-html.hbs --partial jsdoc2md/sig-link-parent.hbs --files src/*.js > docs/api.md"
     },

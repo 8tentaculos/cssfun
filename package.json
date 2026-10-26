@@ -80,13 +80,20 @@
     "author": "Alberto Masuelli <alberto.masuelli@gmail.com> (https://github.com/8tentaculos)",
     "license": "MIT",
     "keywords": [
-        "style",
-        "sheet",
-        "stylesheet",
-        "styles",
         "css",
         "css-in-js",
-        "components"
+        "styles",
+        "stylesheet",
+        "scoped css",
+        "near-zero runtime",
+        "theme",
+        "dark mode",
+        "css variables",
+        "ssr",
+        "framework-agnostic",
+        "no build",
+        "typescript",
+        "jss"
     ],
     "devDependencies": {
         "@eslint/js": "10.0.1",

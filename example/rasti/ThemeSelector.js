@@ -38,33 +38,14 @@ const { classes } = css({
 const ThemeSelector = Component.create`
     <div>
         <div class="${classes.label}">Theme</div>
-        <div class="${classes.selector}">
-            <input
-                type="radio"
-                id="system"
-                name="theme"
-                value=""
-                checked="${({ props }) => props.theme === ''}"
-                onChange="${({ props }) => (ev) => props.setTheme(ev.target.value)}"
-            />
+        <div class="${classes.selector}" onChange=${function(ev) { this.props.handleChange(ev.target.value); }}>
+            <input type="radio" id="system" name="theme" value="" checked="${({ props }) => props.theme === ''}" />
             <label for="system">System</label>
-            <input
-                type="radio"
-                id="light"
-                name="theme"
-                value="light"
-                checked="${({ props }) => props.theme === 'light'}"
-                onChange="${({ props }) => (ev) => props.setTheme(ev.target.value)}"
-            />
+
+            <input type="radio" id="light" name="theme" value="light" checked="${({ props }) => props.theme === 'light'}" />
             <label for="light">Light</label>
-            <input
-                type="radio"
-                id="dark"
-                name="theme"
-                value="dark"
-                checked="${({ props }) => props.theme === 'dark'}"
-                onChange="${({ props }) => (ev) => props.setTheme(ev.target.value)}"
-            />
+
+            <input type="radio" id="dark" name="theme" value="dark" checked="${({ props }) => props.theme === 'dark'}" />
             <label for="dark">Dark</label>
         </div>
     </div>

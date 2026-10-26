@@ -68,13 +68,13 @@ function App() {
     }, [theme]);
 
     return h`
-        <div class="${classes.root}">
-            <div class="${classes.title}">Hello from the Waving Cat!</div>
-            <div class="${classes.catWrapper}">
-                <div class="${classes.cat}">🐱</div>
-                <div class="${classes.text}">*waves paw*</div>
+        <div className=${classes.root}>
+            <div className=${classes.title}>Hello from the Waving Cat!</div>
+            <div className=${classes.catWrapper}>
+                <div className=${classes.cat}>🐱</div>
+                <div className=${classes.text}>*waves paw*</div>
             </div>
-            <${ThemeSelector} theme=${theme} setTheme=${setTheme} />
+            <${ThemeSelector} theme=${theme} onChange=${setTheme} />
         </div>
     `;
 }

@@ -1,4 +1,4 @@
-import { Component } from 'rasti';
+import { Component, Model } from 'rasti';
 import { css } from 'cssfun';
 
 import ThemeSelector from './ThemeSelector.js';
@@ -55,18 +55,30 @@ const { classes } = css({
     },
 });
 
-const App = Component.create`
-    <div class="${classes.root}">
-        <div class="${classes.title}">Hello from the Waving Cat!</div>
-        <div class="${classes.catWrapper}">
-            <div class="${classes.cat}">🐱</div>
-            <div class="${classes.text}">*waves paw*</div>
-        </div>
-        <${ThemeSelector}
-            theme="${() => document.documentElement.getAttribute('data-color-scheme') || ''}"
-            setTheme=${(theme) => document.documentElement.setAttribute('data-color-scheme', theme)}
-        />
-    </div>
-`;
+class App extends Component {
+    onCreate() {
+        this.state = new Model({
+            theme : document.documentElement.getAttribute('data-color-scheme') || ''
+        });
+    }
+
+    handleThemeChange = (theme) => {
+        this.state.theme = theme;
+        document.documentElement.setAttribute('data-color-scheme', theme);
+    };
+
+    template() {
+        return this.html`
+            <div class="${classes.root}">
+                <div class="${classes.title}">Hello from the Waving Cat!</div>
+                <div class="${classes.catWrapper}">
+                    <div class="${classes.cat}">🐱</div>
+                    <div class="${classes.text}">*waves paw*</div>
+                </div>
+                <${ThemeSelector} theme="${this.state.theme}" handleChange=${this.handleThemeChange} />
+            </div>
+        `;
+    }
+}
 
 export default App;

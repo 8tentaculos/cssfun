@@ -40,13 +40,13 @@ const ThemeSelector = ({ theme, setTheme }) => {
     div.innerHTML = `
         <div class="${classes.label}">Theme</div>
         <div class="${classes.selector}">
-            <input type="radio" id="system" name="theme" value=""${theme == '' ? ' checked' : ''}>
+            <input type="radio" id="system" name="theme" value=""${theme === '' ? ' checked' : ''}>
             <label for="system">System</label>
             
-            <input type="radio" id="light" name="theme" value="light"${theme == 'light' ? ' checked' : ''}>
+            <input type="radio" id="light" name="theme" value="light"${theme === 'light' ? ' checked' : ''}>
             <label for="light">Light</label>
             
-            <input type="radio" id="dark" name="theme" value="dark"${theme == 'dark' ? ' checked' : ''}>
+            <input type="radio" id="dark" name="theme" value="dark"${theme === 'dark' ? ' checked' : ''}>
             <label for="dark">Dark</label>
         </div>
     `;

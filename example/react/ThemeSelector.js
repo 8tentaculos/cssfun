@@ -38,40 +38,40 @@ const { classes } = css({
     },
 });
 
-function ThemeSelector({ theme, setTheme }) {
+function ThemeSelector({ theme, onChange }) {
     return h`
         <div>
-            <div class="${classes.label}">Theme</div>
-            <div class="${classes.selector}">
+            <div className=${classes.label}>Theme</div>
+            <div className=${classes.selector}>
                 <input
                     type="radio"
                     id="system"
                     name="theme"
                     value=""
                     checked=${theme === ''}
-                    onChange=${() => setTheme('')}
+                    onChange=${() => onChange('')}
                 />
-                <label for="system">System</label>
-                
+                <label htmlFor="system">System</label>
+
                 <input
                     type="radio"
                     id="light"
                     name="theme"
                     value="light"
                     checked=${theme === 'light'}
-                    onChange=${() => setTheme('light')}
+                    onChange=${() => onChange('light')}
                 />
-                <label for="light">Light</label>
-                
+                <label htmlFor="light">Light</label>
+
                 <input
                     type="radio"
                     id="dark"
                     name="theme"
                     value="dark"
                     checked=${theme === 'dark'}
-                    onChange=${() => setTheme('dark')}
+                    onChange=${() => onChange('dark')}
                 />
-                <label for="dark">Dark</label>
+                <label htmlFor="dark">Dark</label>
             </div>
         </div>
     `;

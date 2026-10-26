@@ -11,30 +11,37 @@
     "exports": {
         ".": {
             "types": "./types/index.d.ts",
+            "import": "./dist/esm/index.js",
             "default": "./dist/esm/index.js"
         },
         "./StyleSheet": {
             "types": "./types/StyleSheet.d.ts",
+            "import": "./dist/esm/StyleSheet.js",
             "default": "./dist/esm/StyleSheet.js"
         },
         "./StyleSheet.js": {
             "types": "./types/StyleSheet.d.ts",
+            "import": "./dist/esm/StyleSheet.js",
             "default": "./dist/esm/StyleSheet.js"
         },
         "./css": {
             "types": "./types/css.d.ts",
+            "import": "./dist/esm/css.js",
             "default": "./dist/esm/css.js"
         },
         "./css.js": {
             "types": "./types/css.d.ts",
+            "import": "./dist/esm/css.js",
             "default": "./dist/esm/css.js"
         },
         "./createTheme": {
             "types": "./types/createTheme.d.ts",
+            "import": "./dist/esm/createTheme.js",
             "default": "./dist/esm/createTheme.js"
         },
         "./createTheme.js": {
             "types": "./types/createTheme.d.ts",
+            "import": "./dist/esm/createTheme.js",
             "default": "./dist/esm/createTheme.js"
         },
         "./package.json": "./package.json"

@@ -1,6 +1,6 @@
 # CSSFUN and TypeScript
 
-Full guide: [typescript.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.3.0/docs/typescript.md).
+Full guide: [typescript.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.4.0-alpha.0/docs/typescript.md).
 
 CSSFUN ships its own TypeScript declarations; there is no `@types/cssfun` package. Requires **TypeScript 4.1+**, since `classes` inference relies on key remapping and template literal types.
 

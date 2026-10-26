@@ -3,12 +3,12 @@ name: cssfun
 description: Styles web apps with CSSFUN, the near-zero runtime CSS-in-JS library — css() style sheets with scoped class names, nested selectors, class references, global styles, at-rules, themes with light and dark CSS variables, and server-side rendering. Use when writing, reviewing or debugging code that imports `cssfun`, or when the user asks about CSSFUN styles or themes.
 license: MIT
 metadata:
-  version: "0.3.0"
+  version: "0.4.0-alpha.0"
 ---
 
 # CSSFUN
 
-Compact reference for styling with CSSFUN: core API, style syntax, themes and best practices. Full API: [api.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.3.0/docs/api.md).
+Compact reference for styling with CSSFUN: core API, style syntax, themes and best practices. Full API: [api.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.4.0-alpha.0/docs/api.md).
 
 Read these when the task needs them:
 
@@ -53,7 +53,7 @@ const Button = () => <button className={classes.button}>Click me</button>;
 The examples below show the development format.
 
 **Related API:**
-- [`css(styles, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.3.0/docs/api.md#css) - Creates and attaches a StyleSheet
+- [`css(styles, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.4.0-alpha.0/docs/api.md#css) - Creates and attaches a StyleSheet
 
 ### Style Object Structure
 
@@ -338,7 +338,7 @@ const appTheme = createTheme({
 ```
 
 **Related API:**
-- [`createTheme(themes, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.3.0/docs/api.md#createtheme) - Creates a theme StyleSheet
+- [`createTheme(themes, [options])`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.4.0-alpha.0/docs/api.md#createtheme) - Creates a theme StyleSheet
 
 ## Best Practices
 
@@ -421,8 +421,8 @@ const Button = ({ children, disabled, onClick }) => (
 
 ## Additional Resources
 
-- **Full API Documentation**: [api.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.3.0/docs/api.md)
-- **Writing styles**: [styles.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.3.0/docs/styles.md) — class name generation and the full style syntax
-- **Themes**: [themes.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.3.0/docs/themes.md) — color schemes and CSS variables
+- **Full API Documentation**: [api.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.4.0-alpha.0/docs/api.md)
+- **Writing styles**: [styles.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.4.0-alpha.0/docs/styles.md) — class name generation and the full style syntax
+- **Themes**: [themes.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.4.0-alpha.0/docs/themes.md) — color schemes and CSS variables
 - **GitHub Repository**: [8tentaculos/cssfun](https://github.com/8tentaculos/cssfun)
 - **Examples**: [example/](https://github.com/8tentaculos/cssfun/tree/master/example) — vanilla, React and Rasti

@@ -1,6 +1,6 @@
 # CSSFUN advanced usage
 
-Full guide, including subclassing and separate registries: [extending.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.3.0/docs/extending.md).
+Full guide, including subclassing and separate registries: [extending.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.4.0-alpha.0/docs/extending.md).
 
 ## Using the StyleSheet Class Directly
 
@@ -83,4 +83,4 @@ const { classes } = css({
 ```
 
 **Related API:**
-- [`StyleSheet`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.3.0/docs/api.md#stylesheet) - StyleSheet class documentation
+- [`StyleSheet`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.4.0-alpha.0/docs/api.md#stylesheet) - StyleSheet class documentation

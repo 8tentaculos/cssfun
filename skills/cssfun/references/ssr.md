@@ -1,6 +1,6 @@
 # CSSFUN server-side rendering
 
-Full guide, including Content Security Policy nonces: [ssr.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.3.0/docs/ssr.md).
+Full guide, including Content Security Policy nonces: [ssr.md](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.4.0-alpha.0/docs/ssr.md).
 
 On the server, `css()` and `createTheme()` register each StyleSheet without touching the DOM. `StyleSheet.toString()` renders all of them as `<style>` tags to embed in the page's `<head>`.
 
@@ -60,5 +60,5 @@ const cssText = StyleSheet.toCSS();
 ```
 
 **Related API:**
-- [`StyleSheet.toString()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.3.0/docs/api.md#stylesheet_tostring) - Renders all registered instances as `<style>` tags
-- [`StyleSheet.toCSS()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.3.0/docs/api.md#stylesheet_tocss) - Renders all registered instances as CSS
+- [`StyleSheet.toString()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.4.0-alpha.0/docs/api.md#stylesheet_tostring) - Renders all registered instances as `<style>` tags
+- [`StyleSheet.toCSS()`](https://cdn.jsdelivr.net/gh/8tentaculos/cssfun@v0.4.0-alpha.0/docs/api.md#stylesheet_tocss) - Renders all registered instances as CSS

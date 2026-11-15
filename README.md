@@ -127,7 +127,7 @@ See [Class name generation](/docs/styles.md#class-name-generation) for how the n
 - [Server-side rendering](/docs/ssr.md) — rendering styles on the server, and Content Security Policy nonces.
 - [Extending](/docs/extending.md) — custom renderers, subclassing `StyleSheet` and separate registries.
 - [TypeScript](/docs/typescript.md) — class name inference, CSS property autocomplete and exported types.
-- [API documentation](/docs/api.md) — every function, class, method and option.
+- [API documentation](/docs/api.md) — every CSSFUN function, class, method and option.
 - [Agent skill](/skills/cssfun/SKILL.md) — the API, style syntax, themes and best practices for coding agents. Install it with `npx skills add 8tentaculos/cssfun`, or copy `node_modules/cssfun/skills/cssfun` into your agent's skills folder.
 
 ## TypeScript

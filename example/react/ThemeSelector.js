@@ -1,8 +1,8 @@
-import React from "react";
-import htm from "htm";
+import { createElement, Fragment } from 'react';
+import htm from 'htm';
 import { css } from 'cssfun';
 
-const h = htm.bind(React.createElement);
+const h = htm.bind(createElement);
 
 const { classes } = css({
     label : {
@@ -38,40 +38,30 @@ const { classes } = css({
     },
 });
 
+const options = [
+    { id : 'theme-system', value : '', label : 'System' },
+    { id : 'theme-light', value : 'light', label : 'Light' },
+    { id : 'theme-dark', value : 'dark', label : 'Dark' }
+];
+
 function ThemeSelector({ theme, onChange }) {
     return h`
         <div>
             <div className=${classes.label}>Theme</div>
             <div className=${classes.selector}>
-                <input
-                    type="radio"
-                    id="system"
-                    name="theme"
-                    value=""
-                    checked=${theme === ''}
-                    onChange=${() => onChange('')}
-                />
-                <label htmlFor="system">System</label>
-
-                <input
-                    type="radio"
-                    id="light"
-                    name="theme"
-                    value="light"
-                    checked=${theme === 'light'}
-                    onChange=${() => onChange('light')}
-                />
-                <label htmlFor="light">Light</label>
-
-                <input
-                    type="radio"
-                    id="dark"
-                    name="theme"
-                    value="dark"
-                    checked=${theme === 'dark'}
-                    onChange=${() => onChange('dark')}
-                />
-                <label htmlFor="dark">Dark</label>
+                ${options.map(({ id, value, label }) => h`
+                    <${Fragment} key=${id}>
+                        <input
+                            type="radio"
+                            id=${id}
+                            name="theme"
+                            value=${value}
+                            checked=${theme === value}
+                            onChange=${() => onChange(value)}
+                        />
+                        <label htmlFor=${id}>${label}</label>
+                    <//>
+                `)}
             </div>
         </div>
     `;

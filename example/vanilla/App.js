@@ -62,13 +62,12 @@ const App = () => {
             <div class="${classes.cat}">🐱</div>
             <div class="${classes.text}">*waves paw*</div>
         </div>
-        <div class="theme-selector"></div>
     `;
 
-    div.replaceChild(ThemeSelector({
+    div.append(ThemeSelector({
         theme : document.documentElement.getAttribute('data-color-scheme') || '',
         setTheme : theme => document.documentElement.setAttribute('data-color-scheme', theme)
-    }), div.querySelector('.theme-selector'));
+    }));
 
     return div;
 };

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import htm from "htm";
+import { createElement, useState, useEffect } from 'react';
+import htm from 'htm';
 import { css } from 'cssfun';
 
 import ThemeSelector from './ThemeSelector.js';
 
-const h = htm.bind(React.createElement);
+const h = htm.bind(createElement);
 
 const { classes } = css({
     '@global' : {
@@ -60,7 +60,7 @@ const { classes } = css({
 
 function App() {
     const [theme, setTheme] = useState(
-        document.documentElement.getAttribute('data-color-scheme') || ''
+        () => document.documentElement.getAttribute('data-color-scheme') || ''
     );
 
     useEffect(() => {

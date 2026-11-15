@@ -34,20 +34,22 @@ const { classes } = css({
     },
 });
 
+const options = [
+    { id : 'theme-system', value : '', label : 'System' },
+    { id : 'theme-light', value : 'light', label : 'Light' },
+    { id : 'theme-dark', value : 'dark', label : 'Dark' }
+];
+
 const ThemeSelector = ({ theme, setTheme }) => {
     const div = document.createElement('div');
     div.addEventListener('change', ev => setTheme(ev.target.value));
     div.innerHTML = `
         <div class="${classes.label}">Theme</div>
         <div class="${classes.selector}">
-            <input type="radio" id="system" name="theme" value=""${theme === '' ? ' checked' : ''}>
-            <label for="system">System</label>
-            
-            <input type="radio" id="light" name="theme" value="light"${theme === 'light' ? ' checked' : ''}>
-            <label for="light">Light</label>
-            
-            <input type="radio" id="dark" name="theme" value="dark"${theme === 'dark' ? ' checked' : ''}>
-            <label for="dark">Dark</label>
+            ${options.map(({ id, value, label }) => `
+                <input type="radio" id="${id}" name="theme" value="${value}"${theme === value ? ' checked' : ''}>
+                <label for="${id}">${label}</label>
+            `).join('')}
         </div>
     `;
 

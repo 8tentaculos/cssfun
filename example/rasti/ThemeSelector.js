@@ -35,20 +35,22 @@ const { classes } = css({
     },
 });
 
-const ThemeSelector = Component.create`
+const options = [
+    { id : 'theme-system', value : '', label : 'System' },
+    { id : 'theme-light', value : 'light', label : 'Light' },
+    { id : 'theme-dark', value : 'dark', label : 'Dark' }
+];
+
+const ThemeSelector = Component.create(({ props, html }) => html`
     <div>
         <div class="${classes.label}">Theme</div>
-        <div class="${classes.selector}" onChange=${function(ev) { this.props.handleChange(ev.target.value); }}>
-            <input type="radio" id="system" name="theme" value="" checked="${({ props }) => props.theme === ''}" />
-            <label for="system">System</label>
-
-            <input type="radio" id="light" name="theme" value="light" checked="${({ props }) => props.theme === 'light'}" />
-            <label for="light">Light</label>
-
-            <input type="radio" id="dark" name="theme" value="dark" checked="${({ props }) => props.theme === 'dark'}" />
-            <label for="dark">Dark</label>
+        <div class="${classes.selector}" onChange=${(ev) => props.handleChange(ev.target.value)}>
+            ${options.map(({ id, value, label }) => html`
+                <input type="radio" id="${id}" name="theme" value="${value}" checked="${props.theme === value}" />
+                <label for="${id}">${label}</label>
+            `)}
         </div>
     </div>
-`;
+`);
 
 export default ThemeSelector;

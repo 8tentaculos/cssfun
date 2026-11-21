@@ -126,7 +126,8 @@ export interface StyleSheetOptions {
     /**
      * Attributes to be added to the `<style>` element.
      * May be a function returning the attributes object, resolved by `getDecoratedAttributes`
-     * every time the attributes are read.
+     * every time the attributes are read: by `toString` and, in the browser, by `attach` when it
+     * creates the element.
      */
     attributes?: ResolvableOption<Record<string, string>>;
     /**
@@ -244,6 +245,8 @@ declare class StyleSheet<S extends Styles = Styles> {
     /**
      * Render all instances in the registry as a string, including the style tags.
      * Reads the registry of the class it is called on, so it must not be detached from it.
+     * The registry keeps every instance attached so far, so on a server it also holds the
+     * instances of modules that earlier requests imported.
      */
     static toString(this: RegistryOwner): string;
     /**

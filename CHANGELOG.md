@@ -16,11 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **The default CDN file runs in the browser again**: `https://cdn.jsdelivr.net/npm/cssfun` served the CommonJS entry and `https://unpkg.com/cssfun` the ES module entry, neither of which loads in a browser. The `jsdelivr` and `unpkg` fields now point both to `dist/cssfun.umd.min.js`.
+- **The CSP guide passed a `StyleSheet` subclass to `createTheme`**: `options.createStyleSheet` is called without `new`, so the example threw. It now passes a `css` helper built on the subclass. The guide also set the nonce on the prototype before rendering, which an async render lets a concurrent request overwrite: it now sets it right before `StyleSheet.toString()`, or reads it from the request context.
 
 ### Added
 
 - **ES module bundles**: `dist/cssfun.esm.js` (development) and `dist/cssfun.esm.min.js` (production) are single files that run natively in the browser, for example through an import map.
 - **Agent skill**: the reference for AI agents moved from `docs/AGENTS.md` to `skills/cssfun/SKILL.md`, an [Agent Skill](https://agentskills.io) shipped in the package. Install it with `npx skills add 8tentaculos/cssfun` or copy it from `node_modules/cssfun/skills/cssfun`.
+- **Code splitting and CSP in the SSR guide**: what `StyleSheet.toString()` renders when modules load on demand, rendering the same styles for every page, the order of `<style>` tags and `@layer`, and setting a CSP nonce in the browser, which attaches the StyleSheets of modules loaded after the page.
 
 ## [0.3.0] - 2026-10-05
 

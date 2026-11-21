@@ -54,7 +54,8 @@ const card = css({
 });
 ```
 
-- `attributes` may also be a function returning the object. It is called each time the styles are rendered, so it can return per-request values such as a CSP nonce
+- `attributes` may also be a function returning the object. It is called each time a `<style>` tag is rendered by `toString()` or created by `attach()` in the browser, so it can return per-request values such as a CSP nonce ([ssr.md](ssr.md#content-security-policy))
+- To set `attributes` for every StyleSheet, assign `StyleSheet.prototype.attributes`: instances without their own fall back to it
 - `generateClassName(className, index)` and `generateUid()` replace the built-in class name and uid generation
 - To change the prefix for every StyleSheet, set `StyleSheet.prefix` instead of passing the option each time
 

@@ -12,7 +12,7 @@ Compact reference for styling with CSSFUN: core API, style syntax, themes and be
 
 Read these when the task needs them:
 
-- [references/ssr.md](references/ssr.md) — rendering styles on the server.
+- [references/ssr.md](references/ssr.md) — rendering styles on the server, code splitting and Content Security Policy nonces.
 - [references/advanced.md](references/advanced.md) — using `StyleSheet` directly, options such as `prefix` and `attributes`, and custom renderers.
 - [references/typescript.md](references/typescript.md) — inferred `classes`, CSS property autocomplete and exported types.
 
@@ -348,6 +348,7 @@ const appTheme = createTheme({
 - ✅ Name classes after the parts of the component they style
 - ✅ Use theme variables for colors, spacing and other design tokens
 - ✅ For values that change at runtime, update a CSS variable or an inline style — don't create new style sheets
+- ✅ Override the classes of a component from a module that imports it: its `<style>` comes later. Between modules that don't import each other, use specificity or `@layer`, not load order
 
 ### Selector Usage
 
@@ -368,6 +369,8 @@ const appTheme = createTheme({
 - ❌ Calling `css()` inside render functions — call it at module level
 - ❌ Forgetting to apply the theme's `root` class — the variables stay undefined
 - ❌ Writing theme variables in dashed-case (`--fun-color-primary` for `colorPrimary`) — keys are kept as written
+- ❌ `@global` rules or themes in a module loaded with `import()` — once loaded, they apply to every page
+- ❌ A CSP nonce on the server only while the browser still attaches StyleSheets, e.g. of modules loaded on demand — see [references/ssr.md](references/ssr.md)
 
 ### Example: Complete Component
 

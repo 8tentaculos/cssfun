@@ -76,7 +76,7 @@ rendered as a string for server-side rendering.
 | [options.prefix] | <code>string</code> |  | Prefix for generating unique identifiers and data attributes. Defaults to the static `prefix` of the instance's class. |
 | [options.generateUid] | <code>function</code> |  | Custom function to generate the unique identifier. |
 | [options.generateClassName] | <code>function</code> |  | Custom function to generate unique class names. |
-| [options.attributes] | <code>Object</code> \| <code>function</code> |  | Attributes to be added to the `<style>` element. May be a function returning the attributes object, resolved every time the attributes are read. |
+| [options.attributes] | <code>Object</code> \| <code>function</code> |  | Attributes to be added to the `<style>` element. May be a function returning the attributes object, resolved every time the attributes are read: by `toString` and, in the browser, by `attach` when it creates the element. |
 | [options.renderers] | <code>Array</code> \| <code>function</code> | <code>[&#x27;parseStyles&#x27;, &#x27;renderStyles&#x27;]</code> | Array of renderer functions or method names, or a function returning such an array. Resolved by `render` on every call and applied in order, each renderer receiving the previous one's output. Renderers are called with the instance as `this`. |
 | [options.shouldAttachToDOM] | <code>function</code> |  | Custom function to determine whether the StyleSheet should be added to the DOM. |
 
@@ -226,6 +226,8 @@ from the DOM, if it's present.
 ### StyleSheet.toString() ⇒ <code>string</code>
 Render all instances in the registry as a string, including the style tags.
 Reads the registry of the class it is called on, so it must not be detached from it.
+The registry keeps every instance attached so far, so on a server it also holds the instances of
+modules that earlier requests imported.
 Can be used to insert style tags in an HTML template for server-side rendering.
 
 **Kind**: static method of [<code>StyleSheet</code>](#StyleSheet)  

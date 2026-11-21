@@ -124,7 +124,7 @@ See [Class name generation](/docs/styles.md#class-name-generation) for how the n
 
 - [Writing styles](/docs/styles.md) — class name generation and the style syntax: nesting, class references, global styles and at-rules.
 - [Themes](/docs/themes.md) — creating a theme, color schemes and using its CSS variables.
-- [Server-side rendering](/docs/ssr.md) — rendering styles on the server, and Content Security Policy nonces.
+- [Server-side rendering](/docs/ssr.md) — rendering styles on the server, hydration, code splitting and Content Security Policy nonces.
 - [Extending](/docs/extending.md) — custom renderers, subclassing `StyleSheet` and separate registries.
 - [TypeScript](/docs/typescript.md) — class name inference, CSS property autocomplete and exported types.
 - [API documentation](/docs/api.md) — every CSSFUN function, class, method and option.

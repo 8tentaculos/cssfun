@@ -91,7 +91,8 @@ const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'should
  * @param {Function} [options.generateUid] - Custom function to generate the unique identifier.
  * @param {Function} [options.generateClassName] - Custom function to generate unique class names.
  * @param {Object|Function} [options.attributes] - Attributes to be added to the `<style>` element.
- * May be a function returning the attributes object, resolved every time the attributes are read.
+ * May be a function returning the attributes object, resolved every time the attributes are read: by `toString`
+ * and, in the browser, by `attach` when it creates the element.
  * @param {Array|Function} [options.renderers=['parseStyles', 'renderStyles']] - Array of renderer functions or
  * method names, or a function returning such an array. Resolved by `render` on every call and applied in order,
  * each renderer receiving the previous one's output. Renderers are called with the instance as `this`.
@@ -438,6 +439,8 @@ class StyleSheet {
     /**
      * Render all instances in the registry as a string, including the style tags.
      * Reads the registry of the class it is called on, so it must not be detached from it.
+     * The registry keeps every instance attached so far, so on a server it also holds the instances of
+     * modules that earlier requests imported.
      * Can be used to insert style tags in an HTML template for server-side rendering.
      * @returns {string} All instances in the registry as a string.
      * @static

@@ -375,6 +375,17 @@ CustomStyleSheet.prototype.attributes = { nonce : 'abc' };
 css({ root : {} }, { attributes : { nonce : 'abc' }, prefix : 'app' });
 css({ root : {} }, { attributes : () => ({ nonce : getRequestNonce() }), prefix : 'app' });
 
+// a value that may be missing: undefined and null attributes are left out at runtime
+declare const findNonce : () => string | undefined;
+StyleSheet.prototype.attributes = () => ({ nonce : findNonce() });
+StyleSheet.prototype.attributes = { nonce : findNonce(), id : null };
+css({ root : {} }, { attributes : () => ({ nonce : findNonce() }) });
+class OptionalNonceStyleSheet extends StyleSheet {
+    get attributes() { return { nonce : findNonce() }; }
+}
+new OptionalNonceStyleSheet({ root : {} });
+expectError(css({ root : {} }, { attributes : { nonce : 1 } }));
+
 /*
  * createTheme: custom createStyleSheet may return a StyleSheet subclass
  */

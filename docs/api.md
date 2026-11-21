@@ -36,7 +36,7 @@
 | styles | <code>Object</code> | The original styles object provided to the instance. |
 | uid | <code>string</code> | Unique identifier for the StyleSheet instance, generated using `this.generateUid`. |
 | prefix | <code>string</code> | Prefix for generating unique identifiers and data attributes. Taken from the options, from the subclass, or from the static `prefix` of the instance's class. |
-| [attributes] | <code>Object</code> \| <code>function</code> | Optional attributes to be added to the `<style>` element. May be `undefined`, an object, or a function returning one, resolved by `getDecoratedAttributes` every time the attributes are read. |
+| [attributes] | <code>Object</code> \| <code>function</code> | Optional attributes to be added to the `<style>` element. May be `undefined`, an object, or a function returning one, resolved by `getDecoratedAttributes` every time the attributes are read. Attributes whose value is `undefined` or `null` are left out. |
 | renderers | <code>Array</code> \| <code>function</code> | Renderer functions or method names used to process the styles object, or a function returning them. Resolved by `render` on every call. |
 | el | <code>HTMLElement</code> | Reference to the `<style>` element in the DOM. Created when the instance is attached to the DOM. |
 
@@ -76,7 +76,7 @@ rendered as a string for server-side rendering.
 | [options.prefix] | <code>string</code> |  | Prefix for generating unique identifiers and data attributes. Defaults to the static `prefix` of the instance's class. |
 | [options.generateUid] | <code>function</code> |  | Custom function to generate the unique identifier. |
 | [options.generateClassName] | <code>function</code> |  | Custom function to generate unique class names. |
-| [options.attributes] | <code>Object</code> \| <code>function</code> |  | Attributes to be added to the `<style>` element. May be a function returning the attributes object, resolved every time the attributes are read: by `toString` and, in the browser, by `attach` when it creates the element. |
+| [options.attributes] | <code>Object</code> \| <code>function</code> |  | Attributes to be added to the `<style>` element. May be a function returning the attributes object, resolved every time the attributes are read: by `toString` and, in the browser, by `attach` when it creates the element. Attributes whose value is `undefined` or `null` are left out. |
 | [options.renderers] | <code>Array</code> \| <code>function</code> | <code>[&#x27;parseStyles&#x27;, &#x27;renderStyles&#x27;]</code> | Array of renderer functions or method names, or a function returning such an array. Resolved by `render` on every call and applied in order, each renderer receiving the previous one's output. Renderers are called with the instance as `this`. |
 | [options.shouldAttachToDOM] | <code>function</code> |  | Custom function to determine whether the StyleSheet should be added to the DOM. |
 

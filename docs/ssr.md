@@ -231,18 +231,11 @@ import { StyleSheet } from 'cssfun';
 
 const requestContext = new AsyncLocalStorage();
 
-StyleSheet.prototype.attributes = () => {
-    const nonce = requestContext.getStore()?.nonce;
-    // An undefined value would be rendered as nonce="undefined"
-    return nonce ? { nonce } : {};
-};
+// Outside a request the nonce is undefined, and attributes without a value are left out
+StyleSheet.prototype.attributes = () => ({ nonce : requestContext.getStore()?.nonce });
 
 app.use((req, res, next) => requestContext.run({ nonce : res.locals.cspNonce }, next));
 ```
-
-In TypeScript, declare the return type of the function as `Record<string, string>`, here and in the 
-getter of the [subclass](#scoped-alternative-a-subclass). Without it, the empty object is inferred as 
-`{ nonce?: undefined }`, which the type of `attributes` rejects.
 
 ### In the browser
 
@@ -260,8 +253,8 @@ from scripts, and `getAttribute('nonce')` returns an empty string.
 // csp-nonce.js
 import { StyleSheet } from 'cssfun';
 
-const nonce = document.querySelector('meta[property="csp-nonce"]')?.nonce;
-if (nonce) StyleSheet.prototype.attributes = { nonce };
+const meta = document.querySelector('meta[property="csp-nonce"]');
+StyleSheet.prototype.attributes = { nonce : meta?.nonce };
 ```
 
 Import it in the client entry before any module that calls `css()` or `createTheme()`. Modules run 
@@ -326,8 +319,7 @@ import { StyleSheet } from 'cssfun';
 
 class CSPStyleSheet extends StyleSheet {
     get attributes() {
-        const nonce = getNonce();
-        return nonce ? { nonce } : {};
+        return { nonce : getNonce() };
     }
 }
 

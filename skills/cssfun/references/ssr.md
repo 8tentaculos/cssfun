@@ -91,22 +91,17 @@ const html = await render(req.url);
 StyleSheet.prototype.attributes = { nonce : res.locals.cspNonce };
 const styles = StyleSheet.toString();
 
-// ✅ Server, from the request context
-StyleSheet.prototype.attributes = () => {
-    const nonce = requestContext.getStore()?.nonce; // an AsyncLocalStorage
-    return nonce ? { nonce } : {};
-};
+// ✅ Server, from the request context (an AsyncLocalStorage); undefined outside a request
+StyleSheet.prototype.attributes = () => ({ nonce : requestContext.getStore()?.nonce });
 
 // ✅ Browser: csp-nonce.js, imported by the client entry before any module that calls css()
-const nonce = document.querySelector('meta[property="csp-nonce"]')?.nonce;
-if (nonce) StyleSheet.prototype.attributes = { nonce };
+const meta = document.querySelector('meta[property="csp-nonce"]');
+StyleSheet.prototype.attributes = { nonce : meta?.nonce };
 ```
 
 The page carries `<meta property="csp-nonce" nonce="…">` in its `<head>` (Vite emits it for `html.cspNonce`). Pages pre-rendered at build time carry a placeholder nonce instead, which the host replaces with a fresh value in the HTML and the policy header of every response.
 
 - ❌ Setting a plain value before an `await`: a concurrent request replaces it before `toString()`
-- ❌ Returning `{ nonce : undefined }`: it is rendered as `nonce="undefined"`
-- ❌ In TypeScript, leaving the return type of a conditional `attributes` function or getter inferred: declare `Record<string, string>`, or `{}` is inferred as `{ nonce?: undefined }` and rejected
 - ❌ `getAttribute('nonce')`: browsers hide the attribute when the policy comes in a header, so read the `nonce` property
 - ❌ A nonce on the server only, unless the server renders every StyleSheet the browser can attach (every module loaded on demand imported on the server, no browser-only `css()` calls)
 - ❌ Passing a StyleSheet subclass as `createTheme`'s `createStyleSheet`: it is called without `new`, so pass a function such as `(styles, options) => new CSPStyleSheet(styles, options).attach()`

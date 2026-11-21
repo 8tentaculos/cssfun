@@ -127,9 +127,9 @@ export interface StyleSheetOptions {
      * Attributes to be added to the `<style>` element.
      * May be a function returning the attributes object, resolved by `getDecoratedAttributes`
      * every time the attributes are read: by `toString` and, in the browser, by `attach` when it
-     * creates the element.
+     * creates the element. Attributes whose value is `undefined` or `null` are left out.
      */
-    attributes?: ResolvableOption<Record<string, string>>;
+    attributes?: ResolvableOption<Record<string, string | null | undefined>>;
     /**
      * Renderer functions or method names, or a function returning such an array.
      * Default: `['parseStyles', 'renderStyles']`. Resolved by `render` on every call and
@@ -281,8 +281,9 @@ interface StyleSheet<S extends Styles = Styles> {
      * option or declared by a subclass. In a subclass, declare a getter: it is read every time
      * the attributes are used, so a per-request value such as a CSP nonce stays fresh. An
      * object, or a function returning one, is also accepted as an option or on the prototype.
+     * Attributes whose value is `undefined` or `null` are left out.
      */
-    attributes?: Resolvable<Record<string, string>>;
+    attributes?: Resolvable<Record<string, string | null | undefined>>;
 
     /**
      * Renderer functions or method names used to process the styles object, or a function

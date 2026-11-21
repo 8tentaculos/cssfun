@@ -92,7 +92,8 @@ const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'should
  * @param {Function} [options.generateClassName] - Custom function to generate unique class names.
  * @param {Object|Function} [options.attributes] - Attributes to be added to the `<style>` element.
  * May be a function returning the attributes object, resolved every time the attributes are read: by `toString`
- * and, in the browser, by `attach` when it creates the element.
+ * and, in the browser, by `attach` when it creates the element. Attributes whose value is `undefined` or `null`
+ * are left out.
  * @param {Array|Function} [options.renderers=['parseStyles', 'renderStyles']] - Array of renderer functions or
  * method names, or a function returning such an array. Resolved by `render` on every call and applied in order,
  * each renderer receiving the previous one's output. Renderers are called with the instance as `this`.
@@ -124,7 +125,7 @@ const styleSheetOptions = ['prefix', 'generateUid', 'generateClassName', 'should
  * options, from the subclass, or from the static `prefix` of the instance's class.
  * @property {Object|Function} [attributes] - Optional attributes to be added to the `<style>` element. May be
  * `undefined`, an object, or a function returning one, resolved by `getDecoratedAttributes` every time the
- * attributes are read.
+ * attributes are read. Attributes whose value is `undefined` or `null` are left out.
  * @property {Array|Function} renderers - Renderer functions or method names used to process the styles object,
  * or a function returning them. Resolved by `render` on every call.
  * @property {HTMLElement} el - Reference to the `<style>` element in the DOM. Created when the instance is attached to the DOM.
@@ -341,12 +342,20 @@ class StyleSheet {
      * Starts from `this.attributes`, which is optional and may be `undefined`, an object, or a
      * function returning one, resolved on every call so per-request values such as a CSP nonce
      * are read fresh.
+     * Attributes whose value is `undefined` or `null` are left out, so a value that may be missing,
+     * such as a nonce outside a request, needs no check.
      * The `data-<prefix>-uid` attribute is always added.
      * @returns {Object} The attributes object.
      * @private
      */
     getDecoratedAttributes() {
-        const attributes = Object.assign({}, getResult(this.attributes, this));
+        const resolved = getResult(this.attributes, this) || {};
+        const attributes = Object.keys(resolved).reduce((acc, key) => {
+            if (typeof resolved[key] !== 'undefined' && resolved[key] !== null) {
+                acc[key] = resolved[key];
+            }
+            return acc;
+        }, {});
         attributes[`data-${this.prefix}-uid`] = this.uid;
         return attributes;
     }

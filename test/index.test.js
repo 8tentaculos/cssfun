@@ -272,6 +272,38 @@ describe('cssfun', () => {
             expect(instance.toString()).to.include('id="second"');
         });
 
+        it('must leave out attributes whose value is undefined or null', () => {
+            const instance = css({ root : { color : 'red' } }, {
+                attributes : { nonce : undefined, id : null, title : 'kept' }
+            });
+            expect(instance.toString()).to.be.equal(
+                `<style title="kept" data-fun-uid="${instance.uid}">.${instance.prefix[0]}-${instance.uid}-1{color:red;}</style>`
+            );
+            expect(instance.el.hasAttribute('nonce')).to.be.equal(false);
+            expect(instance.el.hasAttribute('id')).to.be.equal(false);
+            expect(instance.el.getAttribute('title')).to.be.equal('kept');
+        });
+
+        it('must accept an attributes function that returns nothing', () => {
+            const instance = css({ root : { color : 'red' } }, { attributes : () => undefined });
+            expect(instance.toString()).to.include(`<style data-fun-uid="${instance.uid}">`);
+        });
+
+        it('must fall back to the attributes of the prototype', () => {
+            let nonce;
+            StyleSheet.prototype.attributes = () => ({ nonce });
+            try {
+                const instance = new StyleSheet({ root : { color : 'red' } });
+                expect(instance.toString()).to.include(`<style data-fun-uid="${instance.uid}">`);
+                nonce = 'abc';
+                expect(instance.toString()).to.include('nonce="abc"');
+                expect(instance.attach().el.getAttribute('nonce')).to.be.equal('abc');
+                expect(css({ root : { color : 'red' } }, { attributes : { id : 'own' } }).toString()).to.not.include('nonce');
+            } finally {
+                delete StyleSheet.prototype.attributes;
+            }
+        });
+
         it('must apply renderers in order, each receiving the previous output', () => {
             const calls = [];
             const instance = new StyleSheet({ root : { color : 'red' } }, {
